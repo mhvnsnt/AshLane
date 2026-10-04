@@ -1228,16 +1228,10 @@ function resolveClip(f: Fighter, b: Body, sim: Sim): { name: string; loop: boole
     if (held) return { name: held, loop: true };
   }
   if (b.kind === "player" && b.state === "free" && b.grounded) {
-    const speed = Math.hypot(b.vx, b.vz);
     if (sim.guard) {
       const pose = sim.lowGuard
-        ? firstClip(f.actions, ["Crouch_Idle_Loop", "guardlow", "stancecrouch", "crouch"])
-        : firstClip(f.actions, ["guardhigh", "Sword_Idle", "block", "defender"]);
-      if (pose) return { name: pose, loop: true };
-    } else if (sim.stickY > 0.45) {
-      const pose = speed < 0.45
-        ? firstClip(f.actions, ["Crouch_Idle_Loop", "stancecrouch", "crouch", "guardlow"])
-        : firstClip(f.actions, ["Crouch_Fwd_Loop", "crouch", "Crouch_Idle_Loop"]);
+        ? firstClip(f.actions, ["guardlow", "Crouch_Idle_Loop", "stancecrouch"])
+        : firstClip(f.actions, ["guardhigh", "block", "defender"]);
       if (pose) return { name: pose, loop: true };
     }
   }

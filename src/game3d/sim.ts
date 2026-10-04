@@ -3101,7 +3101,7 @@ function updatePlayer(sim: Sim, dt: number, dashEdge: boolean) {
     sim.bufJump = 0;
     sim.sfx.push("jump");
   }
-  if (sim.mode !== "belt") applyMove(sim, p, dt, sim.guard ? 0.4 : inputLikeDown(sim) && p.state === "free" ? 0.55 : 1);
+  if (sim.mode !== "belt") applyMove(sim, p, dt, sim.guard ? 0.4 : 1);
 }
 
 function startAu(sim: Sim, p: Body) {

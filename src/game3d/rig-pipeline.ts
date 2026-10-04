@@ -504,57 +504,66 @@ MOVESETS.mannequin = {
   },
 };
 
+const CAST_STYLES: Moveset["clips"][] = [
+  {
+    idle: "boxidle", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "boxing", cross: "jabcross", launch: "elbow", sweep: "bodyblow", lunge: "slugger",
+    armedJab: "elbow", armedCross: "jabcross", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "slugger",
+    spin: "hurricane", hit: "hit", dodge: "evade", down: "fallflat", death: "Death01", pickup: "rise", throw: "suplex", grab: "defender", block: "guardhigh", cheer: "boxing1",
+  },
+  {
+    idle: "drunkidle", walk: "drunkwalk", run: "Jog_Fwd_Loop", back: "drunkwalk", strafeL: "evade", strafeR: "esquiva",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "combo", cross: "rib", launch: "knee", sweep: "crouch", lunge: "dropkick",
+    armedJab: "elbow", armedCross: "rib", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "dropkick",
+    spin: "capoeira", hit: "hitbody", dodge: "esquiva", down: "fallflat", death: "Death01", pickup: "kip", throw: "german", grab: "defender", block: "guardlow", cheer: "drunkidle",
+  },
+  {
+    idle: "ginga", walk: "gingaside", run: "Sprint_Loop", back: "gingaback", strafeL: "gingaside", strafeR: "au",
+    jump: "bigjump", fall: "crossjump", jab: "capoeira", cross: "hurricane", launch: "knee", sweep: "bodyblow", lunge: "dropkick",
+    armedJab: "elbow", armedCross: "hurricane", armedLaunch: "knee", armedSweep: "crouch", armedLunge: "dropkick",
+    spin: "au", hit: "hitside", dodge: "esquiva", down: "fallflat", death: "Death01", pickup: "kip", throw: "backdrop", grab: "takedown", block: "stancecrouch", cheer: "capoeira",
+  },
+  {
+    idle: "defender", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "evade", strafeR: "evade",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "boxing", cross: "slugger", launch: "elbow", sweep: "bodyblow", lunge: "knee",
+    armedJab: "elbow", armedCross: "slugger", armedLaunch: "knee", armedSweep: "crouch", armedLunge: "dropkick",
+    spin: "tiger", hit: "hithead", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "rise", throw: "chokeslam", grab: "defender", block: "guardhigh", cheer: "boxidle",
+  },
+  {
+    idle: "Sword_Idle", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Roll", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Sword_Attack", cross: "Sword_Attack_RM", launch: "elbow", sweep: "crouch", lunge: "slugger",
+    armedJab: "Sword_Attack", armedCross: "Sword_Attack_RM", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "Sword_Attack",
+    spin: "hurricane", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "rise", throw: "ddt", grab: "defender", block: "guardhigh", cheer: "Sword_Idle",
+  },
+  {
+    idle: "Idle_Loop", walk: "Walk_Loop", run: "Sprint_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Punch_Cross", launch: "knee", sweep: "bodyblow", lunge: "dropkick",
+    armedJab: "Punch_Jab", armedCross: "Punch_Cross", armedLaunch: "elbow", armedSweep: "crouch", armedLunge: "slugger",
+    spin: "feral", hit: "Hit_Head", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Jump_Land", throw: "brainbuster", grab: "Punch_Enter", block: "guardhigh", cheer: "Idle_Talking_Loop",
+  },
+  {
+    idle: "stancecrouch", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "gingaback", strafeL: "esquiva", strafeR: "evade",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "boxing2", cross: "boxing3", launch: "elbow", sweep: "crouch", lunge: "knee",
+    armedJab: "elbow", armedCross: "boxing3", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "dropkick",
+    spin: "corkscrew", hit: "hit", dodge: "evade", down: "fallflat", death: "Death01", pickup: "kip", throw: "takedown", grab: "defender", block: "guardlow", cheer: "boxing1",
+  },
+  {
+    idle: "Idle_Talking_Loop", walk: "Walk_Formal_Loop", run: "Sprint_Loop", back: "Walk_Loop", strafeL: "Walk_Formal_Loop", strafeR: "Walk_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "jabcross", launch: "tiger", sweep: "bodyblow", lunge: "slugger",
+    armedJab: "elbow", armedCross: "Punch_Cross", armedLaunch: "tiger", armedSweep: "crouch", armedLunge: "dropkick",
+    spin: "hurricane", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "rise", throw: "suplex", grab: "defender", block: "block", cheer: "Dance_Loop",
+  },
+];
+
 export function castMoveset(file: string) {
   const id = `cast:${file}`;
   if (MOVESETS[id]) return id;
   let n = 0;
   for (let i = 0; i < file.length; i++) n = (n * 33 + file.charCodeAt(i)) >>> 0;
-  const pick = <T,>(list: T[], salt: number) => list[(n + salt) % list.length];
-  const idles = ["Idle_Loop", "Idle_Talking_Loop", "Crouch_Idle_Loop", "Sword_Idle", "Pistol_Idle_Loop"];
-  const walks = ["Walk_Loop", "Walk_Formal_Loop", "Jog_Fwd_Loop", "Crouch_Fwd_Loop"];
-  const runs = ["Sprint_Loop", "Jog_Fwd_Loop", "Walk_Loop"];
-  const jabs = ["Punch_Jab", "Punch_Cross", "Sword_Attack", "Spell_Simple_Shoot"];
-  const crosses = ["Punch_Cross", "Sword_Attack", "Punch_Jab", "Pistol_Shoot"];
-  const launches = ["Sword_Attack", "Punch_Cross", "Spell_Simple_Shoot", "Punch_Enter"];
-  const sweeps = ["Crouch_Fwd_Loop", "Punch_Jab", "Sword_Attack", "Interact"];
-  const hits = ["Hit_Chest", "Hit_Head"];
-  const blocks = ["Crouch_Idle_Loop", "Pistol_Aim_Neutral", "Pistol_Aim_Up", "Sword_Idle"];
+  const clips = { ...CAST_STYLES[n % CAST_STYLES.length] };
   const throws = ["suplex", "german", "chokeslam", "ddt", "brainbuster", "backdrop", "takedown"];
-  const grabs = ["takedown", "Punch_Enter", "boxing", "Interact"];
-  MOVESETS[id] = {
-    id,
-    show: [],
-    clips: {
-      idle: pick(idles, 0),
-      walk: pick(walks, 1),
-      run: pick(runs, 2),
-      back: pick(walks, 3),
-      strafeL: "Roll",
-      strafeR: pick(["Roll", "Walk_Formal_Loop", "Crouch_Fwd_Loop"], 4),
-      jump: "Jump_Start",
-      fall: "Jump_Loop",
-      jab: pick(jabs, 5),
-      cross: pick(crosses, 6),
-      launch: pick(launches, 7),
-      sweep: pick(sweeps, 8),
-      lunge: pick(["Jog_Fwd_Loop", "Sword_Attack", "Punch_Cross", "Sprint_Loop"], 9),
-      armedJab: pick(["Sword_Attack", "Pistol_Shoot", "Punch_Jab"], 10),
-      armedCross: pick(["Sword_Attack_RM", "Punch_Cross", "Pistol_Aim_Up"], 11),
-      armedLaunch: pick(launches, 12),
-      armedSweep: pick(sweeps, 13),
-      armedLunge: pick(["Sword_Attack", "Jog_Fwd_Loop", "Punch_Enter"], 14),
-      spin: pick(["Dance_Loop", "Sword_Attack", "Spell_Simple_Shoot"], 15),
-      hit: pick(hits, 16),
-      dodge: "Roll",
-      down: pick(["Crouch_Idle_Loop", "Sitting_Idle_Loop", "Death01"], 17),
-      death: "Death01",
-      pickup: pick(["Sitting_Exit", "Jump_Land", "PickUp_Table"], 18),
-      throw: pick(throws, 19),
-      grab: pick(grabs, 20),
-      block: pick(blocks, 21),
-      cheer: pick(["Dance_Loop", "Idle_Talking_Loop", "Spell_Simple_Idle_Loop"], 22),
-    },
-  };
+  clips.throw = throws[n % throws.length];
+  MOVESETS[id] = { id, show: [], clips };
   return id;
 }
 
@@ -604,12 +613,12 @@ export function slotFor(body: { state: string; alive: boolean; kind: string; wea
   if (body.state === "throw") return { slot: "hit", loop: false };
   if (body.state === "grab") return { slot: "grab", loop: true };
   if (body.state === "atk" || body.state === "windup") {
-    if (body.swing === 12) return { slot: "spin", loop: false };
-    if (body.swing === 11) return { slot: "armedJab", loop: false };
-    if (body.swing >= 9) return { slot: "spin", loop: true };
-    if (body.swing >= 8) return { slot: "launch", loop: false };
-    if (body.swing >= 7) return { slot: "fall", loop: false };
-    if (body.swing >= 6) return { slot: "lunge", loop: false };
+    if (body.swing === 12) return { slot: armed ? "armedCross" : "cross", loop: false };
+    if (body.swing === 11) return { slot: armed ? "armedJab" : "jab", loop: false };
+    if (body.swing >= 9) return { slot: armed ? "armedLunge" : "lunge", loop: false };
+    if (body.swing >= 8) return { slot: armed ? "armedLaunch" : "launch", loop: false };
+    if (body.swing >= 7) return { slot: armed ? "armedSweep" : "sweep", loop: false };
+    if (body.swing >= 6) return { slot: armed ? "armedLunge" : "lunge", loop: false };
     if (body.swing >= 5) return { slot: armed ? "armedSweep" : "sweep", loop: false };
     if (body.swing >= 4) return { slot: armed ? "armedLunge" : "lunge", loop: false };
     if (body.swing >= 3) return { slot: armed ? "armedLaunch" : "launch", loop: false };
