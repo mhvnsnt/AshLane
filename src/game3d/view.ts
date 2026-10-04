@@ -430,6 +430,8 @@ export function createView(canvas: HTMLCanvasElement) {
         minZ: placed.min.z + 0.2,
         maxZ: placed.max.z - 0.2,
         kind: "wall",
+        hp: 0,
+        role: "",
       });
     });
   }
@@ -455,6 +457,8 @@ export function createView(canvas: HTMLCanvasElement) {
         minZ: placed.min.z + 0.35,
         maxZ: placed.max.z - 0.35,
         kind: "wall",
+        hp: 0,
+        role: "",
       });
     });
   }
@@ -857,7 +861,13 @@ export function createView(canvas: HTMLCanvasElement) {
       const box = sim.boxes[i];
       const mesh = boxMeshes[i];
       if (!mesh) continue;
-      if (box.kind === "gate") mesh.visible = !sim.streetClear;
+      if (box.kind === "open") mesh.visible = false;
+      else if (box.kind === "gate") mesh.visible = !sim.streetClear;
+      else mesh.visible = true;
+      if (box.hp > 0 && box.kind !== "open") {
+        const mat = (mesh as THREE.Mesh).material as THREE.MeshLambertMaterial | undefined;
+        if (mat && mat.color) mat.color.setHex(box.role === "cage" ? 0x9aa7b2 : box.role === "door" ? 0x8a5a32 : 0x6d5344);
+      }
     }
     fighters.forEach((f, i) => {
       const b = sim.bodies[i];

@@ -66,7 +66,7 @@ export type Body = {
   link: number;
 };
 
-export type BoxKind = "wall" | "plat" | "spring" | "goal" | "gate" | "rope";
+export type BoxKind = "wall" | "plat" | "spring" | "goal" | "gate" | "rope" | "open";
 
 export type Box = {
   minX: number;
@@ -76,6 +76,8 @@ export type Box = {
   maxY: number;
   maxZ: number;
   kind: BoxKind;
+  hp: number;
+  role: "" | "door" | "cage" | "weak";
 };
 
 export type Particle = {
@@ -138,6 +140,8 @@ export type Sim = {
   backupT: number;
   backups: number;
   door: number;
+  doorHits: number;
+  doorBroke: boolean;
   rearLock: boolean;
   xp: number;
   level: number;
@@ -244,8 +248,8 @@ function approachAngle(cur: number, target: number, rate: number, dt: number) {
   return cur + d * (1 - Math.exp(-rate * dt));
 }
 
-function box(minX: number, maxX: number, minZ: number, maxZ: number, h: number, kind: BoxKind): Box {
-  return { minX, maxX, minY: 0, maxY: h, minZ, maxZ, kind };
+function box(minX: number, maxX: number, minZ: number, maxZ: number, h: number, kind: BoxKind, hp = 0, role: Box["role"] = ""): Box {
+  return { minX, maxX, minY: 0, maxY: h, minZ, maxZ, kind, hp, role };
 }
 
 function buildBoxes(): Box[] {
@@ -275,7 +279,9 @@ function buildBoxes(): Box[] {
     box(3, 8, -48, -46, 3, "wall"),
     box(-1.2, 0.4, -34.4, -33, 2.6, "wall"),
     box(1.8, 3.4, -40.6, -39.2, 2.6, "wall"),
-    box(24, 26, -14.4, 24, 3, "wall"),
+    box(24, 26, -14.4, -2, 3, "wall"),
+    box(24, 26, -2, 4, 3, "wall", 4, "weak"),
+    box(24, 26, 4, 24, 3, "wall"),
     box(16.4, 48, -14.9, -14.2, 2.4, "wall"),
     box(46, 48, -26, -22, 3, "wall"),
     box(46, 48, -16, -14.2, 3, "wall"),
@@ -331,11 +337,11 @@ function buildBoxes(): Box[] {
     box(76.8, 78, 36.6, 38, 3, "wall"),
     box(-62, -48, -8, -6, 3, "wall"),
     box(-62, -48, 6, 8, 3, "wall"),
-    box(-78, -76.4, -8, 8, 3.2, "wall"),
+    box(-78, -76.4, -8, 8, 3.2, "wall", 8, "cage"),
     box(-78, -62, -8, -6.6, 3.2, "wall"),
     box(-78, -62, 6.6, 8, 3.2, "wall"),
-    box(-63.4, -62, -8, -1.6, 3.2, "wall"),
-    box(-63.4, -62, 1.6, 8, 3.2, "wall"),
+    box(-63.4, -62, -8, -1.6, 3.2, "wall", 6, "cage"),
+    box(-63.4, -62, 1.6, 8, 3.2, "wall", 6, "cage"),
     box(-14, -6, -78, -48, 3, "wall"),
     box(6, 14, -78, -48, 3, "wall"),
     box(-14, 14, -80, -78, 3, "wall"),
@@ -531,6 +537,8 @@ export function createSim(tune?: Tune): Sim {
     backupT: 0,
     backups: 0,
     door: 0,
+    doorHits: 0,
+    doorBroke: false,
     rearLock: false,
     xp: 0,
     level: 1,
@@ -1764,11 +1772,45 @@ function wallSlam(sim: Sim, b: Body) {
   b.stateT = 0.25;
 }
 
+function crack(sim: Sim, box: Box | null) {
+  if (!box || box.hp <= 0 || box.kind === "open") return;
+  box.hp -= box.role === "cage" ? 1 : box.role === "door" ? 2 : 1.5;
+  if (box.hp > 0) {
+    sim.banner = box.role === "door" ? "Door buckles" : box.role === "cage" ? "Cage dents" : "Wall cracks";
+    sim.bannerT = 0.6;
+    return;
+  }
+  box.kind = "open";
+  box.maxY = 0;
+  sim.banner = box.role === "door" ? "Door's down" : box.role === "cage" ? "Cage's down" : "Wall's open";
+  sim.bannerT = 1.1;
+  sim.sfx.push("slam");
+}
+
+function nearestHard(sim: Sim, b: Body) {
+  let best: Box | null = null;
+  let bestD = 0.9;
+  for (const box of sim.boxes) {
+    if (box.kind === "plat" || box.kind === "spring" || box.kind === "goal" || box.kind === "open" || box.kind === "rope") continue;
+    if (box.kind === "gate" && sim.streetClear) continue;
+    if (box.role === "door" && (sim.doorBroke || sim.door > 0.45)) continue;
+    const cx = Math.min(Math.max(b.x, box.minX), box.maxX);
+    const cz = Math.min(Math.max(b.z, box.minZ), box.maxZ);
+    const d = Math.hypot(b.x - cx, b.z - cz);
+    if (d < bestD) {
+      best = box;
+      bestD = d;
+    }
+  }
+  return best;
+}
+
 function resolveXZ(sim: Sim, b: Body): "" | "hard" | "soft" | "rope" {
   let touch: "" | "hard" | "soft" | "rope" = "";
   for (const box of sim.boxes) {
-    if (box.kind === "spring" || box.kind === "goal" || box.kind === "plat") continue;
+    if (box.kind === "spring" || box.kind === "goal" || box.kind === "plat" || box.kind === "open") continue;
     if (box.kind === "gate" && sim.streetClear) continue;
+    if (box.role === "door" && (sim.doorBroke || sim.door > 0.45)) continue;
     if (b.y >= box.maxY - 0.08) continue;
     if (b.y + 1.45 < box.minY) continue;
     const cx = Math.min(Math.max(b.x, box.minX), box.maxX);
@@ -1795,15 +1837,26 @@ function resolveXZ(sim: Sim, b: Body): "" | "hard" | "soft" | "rope" {
       b.vz -= vn * nz;
     }
   }
-  if (sim.door < 0.45 && b.y < 2.15 && b.x > -13.6 && b.x < -11.2 && b.z > -6.05 && b.z < -4.95) {
+  if (!sim.doorBroke && sim.door < 0.45 && b.y < 2.15 && b.x > -13.6 && b.x < -11.2 && b.z > -6.05 && b.z < -4.95) {
     b.z = b.z > -5.5 ? -4.88 : -6.12;
     b.vz = 0;
+    if (b.splat < 0.15 && ((b.state === "throw" && b.slam) || ((b.state === "hit" || b.state === "launch") && Math.hypot(b.vx, b.vz) > 6))) {
+      sim.doorHits += 1;
+      if (sim.doorHits >= 2) {
+        sim.doorBroke = true;
+        sim.door = 1;
+        sim.banner = "Door's down";
+      } else sim.banner = "Door buckles";
+      sim.bannerT = 0.8;
+      wallSlam(sim, b);
+      return "hard";
+    }
   }
   for (const prop of sim.props) {
     if (!prop.alive || prop.kind === "pipe" || prop.kind === "bottle" || prop.kind === "board" || prop.kind === "blade" || prop.kind === "spear") continue;
     const car = prop.kind === "car";
     if (car && prop.crush > 0.92) continue;
-    const top = car ? carTop(prop) : 0.9;
+    const top = car ? carTop(prop) : prop.kind === "table" ? 0.7 : prop.kind === "crate" ? 0.62 : prop.kind === "chair" ? 0.42 : 0.9;
     if (b.y >= top - (car ? 0.02 : 0)) continue;
     const hx = car ? 2.05 : 0.55;
     const hz = car ? 0.9 : 0.55;
@@ -1841,8 +1894,9 @@ function resolveXZ(sim: Sim, b: Body): "" | "hard" | "soft" | "rope" {
 
 function eject(sim: Sim, b: Body) {
   for (const box of sim.boxes) {
-    if (box.kind === "spring" || box.kind === "goal" || box.kind === "plat") continue;
+    if (box.kind === "spring" || box.kind === "goal" || box.kind === "plat" || box.kind === "open") continue;
     if (box.kind === "gate" && sim.streetClear) continue;
+    if (box.role === "door" && (sim.doorBroke || sim.door > 0.45)) continue;
     if (b.y >= box.maxY - 0.05) continue;
     if (b.x <= box.minX || b.x >= box.maxX || b.z <= box.minZ || b.z >= box.maxZ) continue;
     const left = b.x - box.minX;
@@ -1887,6 +1941,18 @@ function resolveY(sim: Sim, b: Body, prevY: number) {
     if (prop.kind !== "car" || !prop.alive && prop.crush > 0.98) continue;
     if (Math.abs(b.x - prop.x) > 2.05 || Math.abs(b.z - prop.z) > 0.9) continue;
     const top = carTop(prop);
+    if (prevY >= top - 0.08 && b.y < top && b.vy <= 0) {
+      b.y = top;
+      b.vy = 0;
+      b.grounded = true;
+    }
+  }
+  for (const prop of sim.props) {
+    if (!prop.alive || (prop.kind !== "table" && prop.kind !== "crate" && prop.kind !== "chair")) continue;
+    const top = prop.kind === "table" ? 0.7 : prop.kind === "crate" ? 0.62 : 0.42;
+    const hx = prop.kind === "table" ? 0.5 : 0.32;
+    const hz = prop.kind === "table" ? 0.32 : 0.32;
+    if (Math.abs(b.x - prop.x) > hx || Math.abs(b.z - prop.z) > hz) continue;
     if (prevY >= top - 0.08 && b.y < top && b.vy <= 0) {
       b.y = top;
       b.vy = 0;
@@ -1966,7 +2032,16 @@ function moveBody(sim: Sim, b: Body, dt: number) {
           }
         } else sim.banner = "Stalled";
         sim.bannerT = 0.7;
-      } else wallSlam(sim, b);
+      } else {
+        crack(sim, nearestHard(sim, b));
+        wallSlam(sim, b);
+      }
+      break;
+    }
+    const speed = Math.hypot(b.vx, b.vz);
+    if (touch === "hard" && b.splat < 0.15 && (b.state === "hit" || b.state === "launch") && speed > 6) {
+      crack(sim, nearestHard(sim, b));
+      wallSlam(sim, b);
       break;
     }
   }
@@ -3676,6 +3751,10 @@ export function snapshot(sim: Sim): Hud {
 function updateDoor(sim: Sim, dt: number) {
   const p = sim.bodies[0];
   if (!p) return;
+  if (sim.doorBroke) {
+    sim.door = 1;
+    return;
+  }
   const near = Math.hypot(p.x + 12.4, p.z + 5.5) < 2.15;
   sim.door = near ? Math.min(1, sim.door + dt * 2.6) : Math.max(0, sim.door - dt * 1.5);
 }
