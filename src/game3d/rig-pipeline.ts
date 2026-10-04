@@ -110,23 +110,23 @@ export const MOVESETS: Record<string, Moveset> = {
     show: [],
     clips: {
       idle: "Idle_Loop",
-      walk: "Walk_Loop",
+      walk: "Jog_Fwd_Loop",
       run: "Sprint_Loop",
-      back: "Walk_Formal_Loop",
+      back: "Jog_Fwd_Loop",
       strafeL: "Jog_Fwd_Loop",
       strafeR: "Jog_Fwd_Loop",
       jump: "Jump_Start",
       fall: "Jump_Loop",
       jab: "Punch_Jab",
       cross: "Punch_Cross",
-      launch: "Sword_Attack",
+      launch: "Punch_Cross",
       sweep: "Punch_Enter",
-      lunge: "Sword_Attack_RM",
-      armedJab: "Sword_Attack",
-      armedCross: "Sword_Attack_RM",
-      armedLaunch: "Sword_Attack",
+      lunge: "Punch_Enter",
+      armedJab: "Punch_Jab",
+      armedCross: "Punch_Cross",
+      armedLaunch: "Punch_Cross",
       armedSweep: "Punch_Enter",
-      armedLunge: "Sword_Attack_RM",
+      armedLunge: "Punch_Enter",
       spin: "Spell_Simple_Shoot",
       hit: "Hit_Chest",
       dodge: "Roll",
@@ -550,6 +550,8 @@ export function slotFor(body: { state: string; alive: boolean; kind: string; wea
   if (body.state === "throw") return { slot: "hit", loop: false };
   if (body.state === "grab") return { slot: "grab", loop: true };
   if (body.state === "atk" || body.state === "windup") {
+    if (body.swing === 12) return { slot: "spin", loop: false };
+    if (body.swing === 11) return { slot: "armedJab", loop: false };
     if (body.swing >= 9) return { slot: "spin", loop: true };
     if (body.swing >= 8) return { slot: "launch", loop: false };
     if (body.swing >= 7) return { slot: "fall", loop: false };

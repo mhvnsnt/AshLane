@@ -50,13 +50,14 @@ export type Hud = {
   combo: number;
   foes: number;
   banner: string;
+  face: string;
   canGrab: boolean;
   cleared: boolean;
   streetClear: boolean;
   scaffoldClear: boolean;
   plazaClear: boolean;
   tune: Tune;
-  weapon: "fist" | "pipe" | "bottle";
+  weapon: "fist" | "pipe" | "bottle" | "board";
   area: string;
   phase: string;
   phaseStep: string;
@@ -66,6 +67,9 @@ export type Hud = {
   job: string;
   jobStep: string;
   martial: string;
+  who: string;
+  bio: string;
+  cast: string;
   stance: string;
   bout: string;
   flow: number;
@@ -78,6 +82,9 @@ export type Hud = {
   waveMax: number;
   missionClear: boolean;
   clearedMission: number;
+  purse: number;
+  xp: number;
+  level: number;
   build: string;
   crowd: string;
   height: number;
@@ -102,6 +109,7 @@ export const EMPTY_HUD: Hud = {
   combo: 0,
   foes: 0,
   banner: "",
+  face: "",
   canGrab: false,
   cleared: false,
   streetClear: false,
@@ -117,7 +125,10 @@ export const EMPTY_HUD: Hud = {
   style: "knight",
   job: "Warm the plaza",
   jobStep: "You were hired to quiet one block. Clear the plaza pack.",
-  martial: "",
+  martial: "wrestling",
+  who: "Bannon",
+  bio: "",
+  cast: "",
   stance: "orthodox",
   bout: "off",
   flow: 0,
@@ -130,7 +141,10 @@ export const EMPTY_HUD: Hud = {
   waveMax: 1,
   missionClear: false,
   clearedMission: 0,
-  build: "chibi",
+  purse: 0,
+  xp: 0,
+  level: 1,
+  build: "full",
   crowd: "mix",
   height: 1,
   bulk: 1,

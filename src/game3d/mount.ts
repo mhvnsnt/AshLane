@@ -2,8 +2,9 @@ import { clampTune, loadTune, saveTune, type Mode, type Tune } from "./spec";
 import { createSim, rematch, saveShape, setMode, startBout as bootBout, startStory as bootStory, warp, snapshot, step, type FrameInput, type Sim } from "./sim";
 import { createView } from "./view";
 import { equipStyle, retargetSlot, type Slot } from "./rig-pipeline";
-import { loadCleared } from "./campaign";
+import { loadCleared, loadPurse, loadXp } from "./campaign";
 import { applyFighter, applyMartial, applyStance, loadFighter, saveFighter } from "./styles";
+import { fighterById } from "./roster";
 
 export type Handle = {
   start: (mode: Mode) => void;
@@ -16,6 +17,8 @@ export type Handle = {
   setCrowd: (id: "mix" | "chibi" | "full") => void;
   setShape: (partial: { height?: number; bulk?: number; head?: number; leg?: number; shoulder?: number }) => void;
   setMartial: (id: string) => void;
+  setWho: (id: string) => void;
+  setAttire: (file: string) => void;
   setStance: (id: string) => void;
   setStage: (id: string) => void;
   startBout: (kind: "exhibit" | "practice", stage: string) => void;
@@ -50,6 +53,14 @@ const WATCH = new Set([
 export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof snapshot>) => void): Handle {
   const sim = createSim(loadTune());
   sim.clearedMission = loadCleared();
+  sim.purse = loadPurse();
+  sim.xp = loadXp();
+  sim.level = 1 + Math.floor(sim.xp / 100);
+  const ranked = sim.bodies[0];
+  if (ranked && sim.level > 1) {
+    ranked.maxHp += (sim.level - 1) * 8;
+    ranked.hp = ranked.maxHp;
+  }
   const fighter = loadFighter();
   if (fighter) {
     sim.style = fighter.style;
@@ -232,6 +243,24 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
       saveFighter(sim.style, sim.martial, sim.stance);
       push(snapshot(sim));
     },
+    setWho(id) {
+      const row = fighterById(id);
+      sim.who = row.name;
+      sim.bio = row.bio;
+      sim.cast = row.attires[0]?.file ?? "";
+      sim.martial = row.martial;
+      const p = sim.bodies[0];
+      if (p) p.name = row.name;
+      equipStyle(sim.style);
+      applyMartial(row.martial);
+      applyStance(sim.stance);
+      saveFighter(sim.style, sim.martial, sim.stance);
+      push(snapshot(sim));
+    },
+    setAttire(file) {
+      sim.cast = file;
+      push(snapshot(sim));
+    },
     setStance(id) {
       sim.stance = id;
       applyStance(id);
@@ -320,33 +349,54 @@ function deadzone(x: number, y: number) {
 }
 
 function blip(audio: AudioContext, name: string) {
-  const o = audio.createOscillator();
-  const g = audio.createGain();
   const now = audio.currentTime;
+  const impact = name === "hit" || name === "hurt" || name === "slam" || name === "throw" || name === "swing" || name === "crumple" || name === "grab";
+  if (impact) {
+    const dur = name === "slam" || name === "throw" ? 0.16 : 0.07;
+    const count = Math.floor(audio.sampleRate * dur);
+    const buf = audio.createBuffer(1, count, audio.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < count; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / count);
+    const src = audio.createBufferSource();
+    src.buffer = buf;
+    const filter = audio.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = name === "slam" || name === "throw" ? 280 : name === "swing" ? 1400 : 700;
+    const g = audio.createGain();
+    g.gain.setValueAtTime(name === "swing" ? 0.05 : 0.12, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+    src.connect(filter);
+    filter.connect(g);
+    g.connect(audio.destination);
+    src.start(now);
+    if (name === "swing" || name === "grab") return;
+  }
+  const o = audio.createOscillator();
+  const tone = audio.createGain();
   const table: Record<string, [number, number, OscillatorType]> = {
     swing: [220, 0.07, "square"],
-    hit: [180, 0.08, "triangle"],
-    hurt: [110, 0.14, "sawtooth"],
+    hit: [140, 0.06, "triangle"],
+    hurt: [90, 0.12, "sawtooth"],
     grab: [140, 0.1, "square"],
-    throw: [90, 0.12, "sawtooth"],
-    slam: [70, 0.18, "square"],
+    throw: [70, 0.14, "sawtooth"],
+    slam: [55, 0.16, "square"],
     blast: [320, 0.16, "sawtooth"],
     jump: [420, 0.08, "square"],
     spring: [520, 0.12, "square"],
     dash: [260, 0.06, "triangle"],
     win: [660, 0.22, "square"],
     deny: [80, 0.08, "square"],
-    crumple: [100, 0.12, "triangle"],
-    land: [150, 0.05, "triangle"],
+    crumple: [80, 0.1, "triangle"],
+    land: [120, 0.05, "triangle"],
   };
   const spec = table[name] ?? [200, 0.05, "square"];
   o.type = spec[2];
   o.frequency.setValueAtTime(spec[0], now);
   if (name === "win") o.frequency.exponentialRampToValueAtTime(880, now + 0.18);
-  g.gain.setValueAtTime(0.08, now);
-  g.gain.exponentialRampToValueAtTime(0.001, now + spec[1]);
-  o.connect(g);
-  g.connect(audio.destination);
+  tone.gain.setValueAtTime(impact ? 0.04 : 0.08, now);
+  tone.gain.exponentialRampToValueAtTime(0.001, now + spec[1]);
+  o.connect(tone);
+  tone.connect(audio.destination);
   o.start(now);
   o.stop(now + spec[1] + 0.02);
 }

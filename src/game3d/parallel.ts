@@ -13,7 +13,7 @@ export function phaseCopy(id: PhaseId) {
   return PIPELINE.find((row) => row.id === id) ?? PIPELINE[0];
 }
 
-export function resolvePhase(opts: { scuffle: boolean; weapon: "fist" | "pipe" | "bottle"; combo: number; canGrab: boolean }): PhaseId {
+export function resolvePhase(opts: { scuffle: boolean; weapon: string; combo: number; canGrab: boolean }): PhaseId {
   if (!opts.scuffle) return "walk";
   if (opts.canGrab || opts.weapon !== "fist") return "scrap";
   if (opts.combo >= 2) return "string";

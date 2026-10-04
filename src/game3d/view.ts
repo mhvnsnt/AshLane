@@ -3,6 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { Body, Box, Sim } from "./sim";
 import { HAND_SLOT, PROP_MESH, TARGET_HEIGHT, adoptRig, clipForMoveset, slotFor } from "./rig-pipeline";
+import { forgeCar, forgeStreet, poseCar } from "./forge";
 import { bakeMotion, loadMotionBank, motionNames } from "./motion-bank";
 
 type Fighter = {
@@ -34,19 +35,58 @@ const PAL = [
 ];
 
 export function createView(canvas: HTMLCanvasElement) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: "high-performance" });
+  const phone = window.matchMedia("(pointer: coarse)").matches;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !phone, alpha: false, powerPreference: "high-performance" });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.matchMedia("(pointer: coarse)").matches ? 1.35 : 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, phone ? 1 : 1.5));
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x12161c);
   scene.fog = new THREE.Fog(0x12161c, 18, 78);
-  const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 120);
+  const camera = new THREE.PerspectiveCamera(58, 1, 0.1, 240);
   camera.position.set(8, 14, 16);
   camera.lookAt(0, 1, 0);
 
-  const hemi = new THREE.HemisphereLight(0x8ea4c0, 0x1a1418, 0.85);
+  const skyMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    depthWrite: false,
+    fog: false,
+    uniforms: { uDay: { value: 0.65 } },
+    vertexShader: "varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform float uDay; varying vec3 vP; void main(){ vec3 d = normalize(vP); float h = d.y; vec3 night = vec3(0.02, 0.025, 0.07); vec3 noon = mix(vec3(0.55, 0.72, 0.9), vec3(0.78, 0.88, 0.98), smoothstep(0.0, 0.55, h)); vec3 dusk = vec3(0.86, 0.42, 0.22); float day = smoothstep(0.08, 0.62, uDay); vec3 col = mix(night, noon, day); float belt = (1.0 - smoothstep(0.18, 0.48, uDay)) * smoothstep(0.02, 0.22, uDay); col = mix(col, dusk, belt * smoothstep(-0.15, 0.25, h)); gl_FragColor = vec4(col, 1.0); }",
+  });
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(120, 20, 14), skyMat);
+  sky.frustumCulled = false;
+  scene.add(sky);
+  const starGeo = new THREE.BufferGeometry();
+  const starPos = new Float32Array(180 * 3);
+  for (let i = 0; i < 180; i++) {
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.random() * 0.9 + 0.15;
+    const r = 90;
+    starPos[i * 3] = Math.cos(th) * Math.sin(ph) * r;
+    starPos[i * 3 + 1] = Math.cos(ph) * r;
+    starPos[i * 3 + 2] = Math.sin(th) * Math.sin(ph) * r;
+  }
+  starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xf7f1dd, size: 0.55, sizeAttenuation: false, transparent: true, opacity: 0 }));
+  scene.add(stars);
+  const clouds: THREE.Mesh[] = [];
+  for (let i = 0; i < 5; i++) {
+    const cloud = new THREE.Mesh(new THREE.PlaneGeometry(28 + i * 6, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.28, depthWrite: false, fog: false }));
+    cloud.rotation.x = Math.PI / 2;
+    cloud.position.set((i - 2) * 18, 46, (i % 2 === 0 ? -10 : 14));
+    scene.add(cloud);
+    clouds.push(cloud);
+  }
+  const sunOrb = new THREE.Mesh(new THREE.SphereGeometry(2.2, 12, 10), new THREE.MeshBasicMaterial({ color: 0xfff1c4, fog: false }));
+  scene.add(sunOrb);
+  const door = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.35, 0.16), new THREE.MeshLambertMaterial({ color: 0x6b3a28 }));
+  door.position.set(-12.4, 1.18, -5.5);
+  scene.add(door);
+  const lamps: THREE.PointLight[] = [];
+  const hemi = new THREE.HemisphereLight(0xd5e4f4, 0x2a2428, 1.45);
   scene.add(hemi);
-  const sun = new THREE.DirectionalLight(0xc5d2e4, 1.05);
+  const sun = new THREE.DirectionalLight(0xfff4e4, 1.55);
   sun.position.set(-8, 18, 6);
   scene.add(sun);
   const rim = new THREE.DirectionalLight(0xe4572e, 0.28);
@@ -54,9 +94,22 @@ export function createView(canvas: HTMLCanvasElement) {
   scene.add(rim);
 
   const groundMat = new THREE.MeshPhongMaterial({ map: groundTex(), color: 0xffffff, shininess: 22, specular: 0x3d5166 });
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(64, 64), groundMat);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(180, 180), groundMat);
   ground.rotation.x = -Math.PI / 2;
   scene.add(ground);
+  const texLoader = new THREE.TextureLoader();
+  const loadSkin = (file: string, rx: number, ry: number) => {
+    const tex = texLoader.load(`/textures/${file}`);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(rx, ry);
+    return tex;
+  };
+  const asphalt = loadSkin("asphalt.jpg", 16, 16);
+  const brick = loadSkin("brick.jpg", 2, 2);
+  const dockSkin = loadSkin("dock.jpg", 5, 5);
+  const pitSkin = loadSkin("pit.jpg", 5, 5);
 
   const lane = new THREE.Mesh(
     new THREE.PlaneGeometry(46, 8.2),
@@ -69,6 +122,16 @@ export function createView(canvas: HTMLCanvasElement) {
   scaffold.rotation.x = -Math.PI / 2;
   scaffold.position.set(-4, 0.021, 20);
   scene.add(scaffold);
+  const slab = (x: number, z: number, w: number, d: number, color: number, y = 0.018) => {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshPhongMaterial({ color, shininess: 10, specular: 0x223038 }));
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(x, y, z);
+    scene.add(mesh);
+  };
+  slab(-37, 0, 22, 26, 0x3a4432);
+  slab(-1, 35, 14, 22, 0x243440);
+  slab(16, 36, 16, 20, 0x102430, -0.06);
+  slab(1, -36, 14, 22, 0x14161a);
 
   const ring = new THREE.Mesh(
     new THREE.TorusGeometry(1, 0.035, 8, 28),
@@ -113,6 +176,18 @@ export function createView(canvas: HTMLCanvasElement) {
   let zombief: RigTemplate | null = null;
   let rigKey = "";
   const loader = new GLTFLoader();
+  const castRigs = new Map<string, RigTemplate>();
+  const castLoading = new Set<string>();
+  function ensureCast(file: string) {
+    if (!file || castRigs.has(file) || castLoading.has(file)) return;
+    castLoading.add(file);
+    loader.loadAsync(`/models/cast/${file}`).then((gltf) => {
+      castRigs.set(file, adoptRig(gltf.scene, gltf.animations, "mannequin"));
+      rigKey = "";
+    }).catch(() => {
+      castLoading.delete(file);
+    });
+  }
   const loadRig = (url: string, slot: string, moveset: string) =>
     loader.loadAsync(url).then((gltf) => {
       const rig = adoptRig(gltf.scene, gltf.animations, moveset);
@@ -133,7 +208,14 @@ export function createView(canvas: HTMLCanvasElement) {
       else hex = rig;
       rigKey = "";
     });
-  void loadRig("/models/kaykit/Knight.glb", "knight", "knight").then(() => {
+  void Promise.all([
+    loadRig("/models/humanoid/Soldier_Male.glb", "soldier", "soldier"),
+    loadRig("/models/humanoid/Soldier_Female.glb", "soldierf", "soldierf"),
+    loadRig("/models/humanoid/Zombie_Male.glb", "zombie", "zombie"),
+    loadRig("/models/humanoid/Zombie_Female.glb", "zombief", "zombief"),
+    loadRig("/models/humanoid/mannequin.glb", "mannequin", "mannequin"),
+  ]).then(() => {
+    void loadRig("/models/kaykit/Knight.glb", "knight", "knight");
     void loadRig("/models/kaykit/Rogue.glb", "rogue", "runner");
     void loadRig("/models/kaykit/Barbarian.glb", "brute", "brute");
     void loadRig("/models/kaykit/Rogue_Hooded.glb", "hood", "hood");
@@ -141,13 +223,8 @@ export function createView(canvas: HTMLCanvasElement) {
     void loadRig("/models/humanoid/drifter.glb", "drifter", "drifter");
     void loadRig("/models/kaykit/Skeleton_Warrior.glb", "skel", "skeleton");
     void loadRig("/models/kaykit/Skeleton_Rogue.glb", "bones", "bones");
-    void loadRig("/models/humanoid/mannequin.glb", "mannequin", "mannequin");
     void loadRig("/models/kaykit/Skeleton_Mage.glb", "skull", "skull");
     void loadRig("/models/kaykit/Skeleton_Minion.glb", "minion", "minion");
-    void loadRig("/models/humanoid/Soldier_Male.glb", "soldier", "soldier");
-    void loadRig("/models/humanoid/Soldier_Female.glb", "soldierf", "soldierf");
-    void loadRig("/models/humanoid/Zombie_Male.glb", "zombie", "zombie");
-    void loadRig("/models/humanoid/Zombie_Female.glb", "zombief", "zombief");
   });
   void loadMotionBank().then(() => {
     rigKey = "";
@@ -172,26 +249,40 @@ export function createView(canvas: HTMLCanvasElement) {
   let idle = 0.4;
   let built = false;
 
+  const curb = new THREE.Mesh(
+    new THREE.TorusGeometry(1, 0.045, 5, 48),
+    new THREE.MeshBasicMaterial({ color: 0x14181c }),
+  );
+  curb.rotation.x = Math.PI / 2;
+  curb.position.y = 0.04;
+  curb.visible = false;
+  scene.add(curb);
+
   let stageId = "";
   function applyStage(id: string) {
     if (id === stageId) return;
     stageId = id;
     const look =
       id === "dock"
-        ? { fog: 0x0c141c, sky: 0x6a90b0, ground: 0x9bb0c4, near: 14, far: 62 }
+        ? { fog: 0x163044, sky: 0xb7d4ea, near: 16, far: 70 }
         : id === "pit"
-          ? { fog: 0x1a100e, sky: 0xc08060, ground: 0xc4a090, near: 12, far: 55 }
+          ? { fog: 0x6a3a28, sky: 0xf2c09a, near: 14, far: 62 }
           : id === "high"
-          ? { fog: 0x161c28, sky: 0xb0c0d8, ground: 0xc8d0dc, near: 16, far: 70 }
+          ? { fog: 0x8ea4be, sky: 0xf7fbff, near: 24, far: 96 }
           : id === "yard"
-            ? { fog: 0x1a2218, sky: 0xa8c090, ground: 0xc6d2b4, near: 20, far: 80 }
+            ? { fog: 0x3d5230, sky: 0xd7efb0, near: 18, far: 80 }
             : id === "under"
-              ? { fog: 0x070c10, sky: 0x4a6870, ground: 0x8098a0, near: 10, far: 42 }
-              : { fog: 0x12161c, sky: 0x8ea4c0, ground: 0xffffff, near: 18, far: 78 };
+              ? { fog: 0x1a2830, sky: 0x7f96a4, near: 12, far: 52 }
+              : { fog: 0x243044, sky: 0xd7e6f8, near: 22, far: 90 };
     scene.background = new THREE.Color(look.fog);
     scene.fog = new THREE.Fog(look.fog, look.near, look.far);
     hemi.color.setHex(look.sky);
-    groundMat.color.setHex(look.ground);
+    hemi.intensity = 1.45;
+    sun.intensity = id === "under" ? 1.15 : 1.55;
+    const floor = id === "dock" ? dockSkin : id === "pit" ? pitSkin : asphalt;
+    groundMat.map = floor;
+    groundMat.color.setHex(0xffffff);
+    groundMat.needsUpdate = true;
   }
 
   function resize() {
@@ -211,11 +302,107 @@ export function createView(canvas: HTMLCanvasElement) {
     addUrban(flickers);
     addDress();
     addMarket();
+    for (const model of forgeStreet({ asphalt, brick, dock: dockSkin, pit: pitSkin })) scene.add(model);
+    const train = new THREE.Mesh(new THREE.BoxGeometry(3.4, 2.2, 12), new THREE.MeshLambertMaterial({ color: 0xc5ced6 }));
+    train.position.set(0, 1.2, -90);
+    scene.add(train);
+    train.name = "train";
+    const city: [string, number, number, number, number][] = [
+      ["low-detail-building-a.glb", 78, -8, 7, 0.4],
+      ["low-detail-building-b.glb", 78, 52, 8, -0.6],
+      ["low-detail-building-c.glb", -78, 22, 7, 1.2],
+      ["low-detail-building-wide-a.glb", -78, -28, 6, 0.2],
+      ["building-a.glb", 24, 76, 9, 0],
+      ["building-skyscraper-a.glb", -28, -76, 16, 0.3],
+    ];
+    for (const [file, x, z, height, yaw] of city) plantBuilding(sim, file, x, z, height, yaw);
+    void loader.loadAsync("/models/gen/cart.glb").then((gltf) => {
+      const mesh = gltf.scene;
+      const steel = document.createElement("canvas");
+      steel.width = 128;
+      steel.height = 128;
+      const paint = steel.getContext("2d");
+      if (paint) {
+        paint.fillStyle = "#8d969e";
+        paint.fillRect(0, 0, 128, 128);
+        for (let i = 0; i < 500; i++) {
+          paint.fillStyle = i % 17 === 0 ? "#7a3e2a" : i % 2 === 0 ? "#d5dde2" : "#6a737a";
+          paint.fillRect(Math.random() * 128, Math.random() * 128, 2, 1);
+        }
+      }
+      const map = new THREE.CanvasTexture(steel);
+      map.colorSpace = THREE.SRGBColorSpace;
+      map.wrapS = THREE.RepeatWrapping;
+      map.wrapT = THREE.RepeatWrapping;
+      map.repeat.set(4, 4);
+      mesh.traverse((obj) => {
+        const part = obj as THREE.Mesh;
+        if (!part.isMesh) return;
+        const geo = part.geometry;
+        geo.computeVertexNormals();
+        const pos = geo.getAttribute("position");
+        geo.computeBoundingBox();
+        const bb = geo.boundingBox;
+        if (pos && bb) {
+          const uv = new Float32Array(pos.count * 2);
+          const sx = bb.max.x - bb.min.x || 1;
+          const sy = bb.max.y - bb.min.y || 1;
+          for (let i = 0; i < pos.count; i++) {
+            uv[i * 2] = (pos.getX(i) - bb.min.x) / sx;
+            uv[i * 2 + 1] = (pos.getY(i) - bb.min.y) / sy;
+          }
+          geo.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+        }
+        part.material = new THREE.MeshStandardMaterial({ map, color: 0xd7dee4, metalness: 0.72, roughness: 0.42 });
+      });
+      const box = new THREE.Box3().setFromObject(mesh);
+      const size = box.getSize(new THREE.Vector3());
+      const span = Math.max(size.x, size.y, size.z) || 1;
+      mesh.scale.setScalar(1.15 / span);
+      mesh.position.set(38, 0, -20);
+      const grounded = new THREE.Box3().setFromObject(mesh);
+      mesh.position.y -= grounded.min.y;
+      scene.add(mesh);
+    });
+  }
+
+  function plantBuilding(sim: Sim, file: string, x: number, z: number, height: number, yaw: number) {
+    void loader.loadAsync(`/models/kenney/${file}`).then((gltf) => {
+      const mesh = gltf.scene;
+      mesh.rotation.y = yaw;
+      const raw = new THREE.Box3().setFromObject(mesh);
+      const size = raw.getSize(new THREE.Vector3());
+      const span = size.y || 1;
+      mesh.scale.setScalar(height / span);
+      mesh.position.set(x, 0, z);
+      const grounded = new THREE.Box3().setFromObject(mesh);
+      mesh.position.y -= grounded.min.y;
+      const placed = new THREE.Box3().setFromObject(mesh);
+      scene.add(mesh);
+      sim.boxes.push({
+        minX: placed.min.x + 0.35,
+        maxX: placed.max.x - 0.35,
+        minY: 0,
+        maxY: Math.max(2.2, placed.max.y - 0.2),
+        minZ: placed.min.z + 0.35,
+        maxZ: placed.max.z - 0.35,
+        kind: "wall",
+      });
+    });
   }
 
   function buildBox(box: Box) {
     const midX = (box.minX + box.maxX) / 2;
     const midZ = (box.minZ + box.maxZ) / 2;
+    if (box.kind === "rope") {
+      const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(box.maxX - box.minX, box.maxY, box.maxZ - box.minZ),
+        new THREE.MeshLambertMaterial({ color: 0xc23b2e }),
+      );
+      mesh.position.set(midX, box.maxY / 2, midZ);
+      scene.add(mesh);
+      return mesh;
+    }
     if (box.kind === "spring") {
       const mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.68, 0.1, 14), new THREE.MeshBasicMaterial({ color: 0xf0b429 }));
       mesh.position.set(midX, 0.07, midZ);
@@ -242,8 +429,12 @@ export function createView(canvas: HTMLCanvasElement) {
     const geo = new THREE.BoxGeometry(box.maxX - box.minX, h, box.maxZ - box.minZ);
     const wide = box.maxX - box.minX > 20 || box.maxZ - box.minZ > 20;
     const color = box.kind === "gate" ? 0xe4572e : box.kind === "plat" ? 0x6a5438 : wide ? 0x3c4450 : h < 2 ? 0x3a342e : 0x2a313c;
+    const plaza = box.maxX > -28 && box.minX < 26 && box.maxZ > -28 && box.minZ < 26;
+    const pick = Math.abs(Math.round(midX * 3 + midZ * 7)) % 4;
+    const skin = box.kind === "wall" && !plaza && h > 2 ? (pick === 1 ? brick : pick === 2 ? dockSkin : pick === 3 ? asphalt : null) : null;
     const mat = new THREE.MeshLambertMaterial({
-      color,
+      color: skin ? 0xffffff : color,
+      map: skin,
       transparent: box.kind === "gate",
       opacity: box.kind === "gate" ? 0.45 : 1,
     });
@@ -274,6 +465,7 @@ export function createView(canvas: HTMLCanvasElement) {
       const light = new THREE.PointLight(color, color === 0xf0b429 ? 1.15 : 0.85, 12, 1.4);
       light.position.set(x, 3.15, z);
       scene.add(light);
+      lamps.push(light);
     }
   }
 
@@ -413,6 +605,21 @@ export function createView(canvas: HTMLCanvasElement) {
         drop("stairs_wood", -16.2, 17.1);
         drop("column", -4, 8);
         drop("wall_arched", -12.4, -5.15, Math.PI);
+        const pieces = ["barrel_small", "barrel_large", "box_small", "box_large", "pillar", "barrier", "stool", "torch_mounted", "column", "table_small"];
+        const spots: [number, number][] = [
+          [-40, 1], [-36, -7], [-33, 6], [-44, -3], [-30, -4], [-42, 8], [-38, 4],
+          [-4, 30], [1, 33], [-2, 39], [3, 36], [0, 42],
+          [-3, -31], [1, -35], [2, -41], [-1, -44], [3, -38],
+          [11, -17.5], [-9, -17.2], [5, 9], [-1, 11], [20, -17],
+        ];
+        let seed = 20261004;
+        const roll = () => {
+          seed = (Math.imul(1664525, seed) + 1013904223) >>> 0;
+          return seed / 4294967296;
+        };
+        for (const [x, z] of spots) {
+          drop(pieces[Math.floor(roll() * pieces.length)], x + (roll() - 0.5) * 0.5, z + (roll() - 0.5) * 0.5, roll() * 6.28);
+        }
         scene.add(root);
         for (const mesh of boxMeshes) if (mesh.userData.shell) mesh.visible = false;
         propKey = "";
@@ -422,52 +629,47 @@ export function createView(canvas: HTMLCanvasElement) {
       });
   }
 
+  function people(): RigTemplate[] {
+    return [soldier, soldierf, drifter, knight, rogue, hood, brute, hex].filter((rig): rig is RigTemplate => rig !== null);
+  }
+
+  function mixed(): RigTemplate[] {
+    const extra = [skel, bones, skull, minion, zombie, zombief, mannequin].filter((rig): rig is RigTemplate => rig !== null);
+    return [...people(), ...extra];
+  }
+
   function rigFor(b: Body, sim: Sim): RigTemplate | null {
-    if (!knight) return null;
+    const humans = people();
+    const all = sim.crowd === "chibi" ? [knight, rogue, hood, brute, hex, skel, bones, skull, minion].filter((rig): rig is RigTemplate => rig !== null) : mixed();
+    if (!humans.length && !all.length && !knight) return null;
     if (b.kind === "player") {
-      if (sim.style === "soldier") return soldier ?? mannequin ?? knight;
-      if (sim.style === "soldierf") return soldierf ?? mannequin ?? knight;
-      if (sim.style === "zombie") return zombie ?? soldier ?? knight;
-      if (sim.style === "zombief") return zombief ?? soldierf ?? knight;
-      if (sim.build === "full" && sim.style !== "drifter") return mannequin ?? soldier ?? knight;
-      if (sim.style === "runner") return rogue ?? knight;
-      if (sim.style === "brute") return brute ?? knight;
-      if (sim.style === "hood") return hood ?? knight;
-      if (sim.style === "hex") return hex ?? knight;
-      if (sim.style === "drifter") return drifter ?? knight;
+      if (sim.cast && castRigs.has(sim.cast)) return castRigs.get(sim.cast) ?? null;
+      if (sim.style === "soldier") return soldier ?? humans[0] ?? knight;
+      if (sim.style === "soldierf") return soldierf ?? humans[0] ?? knight;
+      if (sim.style === "zombie") return zombie ?? humans[0] ?? knight;
+      if (sim.style === "zombief") return zombief ?? humans[0] ?? knight;
+      if (sim.style === "mannequin") return mannequin ?? humans[0] ?? knight;
+      if (sim.style === "drifter") return drifter ?? humans[0] ?? knight;
+      if (sim.style === "runner" || sim.style === "ash") return sim.build === "chibi" ? rogue ?? knight : soldierf ?? rogue ?? humans[0] ?? knight;
+      if (sim.style === "brute" || sim.style === "pit") return sim.build === "chibi" ? brute ?? knight : soldier ?? brute ?? humans[0] ?? knight;
+      if (sim.style === "hood") return sim.build === "chibi" ? hood ?? knight : soldierf ?? hood ?? knight;
+      if (sim.style === "hex") return sim.build === "chibi" ? hex ?? knight : soldier ?? hex ?? knight;
       if (sim.style === "skeleton") return skel ?? knight;
       if (sim.style === "bones") return bones ?? knight;
-      if (sim.style === "mannequin") return mannequin ?? knight;
       if (sim.style === "skull") return skull ?? knight;
       if (sim.style === "minion") return minion ?? knight;
-      if (sim.style === "rain") return knight;
-      if (sim.style === "ash") return rogue ?? knight;
-      if (sim.style === "pit") return brute ?? knight;
-      return knight;
+      if (sim.build === "chibi") return knight;
+      return soldier ?? soldierf ?? drifter ?? humans[0] ?? knight;
     }
-    if (b.kind === "ally") return hood ?? rogue ?? knight;
-    if (sim.crowd === "full") {
-      const pick = b.id % 4;
-      if (pick === 0 && soldier) return soldier;
-      if (pick === 1 && soldierf) return soldierf;
-      if (pick === 2 && zombie) return zombie;
-      return zombief ?? mannequin ?? drifter ?? knight;
-    }
-    if (b.arch === "brute") return brute ?? knight;
-    if (b.arch === "runner") return rogue ?? knight;
-    if (b.arch === "hood") return hood ?? knight;
-    if (b.arch === "hex") return hex ?? knight;
-    if (b.arch === "brawler") return knight;
-    if (b.id % 5 === 0 && skel) return skel;
-    if (b.id % 5 === 1 && bones) return bones;
-    if (b.id % 5 === 2 && skull) return skull;
-    if (b.id % 5 === 3 && minion) return minion;
-    if (sim.crowd !== "chibi" && b.id % 5 === 4 && mannequin) return mannequin;
-    return b.id % 2 === 0 ? rogue : brute;
+    if (b.kind === "ally") return soldierf ?? hood ?? rogue ?? knight;
+    const pool = sim.crowd === "full" ? humans : all;
+    if (pool.length) return pool[b.id % pool.length];
+    return knight;
   }
 
   function syncFighters(sim: Sim) {
-    const key = `${sim.style}|${sim.build}|${sim.crowd}|${sim.height}|${sim.bulk}|${sim.head}|${sim.leg}|${sim.shoulder}|${sim.bodies.map((b) => b.id).join(",")}|${knight ? 1 : 0}${rogue ? 1 : 0}${brute ? 1 : 0}${hood ? 1 : 0}${hex ? 1 : 0}${drifter ? 1 : 0}${skel ? 1 : 0}${bones ? 1 : 0}${mannequin ? 1 : 0}${skull ? 1 : 0}${minion ? 1 : 0}${soldier ? 1 : 0}${soldierf ? 1 : 0}${zombie ? 1 : 0}${zombief ? 1 : 0}`;
+    if (sim.cast) ensureCast(sim.cast);
+    const key = `${sim.cast}|${castRigs.has(sim.cast) ? 1 : 0}|${sim.style}|${sim.build}|${sim.crowd}|${sim.height}|${sim.bulk}|${sim.head}|${sim.leg}|${sim.shoulder}|${sim.bodies.map((b) => b.id).join(",")}|${knight ? 1 : 0}${rogue ? 1 : 0}${brute ? 1 : 0}${hood ? 1 : 0}${hex ? 1 : 0}${drifter ? 1 : 0}${skel ? 1 : 0}${bones ? 1 : 0}${mannequin ? 1 : 0}${skull ? 1 : 0}${minion ? 1 : 0}${soldier ? 1 : 0}${soldierf ? 1 : 0}${zombie ? 1 : 0}${zombief ? 1 : 0}`;
     if (key === rigKey && fighters.length === sim.bodies.length) return;
     rigKey = key;
     for (const f of fighters) {
@@ -479,7 +681,8 @@ export function createView(canvas: HTMLCanvasElement) {
     fighters.length = 0;
     for (const b of sim.bodies) {
       const rig = rigFor(b, sim);
-      const made = rig ? makeRig(rig, b.kind === "player" ? 0xf0b429 : 0xe4572e, b.kind === "player" ? "player" : rig.moveset, b.kind === "player" ? DYE[sim.style] ?? 0 : 0, b.kind === "player" ? sim.height : 1, b.kind === "player" ? sim.bulk : 1, b.kind === "player" ? sim.head : 1, b.kind === "player" ? sim.leg : 1, b.kind === "player" ? sim.shoulder : 1) : makeFighter(shared, b.kind === "player" ? PAL[0] : PAL[(b.id % (PAL.length - 1)) + 1]);
+      const native = !!rig && (rig.moveset === "soldier" || rig.moveset === "soldierf" || rig.moveset === "zombie" || rig.moveset === "zombief" || rig.moveset === "drifter" || rig.moveset === "mannequin");
+      const made = rig ? makeRig(rig, b.kind === "player" ? 0xf0b429 : 0xe4572e, b.kind === "player" && !native ? "player" : rig.moveset, b.kind === "player" && !native ? DYE[sim.style] ?? 0 : 0, b.kind === "player" ? sim.height : 1, b.kind === "player" ? sim.bulk : 1, b.kind === "player" ? sim.head : 1, b.kind === "player" ? sim.leg : 1, b.kind === "player" ? sim.shoulder : 1) : makeFighter(shared, b.kind === "player" ? PAL[0] : PAL[(b.id % (PAL.length - 1)) + 1]);
       made.id = b.id;
       scene.add(made.group);
       scene.add(made.bar);
@@ -502,6 +705,14 @@ export function createView(canvas: HTMLCanvasElement) {
           mesh.rotation.z = Math.PI / 2;
         } else if (prop.kind === "bottle") {
           mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.32, 6), new THREE.MeshLambertMaterial({ color: 0x69c3c2 }));
+        } else if (prop.kind === "chair") {
+          mesh = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.42, 0.46), new THREE.MeshLambertMaterial({ color: 0x8a5a32 }));
+        } else if (prop.kind === "table") {
+          mesh = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.7, 0.7), new THREE.MeshLambertMaterial({ color: 0x6a4328 }));
+        } else if (prop.kind === "board") {
+          mesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, 0.28), new THREE.MeshLambertMaterial({ color: 0xa56b3c }));
+        } else if (prop.kind === "car") {
+          mesh = forgeCar();
         } else if (src) mesh = src.clone(true);
         else mesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshLambertMaterial({ color: 0x6a5438 }));
         scene.add(mesh);
@@ -511,13 +722,45 @@ export function createView(canvas: HTMLCanvasElement) {
     sim.props.forEach((prop, i) => {
       const mesh = propViews[i];
       if (!mesh) return;
-      mesh.visible = prop.alive;
+      mesh.visible = prop.kind === "car" || prop.alive;
       mesh.position.set(prop.x, prop.y + (prop.kind === "pipe" ? 0.15 : 0), prop.z);
+      if (prop.kind === "car") poseCar(mesh as THREE.Group, prop.crush);
     });
   }
 
   function render(sim: Sim, dt: number) {
-    applyStage(sim.stage);
+    const p = sim.bodies[0];
+    applyStage(sim.story ? sim.stage : p && p.x < -26 ? "yard" : p && p.z > 26 ? "dock" : p && p.z < -26 ? "under" : sim.stage);
+    const day = (Math.sin(sim.time * 0.045) + 1) / 2;
+    skyMat.uniforms.uDay.value = day;
+    sky.position.copy(camera.position);
+    stars.position.copy(camera.position);
+    (stars.material as THREE.PointsMaterial).opacity = Math.max(0, 0.9 - day * 1.6);
+    sun.position.set(Math.cos(sim.time * 0.045) * 40, -8 + day * 46, Math.sin(sim.time * 0.045) * 18);
+    sun.intensity = 0.35 + day * 1.25;
+    sun.color.setHex(day < 0.35 ? 0xffb07a : 0xfff4e4);
+    hemi.intensity = 0.72 + day * 0.75;
+    sunOrb.position.copy(sun.position);
+    sunOrb.visible = day > 0.08;
+    for (let i = 0; i < clouds.length; i++) {
+      clouds[i].position.x += dt * (1.2 + i * 0.3);
+      if (clouds[i].position.x > 70) clouds[i].position.x = -70;
+      (clouds[i].material as THREE.MeshBasicMaterial).opacity = 0.12 + day * 0.22;
+    }
+    for (const lamp of lamps) lamp.intensity = 0.45 + (1 - day) * 1.35;
+    door.position.x = -12.4 - sim.door * 1.7;
+    const train = scene.getObjectByName("train");
+    if (train) {
+      const cycle = sim.time % 8;
+      train.visible = cycle < 1.3;
+      train.position.z = -80 + (cycle / 1.2) * 26;
+    }
+    if (sim.story && sim.venueR > 1) {
+      curb.visible = true;
+      curb.position.x = sim.venueX;
+      curb.position.z = sim.venueZ;
+      curb.scale.set(sim.venueR, sim.venueR, 1);
+    } else curb.visible = false;
     ring.visible = false;
     ensureWorld(sim);
     syncFighters(sim);
@@ -677,6 +920,11 @@ function poseFighter(f: Fighter, b: Body, sim: Sim, camera: THREE.PerspectiveCam
   f.group.visible = b.alive || b.y > -0.7;
   f.group.position.set(b.x, b.y, b.z);
   f.group.rotation.y = b.yaw + Math.PI;
+  if (b.kind !== "player" && Math.hypot(b.x - camera.position.x, b.z - camera.position.z) > 26) {
+    f.group.visible = false;
+    f.bar.visible = false;
+    return;
+  }
   if (!f.mixer) f.group.scale.setScalar(Math.max(0.05, bulk * sink));
   if (f.mixer) {
     const want = resolveClip(f, b, sim);
@@ -687,10 +935,15 @@ function poseFighter(f: Fighter, b: Body, sim: Sim, camera: THREE.PerspectiveCam
       action.timeScale = Math.min(1.65, Math.max(0.7, speed / 2.15));
     }
     f.mixer.update(dt);
-    if (b.alive && b.grounded && b.state === "free") settleFeet(f);
+    if (action && sim.pairAtk >= 0 && (b.id === sim.pairAtk || b.id === sim.pairVic) && sim.pairT > 0) {
+      const len = sim.pairLen > 0 ? sim.pairLen : action.getClip().duration;
+      action.timeScale = 1;
+      action.time = Math.max(0, Math.min(action.getClip().duration - 0.001, len - sim.pairT));
+    }
+    if (b.kind === "player" && b.alive && b.grounded && b.state === "free") settleFeet(f);
     if (f.gear) {
       f.gear.visible = b.alive && b.weapon !== "fist";
-      (f.gear.material as THREE.MeshLambertMaterial).color.setHex(b.weapon === "bottle" ? 0x69c3c2 : 0xb7c0c8);
+      (f.gear.material as THREE.MeshLambertMaterial).color.setHex(b.weapon === "bottle" ? 0x69c3c2 : b.weapon === "board" ? 0xa56b3c : 0xb7c0c8);
     }
   } else {
     const atk = b.state === "atk" ? Math.sin(Math.min(1, Math.max(0, 0.34 - b.stateT) / 0.28) * Math.PI) : 0;
@@ -814,12 +1067,41 @@ function playClip(f: Fighter, name: string, loop: boolean) {
   next.setLoop(loop ? THREE.LoopRepeat : THREE.LoopOnce, loop ? Infinity : 1);
   next.clampWhenFinished = !loop;
   next.enabled = true;
-  next.fadeIn(0.1).play();
-  if (prev && prev !== next) prev.fadeOut(0.1);
+  next.fadeIn(0).play();
+  if (prev && prev !== next) {
+    if (name.endsWith(":vic") || motionNames().has(name)) prev.stop();
+    else prev.fadeOut(0.08);
+  }
   f.clip = resolved;
 }
 
 function resolveClip(f: Fighter, b: Body, sim: Sim): { name: string; loop: boolean } {
+  if (sim.pair && sim.pairAtk >= 0) {
+    const vic = `${sim.pair}:vic`;
+    if (b.id === sim.pairVic && vic in f.actions) return { name: vic, loop: false };
+    if (b.id === sim.pairAtk && sim.pair in f.actions) return { name: sim.pair, loop: false };
+    if (b.id === sim.pairAtk || b.id === sim.pairVic) {
+      const asked = slotFor(b);
+      return { name: clipForMoveset(f.moveset, asked.slot, (clip) => clip in f.actions), loop: false };
+    }
+  }
+  if (sim.pair && sim.pair !== "mount" && sim.pairAtk < 0) {
+    const vic = `${sim.pair}:vic`;
+    if (b.kind !== "player" && b.state === "grab" && vic in f.actions) return { name: vic, loop: false };
+    if (b.kind === "player" && (b.throwT > 0 || b.state === "grab") && sim.pair in f.actions) return { name: sim.pair, loop: false };
+  }
+  if (sim.grabId === b.id && b.state === "grab" && sim.pairT <= 0) {
+    const hold = sim.rearLock && "hitback" in f.actions ? "hitback" : "defender" in f.actions ? "defender" : "";
+    if (hold) return { name: hold, loop: true };
+  }
+  if (b.kind === "player" && b.state === "free" && b.grounded) {
+    if (sim.guard) {
+      const pose = sim.lowGuard && "guardlow" in f.actions ? "guardlow" : "guardhigh";
+      if (pose in f.actions) return { name: pose, loop: true };
+    } else if (sim.stickY > 0.45 && Math.hypot(b.vx, b.vz) < 0.45 && "stancecrouch" in f.actions) {
+      return { name: "stancecrouch", loop: true };
+    }
+  }
   const asked = slotFor(b);
   const name = clipForMoveset(f.moveset, asked.slot, (clip) => clip in f.actions);
   return { name, loop: asked.loop };
@@ -856,7 +1138,7 @@ function wallRun(
 }
 
 function makeRain(scene: THREE.Scene) {
-  const n = 480;
+  const n = window.matchMedia("(pointer: coarse)").matches ? 140 : 280;
   const pos = new Float32Array(n * 6);
   const vel = new Float32Array(n);
   for (let i = 0; i < n; i++) seedDrop(pos, vel, i, 0, 6, 2);

@@ -173,6 +173,29 @@ export const MARTIAL: { id: string; label: string; note: string; clips: Partial<
       spin: "2H_Melee_Attack_Spin",
     },
   },
+  {
+    id: "lucha",
+    label: "Lucha",
+    note: "Run, then Grab. That is a hurricanrana.",
+    clips: {
+      jab: "Unarmed_Melee_Attack_Kick",
+      cross: "Dodge_Forward",
+      launch: "Jump_Full_Long",
+      sweep: "Unarmed_Melee_Attack_Kick",
+      jump: "Jump_Full_Long",
+    },
+  },
+  {
+    id: "jeet",
+    label: "Jeet kune do",
+    note: "A short cross throws them straight back. A low hit reaches the pack.",
+    clips: {
+      jab: "Unarmed_Melee_Attack_Punch_A",
+      cross: "Unarmed_Melee_Attack_Punch_B",
+      launch: "1H_Melee_Attack_Chop",
+      sweep: "1H_Melee_Attack_Slice_Horizontal",
+    },
+  },
 ];
 
 export const STANCES: { id: string; label: string; note: string; idle: string }[] = [

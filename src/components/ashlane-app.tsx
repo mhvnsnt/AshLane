@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { EMPTY_HUD, parseSpecText, specDocument, type Hud, type Mode } from "@/game3d/spec";
 import { mount, type Handle } from "@/game3d/mount";
-import { MISSIONS } from "@/game3d/campaign";
+import { MISSIONS, placeName, ruleLabel } from "@/game3d/campaign";
 import { ASSIGN_SLOTS, CLIP_NAMES, STYLES, type Slot } from "@/game3d/rig-pipeline";
 import { MARTIAL, STANCES } from "@/game3d/styles";
+import { fighterByName, ROSTER } from "@/game3d/roster";
 
 const ARENAS: { id: string; label: string; note: string }[] = [
   { id: "ward", label: "Cinder ward", note: "The whole lane." },
@@ -96,7 +97,7 @@ export function AshlaneApp() {
               L {Math.round(hud.legsDmg)}
             </p>
             <button type="button" className="rounded-full border border-line bg-ink-2 px-4 py-2 font-display text-xs text-cream" onClick={() => api.current?.pause(true)}>
-              Modes
+              Pause
             </button>
           </div>
         ) : (
@@ -108,6 +109,7 @@ export function AshlaneApp() {
         <div className="stage h-full overflow-hidden rounded-2xl border border-line">
           <canvas ref={canvasRef} className="h-full w-full" />
           {hud.running && hud.banner ? <p className="pointer-events-none absolute inset-x-0 top-4 text-center font-display text-brass">{hud.banner}</p> : null}
+          {playing && hud.face ? <p className="pointer-events-none absolute inset-x-0 top-10 text-center text-sm text-cream">{hud.face}</p> : null}
           {hud.combo > 1 && playing ? <p className="pointer-events-none absolute right-4 top-4 font-display text-ember">{hud.combo} HIT</p> : null}
           {playing && hud.flow > 8 ? <p className="pointer-events-none absolute right-4 top-10 font-display text-xs text-brass">FLOW {hud.flow}</p> : null}
           {playing ? (
@@ -225,7 +227,7 @@ export function AshlaneApp() {
                             {index < hud.clearedMission ? " · done" : ""}
                           </span>
                           <span className="mt-1 block text-sm text-cream-dim">
-                            {mission.step} {mission.waves} waves.
+                            {placeName(mission.drop)}{mission.drop !== mission.home ? ` to ${placeName(mission.home)}` : ""}. {ruleLabel(mission.rule)}.{mission.waves > 1 ? " One extra crew." : ""}
                           </span>
                         </button>
                       );
@@ -274,6 +276,38 @@ export function AshlaneApp() {
                           {hud.style === style.id ? " · on" : ""}
                         </span>
                         <span className="mt-1 block text-sm text-cream-dim">{style.note}</span>
+                      </button>
+                    ))}
+                    <p className="pt-2 font-display text-xs text-brass">Who you are</p>
+                    <p className="text-sm text-cream-dim">{hud.who}. {hud.bio}</p>
+                    {ROSTER.map((fighter) => (
+                      <button
+                        key={fighter.id}
+                        type="button"
+                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        onClick={() => api.current?.setWho(fighter.id)}
+                      >
+                        <span className="font-display text-sm text-brass">
+                          {fighter.name}
+                          {hud.who === fighter.name ? " · on" : ""}
+                        </span>
+                        <span className="mt-1 block text-sm text-cream-dim">{fighter.bio}</span>
+                      </button>
+                    ))}
+                    {fighterByName(hud.who)?.attires.length ? (
+                      <p className="pt-2 font-display text-xs text-brass">Attire</p>
+                    ) : null}
+                    {fighterByName(hud.who)?.attires.map((attire) => (
+                      <button
+                        key={attire.file}
+                        type="button"
+                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        onClick={() => api.current?.setAttire(attire.file)}
+                      >
+                        <span className="font-display text-sm text-brass">
+                          {attire.label}
+                          {hud.cast === attire.file ? " · on" : ""}
+                        </span>
                       </button>
                     ))}
                     <p className="pt-2 font-display text-xs text-brass">Fighting style</p>
@@ -462,10 +496,11 @@ export function AshlaneApp() {
               <div className="w-full max-w-sm">
                 <p className="font-display text-xl">Job done</p>
                 <p className="mt-1 text-sm text-cream-dim">{hud.missionTitle}</p>
+                <p className="mt-1 text-sm text-cream">Purse {hud.purse}. Rank {hud.level}. The next job is a different block.</p>
                 <div className="mt-4 flex flex-col gap-2">
                   {hud.mission + 1 < MISSIONS.length ? (
                     <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => api.current?.startStory(hud.mission + 1)}>
-                      Next job
+                      Next: {placeName(MISSIONS[hud.mission + 1].home)}
                     </button>
                   ) : (
                     <p className="text-sm text-cream-dim">That's the end of the four chapters.</p>
@@ -487,8 +522,15 @@ export function AshlaneApp() {
           {hud.running && hud.paused && !hud.missionClear && hud.bout !== "done" ? (
             <div className="veil absolute inset-0 flex items-center justify-center p-4">
               <div className="w-full max-w-sm">
-                <p className="font-display text-xl">Modes</p>
-                <p className="mt-1 text-sm text-cream-dim">Hop to a part of the ward. The fights you already finished stay finished.</p>
+                <p className="font-display text-xl">Paused</p>
+                <p className="mt-1 text-sm text-cream-dim">Full-size people are the default. Switch it here. The ward stays where you left it.</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>You full{hud.build === "full" ? " · on" : ""}</button>
+                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>You chibi{hud.build === "chibi" ? " · on" : ""}</button>
+                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("full")}>Crowd full{hud.crowd === "full" ? " · on" : ""}</button>
+                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("mix")}>Crowd mix{hud.crowd === "mix" ? " · on" : ""}</button>
+                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("chibi")}>Crowd chibi{hud.crowd === "chibi" ? " · on" : ""}</button>
+                </div>
                 <div className="mt-4 flex flex-col gap-2">
                   {MODES.map((mode) => (
                     <button key={mode.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => begin(mode.id)}>
@@ -511,6 +553,9 @@ export function AshlaneApp() {
 
       <div className="pad-dock">
         <Stick onChange={(x, y) => api.current?.setStick(x, y)} />
+        <button type="button" className="rounded-full border border-line bg-ink-2 px-4 py-3 font-display text-xs text-cream" onClick={() => api.current?.pause(true)}>
+          Pause
+        </button>
         <div className="flex flex-wrap justify-end gap-2">
           <Pad label="Use" hot={hud.weapon !== "fist"} onDown={(d) => api.current?.setBtn("use", d)} />
           <Pad label="Jump" hot={false} onDown={(d) => api.current?.setBtn("jump", d)} />
@@ -532,9 +577,14 @@ function labelFor(mode: Mode) {
 function objective(hud: Hud) {
   if (hud.bout === "practice") return "Practice. The bag stays. Try the dives, the grabs, and the flow counter.";
   if (hud.bout === "exhibit" || hud.bout === "done") return "Exhibition. One card in the ring. Hit them as they swing and it counts as flow.";
-  if (hud.story) return `${hud.missionTitle}. Wave ${hud.wave}/${hud.waveMax}. ${hud.missionStep}`;
+  if (hud.story) return `Rank ${hud.level}. ${hud.actName}. ${hud.missionTitle}. Wave ${hud.wave}/${hud.waveMax}. Purse ${hud.purse}. ${hud.missionStep}`;
   if (hud.scuffle || hud.phase === "clear") return `${hud.phase}. ${hud.phaseStep}`;
   if (hud.area === "house") return hud.weapon === "fist" ? "Noodle house. Take the pipe. Smash the crate." : "Pipe's in hand. Run and the swing lunges. It snaps.";
+  if (hud.area === "ring") return "The ring. Throw them into the red ropes and they come back.";
+  if (hud.area === "cage") return "West cage. The grate is a wall. Throw them into it.";
+  if (hud.area === "subway") return "South tunnel. Stay off the track when the train comes.";
+  if (hud.area === "crane") return "North roof. A long fall hurts.";
+  if (hud.area === "office") return "Back room, past the market. Ledger Cho keeps the paper.";
   return `${hud.job}. ${hud.jobStep}`;
 }
 
