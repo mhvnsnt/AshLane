@@ -10,7 +10,7 @@ import { resetYoko, tickYokosukaBelt } from "./yokosuka/belt";
 export type Phase = "free" | "atk" | "hit" | "launch" | "down" | "grab" | "throw" | "dash" | "spin" | "windup" | "out";
 export type Home = "plaza" | "street" | "scaffold" | "market" | "yard" | "dock" | "under" | "ring" | "cage" | "subway" | "crane" | "office";
 export type Arch = "brawler" | "runner" | "brute" | "hood" | "hex";
-export type Weapon = "fist" | "pipe" | "bottle" | "board";
+export type Weapon = "fist" | "pipe" | "bottle" | "board" | "blade" | "spear";
 
 export type Body = {
   id: number;
@@ -92,7 +92,7 @@ export type Particle = {
 
 export type Prop = {
   id: number;
-  kind: "crate" | "pipe" | "bottle" | "chair" | "table" | "board" | "car";
+  kind: "crate" | "pipe" | "bottle" | "chair" | "table" | "board" | "car" | "blade" | "spear";
   x: number;
   y: number;
   z: number;
@@ -741,7 +741,8 @@ function spawnBodies(sim: Sim) {
   addGrunt(sim, -3, -64, 0, "subway", "hood");
   addGrunt(sim, 0, 72, 3.4, "crane", "hex");
   addGrunt(sim, 74, -26, 0, "office", "hex");
-  addProp(sim, "pipe", -12.2, 1.02, -9, 1, "");
+  addProp(sim, "spear", 66, 0.2, 30, 7, "");
+  addProp(sim, "blade", -60, 0.2, 2, 6, "");
   addProp(sim, "crate", -15.4, 0, -8.2, 2, "");
   addProp(sim, "crate", 27.5, 0, -17.6, 2, "bottle");
   addProp(sim, "crate", 36.2, 0, -21.2, 2, "");
@@ -1295,7 +1296,7 @@ function wearWeapon(sim: Sim, p: Body) {
   if (p.wpn > 0) return;
   p.weapon = "fist";
   p.wpn = 0;
-  sim.banner = kind === "bottle" ? "Bottle shattered" : kind === "board" ? "Board split" : "The pipe snapped";
+  sim.banner = kind === "bottle" ? "Bottle shattered" : kind === "board" ? "Board split" : kind === "blade" ? "The blade snaps" : kind === "spear" ? "The spear snaps" : "The pipe snapped";
   sim.bannerT = 1.3;
   sim.sfx.push("slam");
   burst(sim, p.x, p.y + 1, p.z, kind === "bottle" ? 0x69c3c2 : 0x9aa3ad);
@@ -1324,9 +1325,9 @@ function tryPickup(sim: Sim, p: Body) {
     if (Math.hypot(prop.x - p.x, prop.z - p.z) > 0.85 || Math.abs(prop.y - p.y) > 1.4) continue;
     prop.alive = false;
     p.weapon = prop.kind;
-    p.wpn = prop.kind === "pipe" ? 8 : prop.kind === "board" ? 5 : 3;
+    p.wpn = prop.kind === "pipe" ? 8 : prop.kind === "spear" ? 7 : prop.kind === "blade" ? 6 : prop.kind === "board" ? 5 : 3;
     p.pickupT = 0.4;
-    sim.banner = prop.kind === "pipe" ? "Pipe. Run in and it lunges." : prop.kind === "board" ? "Board. Short, heavy swings." : "Bottle. A few swings, then it breaks.";
+    sim.banner = prop.kind === "pipe" ? "Pipe. Run in and it lunges." : prop.kind === "spear" ? "Spear. It reaches." : prop.kind === "blade" ? "Blade. Short cuts." : prop.kind === "board" ? "Board. Short, heavy swings." : "Bottle. A few swings, then it breaks.";
     sim.bannerT = 1.6;
     sim.sfx.push("grab");
     return;
@@ -1799,7 +1800,7 @@ function resolveXZ(sim: Sim, b: Body): "" | "hard" | "soft" | "rope" {
     b.vz = 0;
   }
   for (const prop of sim.props) {
-    if (!prop.alive || prop.kind === "pipe" || prop.kind === "bottle" || prop.kind === "board") continue;
+    if (!prop.alive || prop.kind === "pipe" || prop.kind === "bottle" || prop.kind === "board" || prop.kind === "blade" || prop.kind === "spear") continue;
     const car = prop.kind === "car";
     if (car && prop.crush > 0.92) continue;
     const top = car ? carTop(prop) : 0.9;
@@ -2754,9 +2755,9 @@ function updatePlayer(sim: Sim, dt: number, dashEdge: boolean) {
         return;
       }
       if (sim.martial === "capoeira") name = "Meia lua";
-      if (p.weapon === "pipe") {
-        dmg = 14;
-        name = "Club";
+      if (p.weapon === "pipe" || p.weapon === "blade" || p.weapon === "spear") {
+        dmg = p.weapon === "blade" ? 13 : p.weapon === "spear" ? 12 : 14;
+        name = p.weapon === "blade" ? "Cut" : p.weapon === "spear" ? "Spear jab" : "Club";
         wearWeapon(sim, p);
       } else if (p.weapon === "board") {
         dmg = 12;
@@ -2868,9 +2869,9 @@ function updatePlayer(sim: Sim, dt: number, dashEdge: boolean) {
         kb = 11;
         call = "Clothesline";
       }
-      if (p.weapon === "pipe") {
-        dmg *= 1.35;
-        kb *= 1.2;
+      if (p.weapon === "pipe" || p.weapon === "blade" || p.weapon === "spear") {
+        dmg *= p.weapon === "blade" ? 1.28 : p.weapon === "spear" ? 1.16 : 1.35;
+        kb *= p.weapon === "spear" ? 1.25 : 1.2;
       } else if (p.weapon === "bottle") {
         dmg *= 1.1;
         kb *= 1.05;
@@ -2885,7 +2886,7 @@ function updatePlayer(sim: Sim, dt: number, dashEdge: boolean) {
       if (sim.martial === "capoeira" && p.swing === 3) call = call || "Windmill";
       if ((sim.martial === "kenpo" || sim.martial === "jeet") && p.swing === 5) call = call || "Dragon tail";
       const tag = p.swing === 5 ? "low" : p.swing === 11 || p.swing === 12 ? "mid" : p.swing === 3 || p.swing >= 6 ? "high" : "mid";
-      const hit = hitGrunts(sim, hx, hz, reach, dmg, kb, lift, poise, f.x, f.z, tag);
+      const hit = hitGrunts(sim, hx, hz, reach + (p.weapon === "spear" ? 0.45 : p.weapon === "blade" ? 0.12 : 0), dmg, kb, lift, poise, f.x, f.z, tag);
       if (hit) p.landed = true;
       const smashed = hitProps(sim, p.x + f.x * 0.7, p.z + f.z * 0.7, reach + 0.35);
       if (hit && call) {

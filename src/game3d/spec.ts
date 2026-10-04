@@ -57,7 +57,7 @@ export type Hud = {
   scaffoldClear: boolean;
   plazaClear: boolean;
   tune: Tune;
-  weapon: "fist" | "pipe" | "bottle" | "board";
+  weapon: "fist" | "pipe" | "bottle" | "board" | "blade" | "spear";
   area: string;
   phase: string;
   phaseStep: string;

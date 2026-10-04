@@ -34,6 +34,10 @@ const PAL = [
   { cloth: 0x3a465c, skin: 0xd8bea6, visor: 0xe4572e },
 ];
 
+const critters: THREE.Object3D[] = [];
+let swordTpl: THREE.Object3D | null = null;
+let spearTpl: THREE.Object3D | null = null;
+
 export function createView(canvas: HTMLCanvasElement) {
   const phone = window.matchMedia("(pointer: coarse)").matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !phone, alpha: false, powerPreference: "high-performance" });
@@ -316,6 +320,28 @@ export function createView(canvas: HTMLCanvasElement) {
       ["building-skyscraper-a.glb", -28, -76, 16, 0.3],
     ];
     for (const [file, x, z, height, yaw] of city) plantBuilding(sim, file, x, z, height, yaw);
+    const dress: [string, number, number, number, boolean][] = [
+      ["/models/kenney/nature/grass.glb", -40, 6, 0.55, false],
+      ["/models/kenney/nature/grass_large.glb", -36, -4, 0.7, false],
+      ["/models/kenney/nature/grass.glb", 12, 38, 0.55, false],
+      ["/models/kenney/nature/flower_redA.glb", -38, 4, 0.4, false],
+      ["/models/kenney/nature/plant_bush.glb", -42, -2, 0.85, false],
+      ["/models/kenney/nature/tree_oak.glb", -44, 12, 4.2, true],
+      ["/models/kenney/nature/tree_default.glb", 16, 40, 3.4, true],
+      ["/models/kenney/nature/rock_largeA.glb", -46, -8, 0.8, true],
+      ["/models/kenney/nature/fence_simple.glb", 18, 36, 1.15, true],
+      ["/models/kenney/pets/animal-dog.glb", -40, -6, 0.7, false],
+      ["/models/kenney/pets/animal-cat.glb", 40, -16, 0.42, false],
+    ];
+    for (const [url, x, z, height, solid] of dress) dropPiece(sim, url, x, z, height, solid);
+    void loader.loadAsync("/models/kenney/arms/weapon-sword.glb").then((gltf) => {
+      swordTpl = gltf.scene;
+      propKey = "";
+    });
+    void loader.loadAsync("/models/kenney/arms/weapon-spear.glb").then((gltf) => {
+      spearTpl = gltf.scene;
+      propKey = "";
+    });
     void loader.loadAsync("/models/gen/cart.glb").then((gltf) => {
       const mesh = gltf.scene;
       const steel = document.createElement("canvas");
@@ -363,6 +389,41 @@ export function createView(canvas: HTMLCanvasElement) {
       const grounded = new THREE.Box3().setFromObject(mesh);
       mesh.position.y -= grounded.min.y;
       scene.add(mesh);
+    });
+  }
+
+  function soften(mesh: THREE.Object3D) {
+    mesh.traverse((obj) => {
+      const part = obj as THREE.Mesh;
+      if (!part.isMesh) return;
+      const mat = part.material as THREE.MeshStandardMaterial;
+      if (mat && "metalness" in mat) mat.metalness = 0;
+    });
+  }
+
+  function dropPiece(sim: Sim, url: string, x: number, z: number, height: number, solid: boolean) {
+    void loader.loadAsync(url).then((gltf) => {
+      const mesh = gltf.scene;
+      soften(mesh);
+      const raw = new THREE.Box3().setFromObject(mesh);
+      const size = raw.getSize(new THREE.Vector3());
+      mesh.scale.setScalar(height / (size.y || 1));
+      mesh.position.set(x, 0, z);
+      const grounded = new THREE.Box3().setFromObject(mesh);
+      mesh.position.y -= grounded.min.y;
+      scene.add(mesh);
+      if (url.includes("animal")) critters.push(mesh);
+      if (!solid) return;
+      const placed = new THREE.Box3().setFromObject(mesh);
+      sim.boxes.push({
+        minX: placed.min.x + 0.2,
+        maxX: placed.max.x - 0.2,
+        minY: 0,
+        maxY: Math.max(0.8, placed.max.y * 0.7),
+        minZ: placed.min.z + 0.2,
+        maxZ: placed.max.z - 0.2,
+        kind: "wall",
+      });
     });
   }
 
@@ -713,6 +774,16 @@ export function createView(canvas: HTMLCanvasElement) {
           mesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, 0.28), new THREE.MeshLambertMaterial({ color: 0xa56b3c }));
         } else if (prop.kind === "car") {
           mesh = forgeCar();
+        } else if (prop.kind === "blade" && swordTpl) {
+          mesh = swordTpl.clone(true);
+          mesh.scale.setScalar(0.55);
+        } else if (prop.kind === "spear" && spearTpl) {
+          mesh = spearTpl.clone(true);
+          mesh.scale.setScalar(0.7);
+        } else if (prop.kind === "blade") {
+          mesh = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.08, 0.7), new THREE.MeshLambertMaterial({ color: 0xd7dee4 }));
+        } else if (prop.kind === "spear") {
+          mesh = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.4, 5), new THREE.MeshLambertMaterial({ color: 0x8a5a32 }));
         } else if (src) mesh = src.clone(true);
         else mesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshLambertMaterial({ color: 0x6a5438 }));
         scene.add(mesh);
@@ -723,7 +794,7 @@ export function createView(canvas: HTMLCanvasElement) {
       const mesh = propViews[i];
       if (!mesh) return;
       mesh.visible = prop.kind === "car" || prop.alive;
-      mesh.position.set(prop.x, prop.y + (prop.kind === "pipe" ? 0.15 : 0), prop.z);
+      mesh.position.set(prop.x, prop.y + (prop.kind === "pipe" || prop.kind === "spear" || prop.kind === "blade" ? 0.2 : 0), prop.z);
       if (prop.kind === "car") poseCar(mesh as THREE.Group, prop.crush);
     });
   }
@@ -754,6 +825,15 @@ export function createView(canvas: HTMLCanvasElement) {
       const cycle = sim.time % 8;
       train.visible = cycle < 1.3;
       train.position.z = -80 + (cycle / 1.2) * 26;
+    }
+    for (const critter of critters) {
+      const homeX = critter.userData.ox as number | undefined;
+      if (homeX === undefined) {
+        critter.userData.ox = critter.position.x;
+        critter.userData.oz = critter.position.z;
+      }
+      critter.position.x = (critter.userData.ox as number) + Math.sin(sim.time * 0.6 + critter.position.z) * 0.8;
+      critter.rotation.y = Math.sin(sim.time * 0.6) > 0 ? 0.4 : -2.4;
     }
     if (sim.story && sim.venueR > 1) {
       curb.visible = true;
@@ -942,8 +1022,27 @@ function poseFighter(f: Fighter, b: Body, sim: Sim, camera: THREE.PerspectiveCam
     }
     if (b.kind === "player" && b.alive && b.grounded && b.state === "free") settleFeet(f);
     if (f.gear) {
+      const want = b.alive && (b.weapon === "blade" || b.weapon === "spear") ? b.weapon : "";
+      const src = want === "blade" ? swordTpl : want === "spear" ? spearTpl : null;
+      if (f.gear.userData.held !== want) {
+        const old = f.gear.getObjectByName("held");
+        if (old) f.gear.remove(old);
+        f.gear.userData.held = want;
+        if (src) {
+          const held = src.clone(true);
+          held.name = "held";
+          held.scale.setScalar(want === "spear" ? 0.45 : 0.35);
+          held.rotation.x = Math.PI / 2;
+          f.gear.add(held);
+        }
+      }
+      const held = f.gear.getObjectByName("held");
+      if (held) held.visible = !!want;
       f.gear.visible = b.alive && b.weapon !== "fist";
-      (f.gear.material as THREE.MeshLambertMaterial).color.setHex(b.weapon === "bottle" ? 0x69c3c2 : b.weapon === "board" ? 0xa56b3c : 0xb7c0c8);
+      const mat = f.gear.material as THREE.MeshLambertMaterial;
+      if (!want) mat.color.setHex(b.weapon === "bottle" ? 0x69c3c2 : b.weapon === "board" ? 0xa56b3c : 0xb7c0c8);
+      mat.opacity = want ? 0 : 1;
+      mat.transparent = !!want;
     }
   } else {
     const atk = b.state === "atk" ? Math.sin(Math.min(1, Math.max(0, 0.34 - b.stateT) / 0.28) * Math.PI) : 0;

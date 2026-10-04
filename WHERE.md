@@ -12,4 +12,7 @@ Do not import Schwarzerblitz stages, characters, or music. Those assets are all 
 
 The shopping cart mesh is `public/models/gen/cart.glb`, generated without Tripo. It has a steel material applied in `view.ts` because the file had no UVs.
 
-Next: more CC0 shells from Kenney `city-suburban`, `city-industrial`, and `city-roads` on the shorepine/kenney mirror. Do not download 4K textures. Keep the existing buttons.
+Kenney nature grass, trees, a fence, a rock, a dog, and a cat are CC0 and sit in the yard, the pier, and the market. A sword and a spear from the Kenney mini-arena kit can be picked up with Use. They swing with the pipe rules: the spear reaches farther, the blade cuts a little harder. They are not guns.
+
+Do not retarget a foreign skeleton onto these fighters. That is what caused the T-pose. New attacks have to be clips that already match the rig in the lane, or they stay out.
+
