@@ -4,7 +4,7 @@ import { mount, type Handle } from "@/game3d/mount";
 import { MISSIONS, placeName, ruleLabel } from "@/game3d/campaign";
 import { ASSIGN_SLOTS, CLIP_NAMES, STYLES, type Slot } from "@/game3d/rig-pipeline";
 import { MARTIAL, STANCES } from "@/game3d/styles";
-import { fighterByName, ROSTER } from "@/game3d/roster";
+import { CAST_PICKS, fighterByName, ROSTER } from "@/game3d/roster";
 
 const ARENAS: { id: string; label: string; note: string }[] = [
   { id: "ward", label: "Cinder ward", note: "The whole lane." },
@@ -29,6 +29,7 @@ export function AshlaneApp() {
   const [specText, setSpecText] = useState(() => specDocument("roam", EMPTY_HUD.tune));
   const [specErr, setSpecErr] = useState("");
   const [suite, setSuite] = useState(false);
+  const [pendingJob, setPendingJob] = useState<number | null>(null);
   const [menu, setMenu] = useState<"main" | "jobs" | "style" | "library" | "story" | "arenas">("main");
   const [arena, setArena] = useState("ward");
   const [slot, setSlot] = useState<Slot>("jab");
@@ -55,6 +56,22 @@ export function AshlaneApp() {
     seeded.current = true;
     setSpecText(specDocument(hud.mode, hud.tune));
   }, [hud]);
+
+  function leave() {
+    setSuite(false);
+    setPendingJob(null);
+    setMenu("main");
+    api.current?.quit();
+  }
+
+  function walkIn(pick: (typeof CAST_PICKS)[number]) {
+    if (pendingJob === null) return;
+    api.current?.setWho(pick.id);
+    api.current?.setAttire(pick.file);
+    api.current?.startStory(pendingJob);
+    setPendingJob(null);
+    setMenu("main");
+  }
 
   function begin(mode: Mode) {
     if (!api.current) {
@@ -125,7 +142,7 @@ export function AshlaneApp() {
                 </p>
                 {menu === "main" ? (
                   <div className="mt-4 flex flex-col gap-2">
-                    <button type="button" className="rounded-full bg-ember px-5 py-3 font-display text-sm text-ink" onClick={() => api.current?.startStory(Math.min(hud.clearedMission, MISSIONS.length - 1))}>
+                    <button type="button" className="rounded-full bg-ember px-5 py-3 font-display text-sm text-ink" onClick={() => setMenu("story")}>
                       Story
                     </button>
                     <div className="grid grid-cols-2 gap-2">
@@ -220,7 +237,7 @@ export function AshlaneApp() {
                           type="button"
                           disabled={locked}
                           className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left disabled:opacity-40"
-                          onClick={() => api.current?.startStory(index)}
+                          onClick={() => setPendingJob(index)}
                         >
                           <span className="font-display text-sm text-brass">
                             {mission.n}. {mission.title}
@@ -440,6 +457,19 @@ export function AshlaneApp() {
               <div className="max-h-[78%] w-full max-w-sm overflow-y-auto">
                 <p className="font-display text-xl">Customize</p>
                 <div className="mt-3 flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>Full{hud.build === "full" ? " · on" : ""}</button>
+                    <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>Ward size{hud.build === "chibi" ? " · on" : ""}</button>
+                  </div>
+                  {CAST_PICKS.map((pick) => (
+                    <button key={pick.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => { api.current?.setWho(pick.id); api.current?.setAttire(pick.file); }}>
+                      <span className="font-display text-sm text-brass">
+                        {pick.name}
+                        {hud.who === pick.name && hud.cast === pick.file ? " · on" : ""}
+                      </span>
+                      <span className="mt-1 block text-sm text-cream-dim">{pick.label}</span>
+                    </button>
+                  ))}
                   {STYLES.map((style) => (
                     <button key={style.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setStyle(style.id)}>
                       <span className="font-display text-sm text-brass">
@@ -486,12 +516,15 @@ export function AshlaneApp() {
                   <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.startBout("practice", arena)}>
                     Practice
                   </button>
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={leave}>
+                    Main menu
+                  </button>
                 </div>
               </div>
             </div>
           ) : null}
 
-          {hud.running && hud.paused && hud.missionClear && hud.bout !== "done" && !suite ? (
+          {hud.running && hud.paused && hud.missionClear && hud.bout !== "done" && !suite && pendingJob === null ? (
             <div className="veil absolute inset-0 flex items-end justify-center p-4 sm:items-center">
               <div className="w-full max-w-sm">
                 <p className="font-display text-xl">Job done</p>
@@ -499,27 +532,27 @@ export function AshlaneApp() {
                 <p className="mt-1 text-sm text-cream">Purse {hud.purse}. Rank {hud.level}. The next job is a different block.</p>
                 <div className="mt-4 flex flex-col gap-2">
                   {hud.mission + 1 < MISSIONS.length ? (
-                    <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => api.current?.startStory(hud.mission + 1)}>
+                    <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => setPendingJob(hud.mission + 1)}>
                       Next: {placeName(MISSIONS[hud.mission + 1].home)}
                     </button>
                   ) : (
                     <p className="text-sm text-cream-dim">That's the end of the four chapters.</p>
                   )}
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.startStory(hud.mission)}>
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setPendingJob(hud.mission)}>
                     Run it again
                   </button>
                   <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setSuite(true)}>
                     Customize
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.pause(false)}>
-                    Stay in the ward
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={leave}>
+                    Main menu
                   </button>
                 </div>
               </div>
             </div>
           ) : null}
 
-          {hud.running && hud.paused && !hud.missionClear && hud.bout !== "done" ? (
+          {hud.running && hud.paused && !hud.missionClear && hud.bout !== "done" && !suite && pendingJob === null ? (
             <div className="veil absolute inset-0 flex items-center justify-center p-4">
               <div className="w-full max-w-sm">
                 <p className="font-display text-xl">Paused</p>
@@ -541,8 +574,33 @@ export function AshlaneApp() {
                   <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => api.current?.pause(false)}>
                     Resume
                   </button>
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setSuite(true)}>
+                    Customize
+                  </button>
                   <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.rematch()}>
                     Rematch
+                  </button>
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={leave}>
+                    Main menu
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+          {pendingJob !== null && MISSIONS[pendingJob] ? (
+            <div className="veil absolute inset-0 z-10 flex items-end justify-center p-4 sm:items-center">
+              <div className="max-h-[78%] w-full max-w-md overflow-y-auto">
+                <p className="font-display text-xl text-cream">Who walks in</p>
+                <p className="mt-1 text-sm text-cream-dim">{MISSIONS[pendingJob].n}. {MISSIONS[pendingJob].title}. {placeName(MISSIONS[pendingJob].drop)}.</p>
+                <div className="mt-4 flex flex-col gap-2">
+                  {CAST_PICKS.map((pick) => (
+                    <button key={pick.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => walkIn(pick)}>
+                      <span className="font-display text-sm text-brass">{pick.name}</span>
+                      <span className="mt-1 block text-sm text-cream-dim">{pick.label}. {pick.bio}</span>
+                    </button>
+                  ))}
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setPendingJob(null)}>
+                    Back
                   </button>
                 </div>
               </div>

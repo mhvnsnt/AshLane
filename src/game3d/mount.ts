@@ -23,6 +23,7 @@ export type Handle = {
   setStage: (id: string) => void;
   startBout: (kind: "exhibit" | "practice", stage: string) => void;
   startStory: (index: number) => void;
+  quit: () => void;
   assignClip: (slot: Slot, clip: string) => void;
   setStick: (x: number, y: number) => void;
   setBtn: (name: "attack" | "grab" | "blast" | "jump" | "dash" | "use", down: boolean) => void;
@@ -279,6 +280,13 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
     startStory(index) {
       unlock();
       bootStory(sim, index);
+      push(snapshot(sim));
+    },
+    quit() {
+      sim.running = false;
+      sim.paused = false;
+      sim.story = false;
+      sim.bout = "off";
       push(snapshot(sim));
     },
     assignClip(slot, clip) {

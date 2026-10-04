@@ -209,3 +209,15 @@ export function fighterById(id: string) {
 export function fighterByName(name: string) {
   return ROSTER.find((f) => f.name === name) ?? null;
 }
+
+export type CastPick = { id: string; name: string; label: string; file: string; bio: string };
+
+export const CAST_PICKS: CastPick[] = ROSTER.flatMap((fighter) =>
+  fighter.attires.map((attire) => ({
+    id: fighter.id,
+    name: fighter.name,
+    label: attire.label,
+    file: attire.file,
+    bio: fighter.bio,
+  })),
+);
