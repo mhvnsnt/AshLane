@@ -1084,7 +1084,7 @@ function settleFeet(f: Fighter) {
   let lowest = Infinity;
   const spot = new THREE.Vector3();
   model.traverse((obj) => {
-    if (obj.name !== "foot.l" && obj.name !== "foot.r" && obj.name !== "FootL" && obj.name !== "FootR" && obj.name !== "LeftFoot" && obj.name !== "RightFoot") return;
+    if (obj.name !== "foot.l" && obj.name !== "foot.r" && obj.name !== "FootL" && obj.name !== "FootR" && obj.name !== "LeftFoot" && obj.name !== "RightFoot" && obj.name !== "mixamorig:LeftFoot" && obj.name !== "mixamorig:RightFoot") return;
     obj.getWorldPosition(spot);
     lowest = Math.min(lowest, spot.y);
   });
@@ -1103,6 +1103,7 @@ function makeRig(template: RigTemplate, barColor: number, moveset = template.mov
   const xz = scale * bulk * (0.9 + shoulder * 0.1);
   model.scale.set(xz, yScale, xz);
   model.position.y = -bounds.min.y * yScale;
+  if (template.moveset.startsWith("cast:")) model.rotation.y = Math.PI / 2;
   model.traverse((obj) => {
     if (PROP_MESH.test(obj.name)) obj.visible = false;
     if (obj.name === "head" || obj.name === "Head" || obj.name === "DEF-head") obj.scale.setScalar(0.85 + head * 0.15);

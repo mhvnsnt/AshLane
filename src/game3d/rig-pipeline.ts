@@ -506,52 +506,52 @@ MOVESETS.mannequin = {
 
 const CAST_STYLES: Moveset["clips"][] = [
   {
-    idle: "boxidle", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Formal_Loop",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "boxing", cross: "jabcross", launch: "elbow", sweep: "bodyblow", lunge: "slugger",
-    armedJab: "elbow", armedCross: "jabcross", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "slugger",
-    spin: "hurricane", hit: "hit", dodge: "evade", down: "fallflat", death: "Death01", pickup: "rise", throw: "suplex", grab: "defender", block: "guardhigh", cheer: "boxing1",
-  },
-  {
-    idle: "drunkidle", walk: "drunkwalk", run: "Jog_Fwd_Loop", back: "drunkwalk", strafeL: "evade", strafeR: "esquiva",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "combo", cross: "rib", launch: "knee", sweep: "crouch", lunge: "dropkick",
-    armedJab: "elbow", armedCross: "rib", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "dropkick",
-    spin: "capoeira", hit: "hitbody", dodge: "esquiva", down: "fallflat", death: "Death01", pickup: "kip", throw: "german", grab: "defender", block: "guardlow", cheer: "drunkidle",
-  },
-  {
-    idle: "ginga", walk: "gingaside", run: "Sprint_Loop", back: "gingaback", strafeL: "gingaside", strafeR: "au",
-    jump: "bigjump", fall: "crossjump", jab: "capoeira", cross: "hurricane", launch: "knee", sweep: "bodyblow", lunge: "dropkick",
-    armedJab: "elbow", armedCross: "hurricane", armedLaunch: "knee", armedSweep: "crouch", armedLunge: "dropkick",
-    spin: "au", hit: "hitside", dodge: "esquiva", down: "fallflat", death: "Death01", pickup: "kip", throw: "backdrop", grab: "takedown", block: "stancecrouch", cheer: "capoeira",
-  },
-  {
-    idle: "defender", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "evade", strafeR: "evade",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "boxing", cross: "slugger", launch: "elbow", sweep: "bodyblow", lunge: "knee",
-    armedJab: "elbow", armedCross: "slugger", armedLaunch: "knee", armedSweep: "crouch", armedLunge: "dropkick",
-    spin: "tiger", hit: "hithead", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "rise", throw: "chokeslam", grab: "defender", block: "guardhigh", cheer: "boxidle",
-  },
-  {
-    idle: "Sword_Idle", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Roll", strafeR: "Walk_Formal_Loop",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "Sword_Attack", cross: "Sword_Attack_RM", launch: "elbow", sweep: "crouch", lunge: "slugger",
-    armedJab: "Sword_Attack", armedCross: "Sword_Attack_RM", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "Sword_Attack",
-    spin: "hurricane", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "rise", throw: "ddt", grab: "defender", block: "guardhigh", cheer: "Sword_Idle",
-  },
-  {
-    idle: "Idle_Loop", walk: "Walk_Loop", run: "Sprint_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Formal_Loop",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Punch_Cross", launch: "knee", sweep: "bodyblow", lunge: "dropkick",
-    armedJab: "Punch_Jab", armedCross: "Punch_Cross", armedLaunch: "elbow", armedSweep: "crouch", armedLunge: "slugger",
-    spin: "feral", hit: "Hit_Head", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Jump_Land", throw: "brainbuster", grab: "Punch_Enter", block: "guardhigh", cheer: "Idle_Talking_Loop",
-  },
-  {
-    idle: "stancecrouch", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "gingaback", strafeL: "esquiva", strafeR: "evade",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "boxing2", cross: "boxing3", launch: "elbow", sweep: "crouch", lunge: "knee",
-    armedJab: "elbow", armedCross: "boxing3", armedLaunch: "knee", armedSweep: "bodyblow", armedLunge: "dropkick",
-    spin: "corkscrew", hit: "hit", dodge: "evade", down: "fallflat", death: "Death01", pickup: "kip", throw: "takedown", grab: "defender", block: "guardlow", cheer: "boxing1",
+    idle: "Idle_Loop", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Punch_Cross", launch: "Sword_Attack", sweep: "bodyblow", lunge: "Punch_Cross",
+    armedJab: "Sword_Attack", armedCross: "Sword_Attack_RM", armedLaunch: "Punch_Cross", armedSweep: "bodyblow", armedLunge: "Punch_Jab",
+    spin: "Dance_Loop", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Jump_Land", throw: "suplex", grab: "Punch_Enter", block: "guardhigh", cheer: "Idle_Talking_Loop",
   },
   {
     idle: "Idle_Talking_Loop", walk: "Walk_Formal_Loop", run: "Sprint_Loop", back: "Walk_Loop", strafeL: "Walk_Formal_Loop", strafeR: "Walk_Loop",
-    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "jabcross", launch: "tiger", sweep: "bodyblow", lunge: "slugger",
-    armedJab: "elbow", armedCross: "Punch_Cross", armedLaunch: "tiger", armedSweep: "crouch", armedLunge: "dropkick",
-    spin: "hurricane", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "rise", throw: "suplex", grab: "defender", block: "block", cheer: "Dance_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Punch_Cross", launch: "Sword_Attack", sweep: "crouch", lunge: "Punch_Cross",
+    armedJab: "Punch_Jab", armedCross: "Punch_Cross", armedLaunch: "Sword_Attack", armedSweep: "bodyblow", armedLunge: "Punch_Cross",
+    spin: "capoeira", hit: "Hit_Head", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Sitting_Exit", throw: "german", grab: "Punch_Enter", block: "guardlow", cheer: "Idle_Loop",
+  },
+  {
+    idle: "Sword_Idle", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Roll", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Sword_Attack", cross: "Punch_Cross", launch: "Sword_Attack_RM", sweep: "bodyblow", lunge: "Punch_Jab",
+    armedJab: "Sword_Attack", armedCross: "Sword_Attack_RM", armedLaunch: "Punch_Cross", armedSweep: "crouch", armedLunge: "Sword_Attack",
+    spin: "hurricane", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Jump_Land", throw: "chokeslam", grab: "defender", block: "guardhigh", cheer: "Sword_Idle",
+  },
+  {
+    idle: "Idle_Loop", walk: "Jog_Fwd_Loop", run: "Sprint_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Cross", cross: "Punch_Jab", launch: "Sword_Attack", sweep: "bodyblow", lunge: "Punch_Cross",
+    armedJab: "Punch_Cross", armedCross: "Sword_Attack", armedLaunch: "Punch_Jab", armedSweep: "crouch", armedLunge: "Punch_Cross",
+    spin: "Dance_Loop", hit: "hit", dodge: "evade", down: "fallflat", death: "Death01", pickup: "rise", throw: "ddt", grab: "Punch_Enter", block: "guardhigh", cheer: "Idle_Talking_Loop",
+  },
+  {
+    idle: "Idle_Talking_Loop", walk: "Walk_Loop", run: "Jog_Fwd_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Formal_Loop", strafeR: "Walk_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Sword_Attack", launch: "Punch_Cross", sweep: "crouch", lunge: "Punch_Jab",
+    armedJab: "Sword_Attack", armedCross: "Punch_Jab", armedLaunch: "Sword_Attack_RM", armedSweep: "bodyblow", armedLunge: "Punch_Cross",
+    spin: "au", hit: "Hit_Head", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "kip", throw: "brainbuster", grab: "defender", block: "guardlow", cheer: "Dance_Loop",
+  },
+  {
+    idle: "Sword_Idle", walk: "Walk_Formal_Loop", run: "Sprint_Loop", back: "Walk_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Punch_Cross", launch: "Sword_Attack", sweep: "bodyblow", lunge: "Sword_Attack",
+    armedJab: "Sword_Attack", armedCross: "Sword_Attack_RM", armedLaunch: "Punch_Cross", armedSweep: "crouch", armedLunge: "Sword_Attack",
+    spin: "hurricane", hit: "Hit_Chest", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Jump_Land", throw: "backdrop", grab: "Punch_Enter", block: "block", cheer: "Sword_Idle",
+  },
+  {
+    idle: "Idle_Loop", walk: "Walk_Formal_Loop", run: "Jog_Fwd_Loop", back: "Walk_Loop", strafeL: "Walk_Formal_Loop", strafeR: "Walk_Formal_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Cross", cross: "Punch_Jab", launch: "Punch_Cross", sweep: "bodyblow", lunge: "Punch_Jab",
+    armedJab: "Punch_Jab", armedCross: "Punch_Cross", armedLaunch: "Sword_Attack", armedSweep: "crouch", armedLunge: "Punch_Cross",
+    spin: "capoeira", hit: "hitbody", dodge: "esquiva", down: "fallflat", death: "Death01", pickup: "rise", throw: "takedown", grab: "defender", block: "guardhigh", cheer: "Idle_Loop",
+  },
+  {
+    idle: "Idle_Talking_Loop", walk: "Walk_Loop", run: "Sprint_Loop", back: "Walk_Formal_Loop", strafeL: "Walk_Loop", strafeR: "Walk_Loop",
+    jump: "Jump_Start", fall: "Jump_Loop", jab: "Punch_Jab", cross: "Punch_Cross", launch: "Sword_Attack_RM", sweep: "crouch", lunge: "Punch_Cross",
+    armedJab: "Sword_Attack", armedCross: "Punch_Cross", armedLaunch: "Sword_Attack", armedSweep: "bodyblow", armedLunge: "Punch_Jab",
+    spin: "Dance_Loop", hit: "Hit_Head", dodge: "Roll", down: "fallflat", death: "Death01", pickup: "Sitting_Exit", throw: "suplex", grab: "Punch_Enter", block: "guardlow", cheer: "Idle_Talking_Loop",
   },
 ];
 
