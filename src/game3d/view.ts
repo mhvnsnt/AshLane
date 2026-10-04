@@ -1197,6 +1197,11 @@ function playClip(f: Fighter, name: string, loop: boolean) {
   f.clip = resolved;
 }
 
+function firstClip(actions: Record<string, THREE.AnimationAction>, names: string[]) {
+  for (const name of names) if (name in actions) return name;
+  return "";
+}
+
 function resolveClip(f: Fighter, b: Body, sim: Sim): { name: string; loop: boolean } {
   if (sim.pair && sim.pairAtk >= 0) {
     const vic = `${sim.pair}:vic`;
@@ -1213,15 +1218,27 @@ function resolveClip(f: Fighter, b: Body, sim: Sim): { name: string; loop: boole
     if (b.kind === "player" && (b.throwT > 0 || b.state === "grab") && sim.pair in f.actions) return { name: sim.pair, loop: false };
   }
   if (sim.grabId === b.id && b.state === "grab" && sim.pairT <= 0) {
-    const hold = sim.rearLock && "hitback" in f.actions ? "hitback" : "defender" in f.actions ? "defender" : "";
+    const hold = sim.rearLock
+      ? firstClip(f.actions, ["hitback", "Hit_Chest", "defender"])
+      : firstClip(f.actions, ["defender", "Punch_Enter", "Interact", "boxidle"]);
     if (hold) return { name: hold, loop: true };
   }
+  if (b.state === "grab" && b.kind !== "player") {
+    const held = firstClip(f.actions, ["Hit_Chest", "defender", "hitbody", "Idle_Loop"]);
+    if (held) return { name: held, loop: true };
+  }
   if (b.kind === "player" && b.state === "free" && b.grounded) {
+    const speed = Math.hypot(b.vx, b.vz);
     if (sim.guard) {
-      const pose = sim.lowGuard && "guardlow" in f.actions ? "guardlow" : "guardhigh";
-      if (pose in f.actions) return { name: pose, loop: true };
-    } else if (sim.stickY > 0.45 && Math.hypot(b.vx, b.vz) < 0.45 && "stancecrouch" in f.actions) {
-      return { name: "stancecrouch", loop: true };
+      const pose = sim.lowGuard
+        ? firstClip(f.actions, ["Crouch_Idle_Loop", "guardlow", "stancecrouch", "crouch"])
+        : firstClip(f.actions, ["guardhigh", "Sword_Idle", "block", "defender"]);
+      if (pose) return { name: pose, loop: true };
+    } else if (sim.stickY > 0.45) {
+      const pose = speed < 0.45
+        ? firstClip(f.actions, ["Crouch_Idle_Loop", "stancecrouch", "crouch", "guardlow"])
+        : firstClip(f.actions, ["Crouch_Fwd_Loop", "crouch", "Crouch_Idle_Loop"]);
+      if (pose) return { name: pose, loop: true };
     }
   }
   const asked = slotFor(b);
