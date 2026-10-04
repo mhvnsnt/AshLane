@@ -1,0 +1,26 @@
+To reach the mechanical peak of Urban Reign and Def Jam: Fight for NY without adding more buttons, AshLane needs three specific subsystems that those games used to create infinite combat variety: the Two-Stage Grapple, the Active Environment, and the Wake-Up Game.
+Here is exactly how those games handled these systems and how they wire into your FSM and physics.
+1. The Two-Stage Grapple (Def Jam: Fight for NY)
+In standard brawlers, pressing Grab triggers an instant throw. Def Jam solved grab-spamming by breaking grapples into two distinct phases: the Lock-Up and the Execution.
+ * Phase 1: The Lock-Up. Pressing Grab snaps both fighters into a collar-and-elbow tie-up (grapple_hold state). No damage is dealt yet. This creates a moment of tension.
+ * Phase 2: The Execution. From the Lock-Up, the attacker inputs a direction + a button (e.g., Up + Hit, or Side + Spin) to trigger a specific slam.
+ * The Counter Window: Because the grapple sits in Phase 1 for a split second, the defender has a visual cue. If the defender presses Grab before the attacker inputs their execution command, the FSM fires a grapple_break animation and resets them to neutral.
+AshLane Implementation:
+When your Grab button connects, disable collision and lock both KayKit rigs into grapple_hold. The attacker now has a 60-frame window. Pressing Hit executes a fast strike. Pressing Grab again executes a heavy slam. Pressing Use violently shoves the opponent in the direction of the stick. If the attacker waits too long, the defender's FSM automatically triggers the break.
+2. Active Boundaries & Hard Body-Damage (Def Jam)
+Def Jam did not just have walls; it categorized environmental geometry into two distinct types: Hard Hazards and Soft Boundaries (the crowd).
+ * Hard Hazards: Smashing a fighter into a brick wall or speaker box dealt massive localized damage to their Head or Back, often triggering a permanent injury state.
+ * Soft Boundaries: If you shoved an opponent into the crowd, the crowd would physically grab the character, holding their arms behind their back for 2 seconds, guaranteeing the attacker a free heavy combo.
+AshLane Implementation:
+Since AshLane is a wet night street and market, you divide the colliders.
+ * Tag the brick walls and dungeon pillars as env_hard. If the Use (shove) command pushes a target's capsule into env_hard, apply an immediate -15 point penalty to their H or C region and trigger a wall_splat animation.
+ * Tag the market stalls, barriers, or watching NPCs as env_soft. If shoved here, the FSM transitions the enemy to a held_hazard state for 60 frames, simulating them stumbling over the barrier or being pushed back onto their feet, leaving them wide open for the J, J, J launch string.
+3. The Wake-Up Game / Okizeme (Urban Reign)
+Urban Reign made the floor just as dangerous as standing. When a character was knocked flat (hurt_grounded), the game didn't just wait for an idle stand-up animation to finish. It initiated the "Wake-Up Game" (Okizeme in fighting game terminology).
+ * Offensive Ground Game: The standing player could target the grounded enemy. Pressing Down + Strike stomped the legs. Pressing Grapple near their feet locked in a submission hold to break their lower body stat.
+ * Defensive Ground Game: The grounded player wasn't helpless. They could press Dodge to execute a quick-roll, creating distance. Or, if the standing player got too close, the grounded player could press Strike to execute a wake-up sweep, instantly knocking the standing player down and reversing the pressure.
+AshLane Implementation:
+When an enemy is in the hurt_grounded state:
+ * If you stand over them and press Hit + Stick Down, your KayKit rig plays a downward strike clip, specifically targeting their L (Leg) integer.
+ * If you press Grab, you mount them for ground-and-pound, transitioning both into a new ground_grapple FSM block.
+ * To prevent you from infinitely stomping the AI, the AI's FSM rolls a probability check. If you stay in their bounding box for more than 2 seconds while they are grounded, they fire a wake_up_sweep clip that forces your capsule into hurt_airborne.

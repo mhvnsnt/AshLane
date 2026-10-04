@@ -1,3 +1,7 @@
-Knight.glb, Rogue.glb, and Barbarian.glb are from KayKit Character Pack: Adventurers by Kay Lousberg.
-License: CC0 1.0 Universal. Free to use, including commercial projects. No attribution required.
+Knight, Rogue, Barbarian, Mage, and Rogue_Hooded are from KayKit Character Pack: Adventurers by Kay Lousberg.
+License: CC0 1.0 Universal. No attribution required.
 Source: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0
+Each file keeps the full 76-clip library on the shared 41-joint skeleton.
+src/game3d/rig-pipeline.ts is the contract: which meshes stay, which clip fills which slot, and that root position is the only track removed.
+Walls, barrels, banners, barriers, stairs, stools, torches, arches, tables, and boxes in props/ are KayKit Dungeon Remastered, also CC0, by Kay Lousberg.
+Source: https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0

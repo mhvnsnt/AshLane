@@ -1,6 +1,9 @@
 import { clampTune, loadTune, saveTune, type Mode, type Tune } from "./spec";
-import { createSim, rematch, setMode, warp, snapshot, step, type FrameInput, type Sim } from "./sim";
+import { createSim, rematch, saveShape, setMode, startBout as bootBout, startStory as bootStory, warp, snapshot, step, type FrameInput, type Sim } from "./sim";
 import { createView } from "./view";
+import { equipStyle, retargetSlot, type Slot } from "./rig-pipeline";
+import { loadCleared } from "./campaign";
+import { applyFighter, applyMartial, applyStance, loadFighter, saveFighter } from "./styles";
 
 export type Handle = {
   start: (mode: Mode) => void;
@@ -8,8 +11,18 @@ export type Handle = {
   rematch: () => void;
   focus: (mode: Mode) => void;
   tune: (partial: Partial<Tune>) => void;
+  setStyle: (id: string) => void;
+  setBuild: (id: "chibi" | "full") => void;
+  setCrowd: (id: "mix" | "chibi" | "full") => void;
+  setShape: (partial: { height?: number; bulk?: number; head?: number; leg?: number; shoulder?: number }) => void;
+  setMartial: (id: string) => void;
+  setStance: (id: string) => void;
+  setStage: (id: string) => void;
+  startBout: (kind: "exhibit" | "practice", stage: string) => void;
+  startStory: (index: number) => void;
+  assignClip: (slot: Slot, clip: string) => void;
   setStick: (x: number, y: number) => void;
-  setBtn: (name: "attack" | "grab" | "blast" | "jump" | "dash", down: boolean) => void;
+  setBtn: (name: "attack" | "grab" | "blast" | "jump" | "dash" | "use", down: boolean) => void;
   dispose: () => void;
 };
 
@@ -31,15 +44,25 @@ const WATCH = new Set([
   "KeyU",
   "KeyZ",
   "KeyX",
+  "KeyF",
 ]);
 
 export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof snapshot>) => void): Handle {
   const sim = createSim(loadTune());
+  sim.clearedMission = loadCleared();
+  const fighter = loadFighter();
+  if (fighter) {
+    sim.style = fighter.style;
+    sim.martial = fighter.martial;
+    sim.stance = fighter.stance;
+    applyFighter(fighter.style, fighter.martial, fighter.slots);
+    applyStance(fighter.stance);
+  }
   const view = createView(canvas);
   const keys = new Set<string>();
   const stick = { x: 0, y: 0 };
-  const btns = { attack: false, grab: false, blast: false, jump: false, dash: false };
-  const input: FrameInput = { x: 0, y: 0, attack: false, grab: false, blast: false, jump: false, dash: false };
+  const btns = { attack: false, grab: false, blast: false, jump: false, dash: false, use: false };
+  const input: FrameInput = { x: 0, y: 0, attack: false, grab: false, blast: false, jump: false, dash: false, use: false };
   let audio: AudioContext | null = null;
   let raf = 0;
   let hudAcc = 0;
@@ -173,6 +196,67 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
       saveTune(sim.tune);
       push(snapshot(sim));
     },
+    setStyle(id) {
+      sim.style = id;
+      equipStyle(id);
+      if (sim.martial) applyMartial(sim.martial);
+      applyStance(sim.stance);
+      saveFighter(sim.style, sim.martial, sim.stance);
+      push(snapshot(sim));
+    },
+    setBuild(id) {
+      sim.build = id;
+      saveShape(sim);
+      push(snapshot(sim));
+    },
+    setCrowd(id) {
+      sim.crowd = id;
+      saveShape(sim);
+      push(snapshot(sim));
+    },
+    setShape(partial) {
+      const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+      if (partial.height !== undefined) sim.height = clamp(partial.height, 0.86, 1.18);
+      if (partial.bulk !== undefined) sim.bulk = clamp(partial.bulk, 0.8, 1.25);
+      if (partial.head !== undefined) sim.head = clamp(partial.head, 0.75, 1.3);
+      if (partial.leg !== undefined) sim.leg = clamp(partial.leg, 0.82, 1.22);
+      if (partial.shoulder !== undefined) sim.shoulder = clamp(partial.shoulder, 0.82, 1.22);
+      saveShape(sim);
+      push(snapshot(sim));
+    },
+    setMartial(id) {
+      sim.martial = id;
+      equipStyle(sim.style);
+      applyMartial(id);
+      applyStance(sim.stance);
+      saveFighter(sim.style, sim.martial, sim.stance);
+      push(snapshot(sim));
+    },
+    setStance(id) {
+      sim.stance = id;
+      applyStance(id);
+      saveFighter(sim.style, sim.martial, sim.stance);
+      push(snapshot(sim));
+    },
+    setStage(id) {
+      sim.stage = id;
+      push(snapshot(sim));
+    },
+    startBout(kind, stage) {
+      unlock();
+      bootBout(sim, kind, stage);
+      push(snapshot(sim));
+    },
+    startStory(index) {
+      unlock();
+      bootStory(sim, index);
+      push(snapshot(sim));
+    },
+    assignClip(slot, clip) {
+      retargetSlot("player", slot, clip);
+      saveFighter(sim.style, sim.martial, sim.stance);
+      push(snapshot(sim));
+    },
     setStick(x, y) {
       stick.x = x;
       stick.y = y;
@@ -198,7 +282,7 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
   };
 }
 
-function readInput(sim: Sim, keys: Set<string>, stick: { x: number; y: number }, btns: { attack: boolean; grab: boolean; blast: boolean; jump: boolean; dash: boolean }, input: FrameInput) {
+function readInput(sim: Sim, keys: Set<string>, stick: { x: number; y: number }, btns: { attack: boolean; grab: boolean; blast: boolean; jump: boolean; dash: boolean; use: boolean }, input: FrameInput) {
   let x = stick.x;
   let y = stick.y;
   if (keys.has("KeyA") || keys.has("ArrowLeft")) x -= 1;
@@ -225,6 +309,7 @@ function readInput(sim: Sim, keys: Set<string>, stick: { x: number; y: number },
   input.blast = btns.blast || keys.has("KeyL") || keys.has("KeyX") || !!pad?.buttons[2]?.pressed;
   input.jump = btns.jump || keys.has("Space") || keys.has("KeyU") || !!pad?.buttons[3]?.pressed;
   input.dash = btns.dash || keys.has("ShiftLeft") || keys.has("ShiftRight") || !!pad?.buttons[5]?.pressed;
+  input.use = btns.use || keys.has("KeyF") || !!pad?.buttons[4]?.pressed;
 }
 
 function deadzone(x: number, y: number) {

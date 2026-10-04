@@ -142,6 +142,7 @@ function applyFrame(sim: Sim, actor: Actor, prev: string) {
       if (p) p.meter = Math.min(100, p.meter + 8);
       sim.combo += 1;
       sim.comboT = 1.25;
+      sim.landed = true;
     }
     if (b.hp <= 0) actor.health = 0;
   }
@@ -162,7 +163,13 @@ function applyFrame(sim: Sim, actor: Actor, prev: string) {
       b.stateT = 0.7;
     }
   }
-  if ((frame.attack ?? 0) > 0 && actor.state_name !== prev) sim.sfx.push("swing");
+  if ((frame.attack ?? 0) > 0 && actor.state_name !== prev) {
+    sim.sfx.push("swing");
+    if (b.kind === "player") {
+      const fx = actor.facing_left ? -1 : 1;
+      sim.pulse = { x: b.x + fx * 0.85, z: b.z, r: 1.15 };
+    }
+  }
 }
 
 function stepActors(sim: Sim, input: FrameInput) {

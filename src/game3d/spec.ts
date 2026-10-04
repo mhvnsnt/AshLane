@@ -56,6 +56,38 @@ export type Hud = {
   scaffoldClear: boolean;
   plazaClear: boolean;
   tune: Tune;
+  weapon: "fist" | "pipe" | "bottle";
+  area: string;
+  phase: string;
+  phaseStep: string;
+  scuffle: string;
+  marketClear: boolean;
+  style: string;
+  job: string;
+  jobStep: string;
+  martial: string;
+  stance: string;
+  bout: string;
+  flow: number;
+  story: boolean;
+  mission: number;
+  missionTitle: string;
+  missionStep: string;
+  actName: string;
+  wave: number;
+  waveMax: number;
+  missionClear: boolean;
+  clearedMission: number;
+  build: string;
+  crowd: string;
+  height: number;
+  bulk: number;
+  head: number;
+  leg: number;
+  shoulder: number;
+  headDmg: number;
+  chestDmg: number;
+  legsDmg: number;
 };
 
 export const EMPTY_HUD: Hud = {
@@ -76,6 +108,38 @@ export const EMPTY_HUD: Hud = {
   scaffoldClear: false,
   plazaClear: false,
   tune: DEFAULT_TUNE,
+  weapon: "fist",
+  area: "plaza",
+  phase: "walk",
+  phaseStep: "Packs stay on their block until you step in.",
+  scuffle: "",
+  marketClear: false,
+  style: "knight",
+  job: "Warm the plaza",
+  jobStep: "You were hired to quiet one block. Clear the plaza pack.",
+  martial: "",
+  stance: "orthodox",
+  bout: "off",
+  flow: 0,
+  story: false,
+  mission: 0,
+  missionTitle: "",
+  missionStep: "",
+  actName: "",
+  wave: 1,
+  waveMax: 1,
+  missionClear: false,
+  clearedMission: 0,
+  build: "chibi",
+  crowd: "mix",
+  height: 1,
+  bulk: 1,
+  head: 1,
+  leg: 1,
+  shoulder: 1,
+  headDmg: 100,
+  chestDmg: 100,
+  legsDmg: 100,
 };
 
 const STORE = "ashlane-tune-v2";

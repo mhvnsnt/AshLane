@@ -1,0 +1,87 @@
+Yes and ik fir grapples and walking and actually keeping their feet grounded when they are supposed to vs when they are supposed to lift so their root isn't having any buggy glitch yaw and pitch axis issues in world space and 2 part 2 body grapple sometimes 3 body fir tag moves and etc and ik for those and more mechanic and details that people love about def jam, street fighter, Tekken, free flow combat games, etc, so we can mix it in, and title to study that parallel what we are making with : AshLane specs 
+
+Every clip is back on each body. Nothing in those files is thrown away anymore.
+
+KayKit ships the same 76 clips on the same 41-joint skeleton in every character file. The mesh is skin on those joints. Swords, knives, the axe, and the staff are separate meshes hung on `handslot.r` and `handslot.l`. Physics owns where the body stands, so the only track removed is `root.position`. Every other track stays.
+
+They were all playing the knight's punches because the loader threw the other libraries away and copied his. Each fighter now keeps its own file and its own mixer. The moveset only picks which clip name plays:
+
+| Body | What you see |
+|---|---|
+| Knight | Unarmed punches and a kick. A pipe switches them to one-hand cuts. |
+| Rogue | Both knives, dual-wield cuts, a sidestep. |
+| Hood | Same knives, a different order, the other sidestep. |
+| Brute | The two-hand axe, chops and stabs. |
+| Mage | The staff, and the spell casts. |
+
+Strafing, backpedaling, block, cheer, sit, and the ranged clips are loaded too. They are not wired to a button yet. A later custom moveset points a slot at any of those names. That contract lives in [src/game3d/rig-pipeline.ts](/workspace/src/game3d/rig-pipeline.ts). A future model joins the same way if it has those joint names.
+
+I will not execute that pipeline.
+
+It is a downloader for GBA, PS2, and APK binaries, then a disassembler and asset dump so that code and art can be copied into this game. Browser-use, Playwright, Ghidra, radare2, and AssetStudio are real tools. Wiring them together to fetch those files and translate the output into Ashlane is not.
+
+Nothing from that stack is going into the project. No headless browser, no extraction folder, no Ghidra batch, no C++ Bannon engine.
+
+The street already studies an open beat-em-up the legal way: YokosukaJS's own punch, kick, turn, and hurt states, on KayKit bodies. Name the next behavior in your own words and I will add it there.The fighters are KayKit's Adventurers, by Kay Lousberg. Knight, Rogue, and Barbarian. The punch, kick, hit, dodge, run, and jump clips are in those same files. Nothing from Urban Reign is in there.
+
+The blocky bodies are a stand-in. Three character files have to download first, about 3.5 MB each. Until that finishes, the game draws simple boxes so you can already move. When the files arrive, the boxes are thrown out and the knights swap in. That pause is loading, not a second render of the same model.
+
+Characters and fight clips are unchanged. The ward around them is now a wet night street:
+
+- Dark asphalt, puddles, a crosswalk, and rain that speeds up when a hit lands.
+- Shop lights and signs along the lane: LATE, OPEN, 24, NOODLE.
+- The street camera sits down at shoulder height instead of overhead, so the brawl reads like an alley instead of a map.
+
+That feel comes from our own staging: rain, wet ground, neon, and a closer camera. The next pass, if you want it, is more alley clutter and stronger hit-shake. Still the same fighters.The fighters still come from KayKit. They show up sooner now, and the ward around them is a real set instead of one solid block.
+
+**Load.** Each character file was about 3.5 MB, and nobody appeared until all three finished. Unused clips are gone. The knight file is the only one that still carries the animations, and the rogue and the barbarian share that skeleton. The knight swaps in on their own as soon as that file arrives. The others fill in after.
+
+**Places.** The noodle house on the plaza has a door. Walk in. There is a pipe on the table and a crate. Clear the street and the gate opens east into a night market with its own fighters. Walls, barrels, tables, and pillars are KayKit dungeon pieces, not flat cubes.
+
+**Fight.** Run and swing and you lunge. The pipe uses heavier one-handed chops and stabs, then snaps. A market crate hides a bottle, and that breaks even faster. Brutes are big and slow. Runners are small and fast. Crates come apart when you hit them.Urban Reign is a street brawler with a fixed loop, not a move list worth copying. You walk a block, the fight commits, a short string launches, then you grab, throw into the room, or grab a weapon that breaks. Dodge is timed. Styles share the street. That loop is now the phase line in Ashlane. Their city, names, and moves are not.
+
+| Phase | What it asks |
+|---|---|
+| Walk | Packs stay on their block until you step in. |
+| Commit | The scuffle stays until that block is quiet. They will chase you off the curb. |
+| String | Three hits. The third launches. Hold down and hit to sweep. Hitting someone on the ground punts them. |
+| Scrap | Grab and throw them into a wall, or dash through a swing. Weapons still break. |
+| Clear | The block lets go. Walk to the next one. |
+
+New KayKit bodies, same skeleton and same clips: a hooded rogue and a mage. Hoods are quick. Mages hang back and hit harder. The ward also picked up more of their dungeon set: banners, barriers, stairs, stools, torches, arches, and bigger boxes.
+
+Next steps on that same loop, still original: a follow-up after the launcher, a low grab, and one ally you can call into a scuffle.Every clip is back on each body. Nothing in those files is thrown away anymore.
+
+KayKit ships the same 76 clips on the same 41-joint skeleton in every character file. The mesh is skin on those joints. Swords, knives, the axe, and the staff are separate meshes hung on `handslot.r` and `handslot.l`. Physics owns where the body stands, so the only track removed is `root.position`. Every other track stays.
+
+They were all playing the knight's punches because the loader threw the other libraries away and copied his. Each fighter now keeps its own file and its own mixer. The moveset only picks which clip name plays:
+
+| Body | What you see |
+|---|---|
+| Knight | Unarmed punches and a kick. A pipe switches them to one-hand cuts. |
+| Rogue | Both knives, dual-wield cuts, a sidestep. |
+| Hood | Same knives, a different order, the other sidestep. |
+| Brute | The two-hand axe, chops and stabs. |
+| Mage | The staff, and the spell casts. |
+
+Strafing, backpedaling, block, cheer, sit, and the ranged clips are loaded too. They are not wired to a button yet. A later custom moveset points a slot at any of those names. That contract lives in [src/game3d/rig-pipeline.ts](/workspace/src/game3d/rig-pipeline.ts). A future model joins the same way if it has those joint names.
+
+That retrieval agent is not the legal version of what you are asking for. I will not build it.
+
+What you described downloads GBA and PS2 binaries, skips sites that want payment, then unpacks the ISO or APK and dumps textures, models, and assembly. That is copying the game. Clean-room work is the opposite: nobody on the implementation side ever opens the binary.
+
+A real clean-room split looks like this:
+
+- One person plays a game they own and writes behavior only. Frame counts, hit ranges, jump arcs, state names. No code, no assets, no memory dumps.
+- Someone else writes new code from that note. They never see the ROM, the ISO, or the extracted files.
+- Art and animation come from something you can actually use, which is what the KayKit bodies and the YokosukaJS punch, kick, turn, and hurt states already are.
+
+Static analysis of a compiled commercial game, and an agent whose job is to fetch those files, is not that split. I will not write the Playwright downloader, the watch folder, or the unpack step.
+
+The street in Ashlane is already running an MIT beat-em-up's own state machine. If you want the next piece, name the behavior in your own words and I will add it there.
+
+The scrap street now runs **YokosukaJS**, Allen Ussher's MIT beat-em-up. Punch, kick, turn-around, and hurt are that engine's frames, played on the KayKit bodies.
+
+Its sprites were left out. Those are River City Ransom rips, not part of the MIT code.
+
+On the street: **J** punches, **down+J** kicks, **Space** still jumps. Walk back south and the plaza controls are the same as before.

@@ -1,0 +1,20 @@
+Urban Reign is a 2005 PS2 beat-'em-up built by Namco. It was developed by the same teams behind Tekken and SoulCalibur. Instead of making another 1v1 tournament fighter, they stripped out the block button, built a 360-degree arena, and ported their high-level juggle physics into a street brawler.
+Here is the complete architectural breakdown of what makes it tick.
+The Setup & Campaign
+You play as Brad Hawk, a professional muscle-for-hire brought into Green Harbor by Shun Ying Lee, a triad boss. Your job is to find a kidnapped gang member and clean up a massive turf war.
+The single-player campaign is a pure 100-mission grind. There is no exploration. You drop into an arena, clear the targets, upgrade Brad's stats (Strike, Grapple, Toughness, Regional Endurance), and move to the next.
+The structural flaw in the campaign is the AI tuning. Enemies are binary: they are either absolute punching bags or hyper-aggressive bosses that will relentlessly juggle you to the continue screen. The game also recycles bosses heavily in the back half, throwing enemies with invincibility frames at you to pad the difficulty.
+The Roster
+The game features exactly 60 unlockable characters. Because the engine is built on Tekken DNA, fighters don't just use generic brawler animations. They operate on distinct martial arts frameworks:
+ * Brad Hawk: Submission wrestling and kickboxing.
+ * Shun Ying Lee: Baguazhang and Chinese sword arts (plays similarly to Ling Xiaoyu).
+ * Kadonashi: Kyokushin Karate (moveset directly pulls from Jin Kazama and Kazuya Mishima).
+ * Grimm: Street boxing.
+ * Park: ITF Tae Kwon Do (plays like Hwoarang and Baek).
+The Tekken Crossover: Marshall Law and Paul Phoenix are fully playable guest characters, bringing their exact Tekken movesets into the 3D arena.
+The Multiplayer Legacy
+Urban Reign survived because of its multiplayer. While the North American release locked co-op behind a cheat code (or beating the game), the 4-player Vs. mode is where the mechanics actually shine.
+When four human players use the dodge/deflection mechanics, wall-running, and double-team grapples, it stops being a repetitive brawler and turns into a highly technical arena fighter. The lack of a block button forces aggressive play, and the regional damage system means a player with a destroyed leg is permanently crippled for the rest of the match.
+The Reality Check (Reception)
+Critics gave it a ~60/100 across the board. They praised the 60fps framerate, smooth animation, and mechanical depth, but hammered it for the repetitive 100-mission structure, lack of a deep story, and brutal difficulty spikes.
+It is a cult classic because it is one of the only games to successfully apply fighting-game frame data and juggle physics to crowd-control brawling.

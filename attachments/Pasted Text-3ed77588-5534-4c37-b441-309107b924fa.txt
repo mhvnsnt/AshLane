@@ -1,0 +1,19 @@
+Combos and Move Cancelling
+Games like Tekken and Street Fighter don't lock you into a single animation until it plays out completely. They chop every move into three distinct phases inside a Finite State Machine (FSM): Startup, Active (when the hitboxes are actually live), and Recovery. Move cancelling is just the engine allowing a new input to hijack the Recovery phase.
+To build this into AshLane using the YokosukaJS framework, you map out an input buffer and a cancel window. You attach an interruptible flag to the punch state. Once the punch animation hits its active frames, the FSM starts listening for the next input. If you hit J during that specific window, the engine kills punch_1 immediately and transitions into punch_2. The input buffer catches early button presses and holds them, executing the cancel on the exact frame it becomes mathematically legal.
+Grapples, Lock-ups, and Paired Animations
+Def Jam's collar-and-elbow tie-ups and Urban Reign's complex throws run on paired animations. You aren't mashing two physics objects together and hoping they align. When a grapple connects, the engine actively disables the collision capsules between the attacker and the defender.
+The attacker takes over as the master state, and the defender becomes the slave. The defender's root position is snapped to a hardcoded offset (like exactly 0.5 meters in front, rotated 180 degrees).
+ * The Lock-up: Both FSMs transition to a grapple_hold state. The animation mixer loops a synced idle clip on both KayKit bodies.
+ * The Reaction / Sub-state: When you input the slam, the FSM pushes both characters into the next synced sequence—throw_execute for the attacker and throw_receive for the defender.
+ * The Break: If the defender hits the reversal window, the FSM branches both rigs into a grapple_break paired animation, shoves them back to neutral, and turns their collision back on.
+Fixing Collision: Sinking and Phasing
+If your characters are drinking the asphalt or phasing through the Noodle shop walls, the animation is fighting your physics engine. This happens when root motion drags the visible mesh outside of the actual physics capsule, or when the physics step rate is too slow and the collider tunnels right through the geometry.
+To lock the street down without writing a custom physics engine:
+ * Strict Physics Authority: The physics capsule owns the world space. The KayKit root.position track must stay permanently locked to the center of that physics capsule. The animation only moves the limbs, never the root coordinates.
+ * Continuous Collision Detection (CCD): If heavy knockbacks or fast dashes are phasing through walls, you need to enable CCD for the colliders. Instead of just checking if a body is inside a wall on the current frame, it sweeps the entire trajectory between frames and stops the collider exactly at the surface impact point.
+ * Ground Raycasting: To stop them from sinking into the floor, fire a raycast straight down from the center of the physics capsule every frame. The exact distance to the ground dictates the Y-axis position of the character model. If the street dips or the collider bounces, the model snaps to the raycast hit, keeping the feet planted perfectly on the geometry.
+Creating a Grapple Sequence in Unreal Engine
+This breakdown demonstrates exactly how two separate character blueprints sync their transforms and state machines to execute a clean paired animation throw without any physics glitching.
+
+YouTube video views will be stored in your YouTube History, and your data will be stored and used by YouTube according to its Terms of Service

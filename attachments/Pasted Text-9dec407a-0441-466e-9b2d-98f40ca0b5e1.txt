@@ -1,0 +1,20 @@
+We are taking the spatial awareness of Urban Reign, the juggle math of Tekken, the environmental violence of Def Jam, and the crowd control of free-flow combat, and wiring it directly into AshLane’s MIT state machine and KayKit rigs.
+Since physics already owns the root and the colliders handle the world space, we don't have to fight buggy yaw and pitch axes. We just sync the YokosukaJS states across the 41-joint skeletons.
+Here is how that hybrid 10/10 blueprint maps onto the AshLane loop.
+The Juggle & String Economy (Tekken x AshLane)
+We build on the existing YokosukaJS inputs (J to punch, Down+J to kick) to create verticality without relying on canned animations.
+ * The String: J, J, J. The third hit is the launcher.
+ * The State Change: Once the target hits the air, their state machine locks into hurt_airborne.
+ * The Follow-Up: Because we kept all 76 clips, you push forward and hit J. Your character plays a jump-strike clip, connecting with their collider mid-air. Gravity pulls them down, but you dictate the velocity vector. If you hold down+J, you sweep them the frame they hit the asphalt.
+Spatial Free-Flow (Arkham x Urban Reign)
+With the camera low on the wet street, the fight is an alley brawl, not an arena. You are always surrounded during the Commit phase.
+ * Directional Targeting: We wire up the loaded (but currently unused) strafe and backpedal clips. Your left stick dictates who you hit, not a hard lock-on. You hit J toward the Rogue, then snap the stick left and hit J to intercept the Brute with a backhand.
+ * The Sidestep: The Rogue and Hood already have sidestep clips. We wire that to a dedicated dodge. A perfectly timed dodge against an incoming punch state leaves the enemy in a vulnerable recovery frame, opening them up for the Scrap phase.
+Environmental Scrap (Def Jam)
+The ward isn't just a background; it's the weapon.
+ * Wall Bouncing: If you launch a Hood and their collider hits the Noodle shop door or a dungeon pillar before hitting the ground, they wall-splat. Their state machine resets the hurt timer, giving you extra frames to close the distance.
+ * Weapon Degradation: The pipe, axes, and bottles sit on handslot.r. They deal massive block damage but have a strict durability counter. You crack a Brute with a bottle, the mesh shatters, and the moveset instantly downshifts back from one-hand cuts to unarmed punches.
+Tag & Crew Dynamics
+You have one ally you can call into a scuffle. We execute 2-body and 3-body tag moves without needing custom "synced animations."
+ * The Intercept: You launch an enemy. While they are in the hurt_airborne state, you press the assist button.
+ * The Execution: Your ally's AI targets the airborne collider and executes their heaviest punch or kick clip. It’s two separate state machines intersecting on the same target at the exact right frame. No glitching, just pure physics and timing.
