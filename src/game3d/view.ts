@@ -5,7 +5,7 @@ import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { Body, Box, Sim } from "./sim";
 import { HAND_SLOT, PROP_MESH, TARGET_HEIGHT, adoptRig, castMoveset, clipForMoveset, slotFor } from "./rig-pipeline";
 import { forgeCar, forgeStreet, poseCar } from "./forge";
-import { bakeMotion, loadMotionBank, motionNames } from "./motion-bank";
+import { bakeMotion, loadMotionBank, motionNames, retargetUal, setUal } from "./motion-bank";
 
 type Fighter = {
   id: number;
@@ -182,6 +182,10 @@ export function createView(canvas: HTMLCanvasElement) {
   let rigKey = "";
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
+  void loader.loadAsync("/motion/ual/AnimationLibrary_Godot_Standard.gltf").then((gltf) => {
+    setUal(gltf.scene, gltf.animations);
+    rigKey = "";
+  });
   const castRigs = new Map<string, RigTemplate>();
   const castLoading = new Set<string>();
   function ensureCast(file: string) {
@@ -1119,6 +1123,11 @@ function makeRig(template: RigTemplate, barColor: number, moveset = template.mov
   }
   for (const clip of bakeMotion(model)) {
     actions[clip.name] = mixer.clipAction(clip);
+  }
+  if (template.moveset.startsWith("cast:")) {
+    for (const clip of retargetUal(model)) {
+      actions[clip.name] = mixer.clipAction(clip);
+    }
   }
   const slots: THREE.Object3D[] = [];
   model.traverse((obj) => {

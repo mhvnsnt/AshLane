@@ -204,3 +204,76 @@ function bakeRole(name: string, times: number[], role: Role, map: Record<string,
   if (tracks.length === 0) return null;
   return new THREE.AnimationClip(name, times[times.length - 1] ?? 1, tracks);
 }
+
+const UAL_BONE: Record<string, string> = {
+  "DEF-hips": "mixamorig:Hips",
+  "DEF-spine.001": "mixamorig:Spine",
+  "DEF-spine.002": "mixamorig:Spine1",
+  "DEF-spine.003": "mixamorig:Spine2",
+  "DEF-neck": "mixamorig:Neck",
+  "DEF-head": "mixamorig:Head",
+  "DEF-shoulder.L": "mixamorig:LeftShoulder",
+  "DEF-upper_arm.L": "mixamorig:LeftArm",
+  "DEF-forearm.L": "mixamorig:LeftForeArm",
+  "DEF-hand.L": "mixamorig:LeftHand",
+  "DEF-thigh.L": "mixamorig:LeftUpLeg",
+  "DEF-shin.L": "mixamorig:LeftLeg",
+  "DEF-foot.L": "mixamorig:LeftFoot",
+  "DEF-toe.L": "mixamorig:LeftToeBase",
+  "DEF-shoulder.R": "mixamorig:RightShoulder",
+  "DEF-upper_arm.R": "mixamorig:RightArm",
+  "DEF-forearm.R": "mixamorig:RightForeArm",
+  "DEF-hand.R": "mixamorig:RightHand",
+  "DEF-thigh.R": "mixamorig:RightUpLeg",
+  "DEF-shin.R": "mixamorig:RightLeg",
+  "DEF-foot.R": "mixamorig:RightFoot",
+  "DEF-toe.R": "mixamorig:RightToeBase",
+};
+
+let ualRoot: THREE.Object3D | null = null;
+let ualClips: THREE.AnimationClip[] = [];
+
+export function setUal(root: THREE.Object3D, clips: THREE.AnimationClip[]) {
+  ualRoot = root;
+  ualClips = clips;
+}
+
+export function retargetUal(target: THREE.Object3D) {
+  if (!ualRoot || ualClips.length === 0) return [] as THREE.AnimationClip[];
+  const sourceRest = new Map<string, THREE.Quaternion>();
+  ualRoot.traverse((obj) => {
+    if (obj.name) sourceRest.set(obj.name, obj.quaternion.clone());
+  });
+  const targetRest = new Map<string, THREE.Quaternion>();
+  target.traverse((obj) => {
+    if (obj.name) targetRest.set(obj.name, obj.quaternion.clone());
+  });
+  const out: THREE.AnimationClip[] = [];
+  for (const clip of ualClips) {
+    if (clip.name === "A_TPose") continue;
+    const tracks: THREE.QuaternionKeyframeTrack[] = [];
+    for (const track of clip.tracks) {
+      if (!track.name.endsWith(".quaternion")) continue;
+      const bone = track.name.slice(0, -".quaternion".length);
+      const dest = UAL_BONE[bone];
+      const qS = sourceRest.get(bone);
+      const qT = dest ? targetRest.get(dest) : undefined;
+      if (!dest || !qS || !qT) continue;
+      const count = track.times.length;
+      const next = new Float32Array(count * 4);
+      const key = new THREE.Quaternion();
+      const rel = new THREE.Quaternion();
+      const inv = qS.clone().invert();
+      const written = new THREE.Quaternion();
+      for (let i = 0; i < count; i++) {
+        key.fromArray(track.values, i * 4);
+        rel.copy(inv).multiply(key);
+        written.copy(qT).multiply(rel);
+        written.toArray(next, i * 4);
+      }
+      tracks.push(new THREE.QuaternionKeyframeTrack(`${dest}.quaternion`, Array.from(track.times), Array.from(next)));
+    }
+    if (tracks.length) out.push(new THREE.AnimationClip(clip.name, clip.duration, tracks));
+  }
+  return out;
+}

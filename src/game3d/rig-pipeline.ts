@@ -504,61 +504,55 @@ MOVESETS.mannequin = {
   },
 };
 
-const CAST_LOCO = [
-  { idle: "boxidle", walk: "drunkwalk", run: "gingaside", back: "gingaback", strafeL: "esquiva", strafeR: "evade", block: "guardhigh" },
-  { idle: "drunkidle", walk: "ginga", run: "gingaside", back: "drunkwalk", strafeL: "gingaside", strafeR: "au", block: "guardlow" },
-  { idle: "defender", walk: "gingaback", run: "drunkwalk", back: "crouch", strafeL: "evade", strafeR: "esquiva", block: "stancecrouch" },
-  { idle: "stancecrouch", walk: "boxing1", run: "ginga", back: "gingaback", strafeL: "au", strafeR: "esquiva", block: "defender" },
-];
-const CAST_HIT = [
-  ["boxing", "jabcross", "elbow", "bodyblow", "slugger", "suplex"],
-  ["combo", "knee", "hurricane", "dropkick", "capoeira", "german"],
-  ["rib", "tiger", "feral", "elbow", "knee", "chokeslam"],
-  ["jabcross", "slugger", "boxing2", "boxing3", "bodyblow", "ddt"],
-  ["knee", "dropkick", "hurricane", "tiger", "combo", "brainbuster"],
-  ["elbow", "rib", "feral", "boxing", "slugger", "backdrop"],
-  ["bodyblow", "jabcross", "knee", "capoeira", "combo", "takedown"],
-];
-
 export function castMoveset(file: string) {
   const id = `cast:${file}`;
   if (MOVESETS[id]) return id;
   let n = 0;
   for (let i = 0; i < file.length; i++) n = (n * 33 + file.charCodeAt(i)) >>> 0;
-  const loco = CAST_LOCO[n % CAST_LOCO.length];
-  const hit = CAST_HIT[n % CAST_HIT.length];
+  const pick = <T,>(list: T[], salt: number) => list[(n + salt) % list.length];
+  const idles = ["Idle_Loop", "Idle_Talking_Loop", "Crouch_Idle_Loop", "Sword_Idle", "Pistol_Idle_Loop"];
+  const walks = ["Walk_Loop", "Walk_Formal_Loop", "Jog_Fwd_Loop", "Crouch_Fwd_Loop"];
+  const runs = ["Sprint_Loop", "Jog_Fwd_Loop", "Walk_Loop"];
+  const jabs = ["Punch_Jab", "Punch_Cross", "Sword_Attack", "Spell_Simple_Shoot"];
+  const crosses = ["Punch_Cross", "Sword_Attack", "Punch_Jab", "Pistol_Shoot"];
+  const launches = ["Sword_Attack", "Punch_Cross", "Spell_Simple_Shoot", "Punch_Enter"];
+  const sweeps = ["Crouch_Fwd_Loop", "Punch_Jab", "Sword_Attack", "Interact"];
+  const hits = ["Hit_Chest", "Hit_Head"];
+  const blocks = ["Crouch_Idle_Loop", "Pistol_Aim_Neutral", "Pistol_Aim_Up", "Sword_Idle"];
+  const throws = ["suplex", "german", "chokeslam", "ddt", "brainbuster", "backdrop", "takedown"];
+  const grabs = ["takedown", "Punch_Enter", "boxing", "Interact"];
   MOVESETS[id] = {
     id,
     show: [],
     clips: {
-      idle: loco.idle,
-      walk: loco.walk,
-      run: loco.run,
-      back: loco.back,
-      strafeL: loco.strafeL,
-      strafeR: loco.strafeR,
-      jump: "bigjump",
-      fall: "crossjump",
-      jab: hit[0],
-      cross: hit[1],
-      launch: hit[2],
-      sweep: hit[3],
-      lunge: hit[4],
-      armedJab: hit[1],
-      armedCross: hit[0],
-      armedLaunch: hit[2],
-      armedSweep: hit[3],
-      armedLunge: hit[4],
-      spin: n % 2 === 0 ? "hurricane" : "capoeira",
-      hit: n % 3 === 0 ? "hithead" : n % 3 === 1 ? "hitbody" : "hit",
-      dodge: n % 2 === 0 ? "esquiva" : "evade",
-      down: "fallflat",
-      death: "fallflat",
-      pickup: "rise",
-      throw: hit[5],
-      grab: n % 2 === 0 ? "takedown" : "boxing",
-      block: loco.block,
-      cheer: "kip",
+      idle: pick(idles, 0),
+      walk: pick(walks, 1),
+      run: pick(runs, 2),
+      back: pick(walks, 3),
+      strafeL: "Roll",
+      strafeR: pick(["Roll", "Walk_Formal_Loop", "Crouch_Fwd_Loop"], 4),
+      jump: "Jump_Start",
+      fall: "Jump_Loop",
+      jab: pick(jabs, 5),
+      cross: pick(crosses, 6),
+      launch: pick(launches, 7),
+      sweep: pick(sweeps, 8),
+      lunge: pick(["Jog_Fwd_Loop", "Sword_Attack", "Punch_Cross", "Sprint_Loop"], 9),
+      armedJab: pick(["Sword_Attack", "Pistol_Shoot", "Punch_Jab"], 10),
+      armedCross: pick(["Sword_Attack_RM", "Punch_Cross", "Pistol_Aim_Up"], 11),
+      armedLaunch: pick(launches, 12),
+      armedSweep: pick(sweeps, 13),
+      armedLunge: pick(["Sword_Attack", "Jog_Fwd_Loop", "Punch_Enter"], 14),
+      spin: pick(["Dance_Loop", "Sword_Attack", "Spell_Simple_Shoot"], 15),
+      hit: pick(hits, 16),
+      dodge: "Roll",
+      down: pick(["Crouch_Idle_Loop", "Sitting_Idle_Loop", "Death01"], 17),
+      death: "Death01",
+      pickup: pick(["Sitting_Exit", "Jump_Land", "PickUp_Table"], 18),
+      throw: pick(throws, 19),
+      grab: pick(grabs, 20),
+      block: pick(blocks, 21),
+      cheer: pick(["Dance_Loop", "Idle_Talking_Loop", "Spell_Simple_Idle_Loop"], 22),
     },
   };
   return id;
