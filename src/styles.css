@@ -39,6 +39,16 @@
   touch-action: none;
 }
 
+.sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
 .stage canvas {
   display: block;
   width: 100%;

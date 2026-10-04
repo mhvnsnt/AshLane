@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { Body, Box, Sim } from "./sim";
-import { HAND_SLOT, PROP_MESH, TARGET_HEIGHT, adoptRig, clipForMoveset, slotFor } from "./rig-pipeline";
+import { HAND_SLOT, PROP_MESH, TARGET_HEIGHT, adoptRig, castMoveset, clipForMoveset, slotFor } from "./rig-pipeline";
 import { forgeCar, forgeStreet, poseCar } from "./forge";
 import { bakeMotion, loadMotionBank, motionNames } from "./motion-bank";
 
@@ -180,13 +181,15 @@ export function createView(canvas: HTMLCanvasElement) {
   let zombief: RigTemplate | null = null;
   let rigKey = "";
   const loader = new GLTFLoader();
+  loader.setMeshoptDecoder(MeshoptDecoder);
   const castRigs = new Map<string, RigTemplate>();
   const castLoading = new Set<string>();
   function ensureCast(file: string) {
     if (!file || castRigs.has(file) || castLoading.has(file)) return;
     castLoading.add(file);
     loader.loadAsync(`/models/cast/${file}`).then((gltf) => {
-      castRigs.set(file, adoptRig(gltf.scene, gltf.animations, "mannequin"));
+      castRigs.set(file, adoptRig(gltf.scene, gltf.animations, castMoveset(file)));
+      castLoading.delete(file);
       rigKey = "";
     }).catch(() => {
       castLoading.delete(file);
@@ -742,8 +745,9 @@ export function createView(canvas: HTMLCanvasElement) {
     fighters.length = 0;
     for (const b of sim.bodies) {
       const rig = rigFor(b, sim);
+      const cast = b.kind === "player" && rig?.moveset.startsWith("cast:");
       const native = !!rig && (rig.moveset === "soldier" || rig.moveset === "soldierf" || rig.moveset === "zombie" || rig.moveset === "zombief" || rig.moveset === "drifter" || rig.moveset === "mannequin");
-      const made = rig ? makeRig(rig, b.kind === "player" ? 0xf0b429 : 0xe4572e, b.kind === "player" && !native ? "player" : rig.moveset, b.kind === "player" && !native ? DYE[sim.style] ?? 0 : 0, b.kind === "player" ? sim.height : 1, b.kind === "player" ? sim.bulk : 1, b.kind === "player" ? sim.head : 1, b.kind === "player" ? sim.leg : 1, b.kind === "player" ? sim.shoulder : 1) : makeFighter(shared, b.kind === "player" ? PAL[0] : PAL[(b.id % (PAL.length - 1)) + 1]);
+      const made = rig ? makeRig(rig, b.kind === "player" ? 0xf0b429 : 0xe4572e, cast ? rig.moveset : b.kind === "player" && !native ? "player" : rig.moveset, b.kind === "player" && !native && !cast ? DYE[sim.style] ?? 0 : 0, b.kind === "player" ? sim.height : 1, b.kind === "player" ? sim.bulk : 1, b.kind === "player" ? sim.head : 1, b.kind === "player" ? sim.leg : 1, b.kind === "player" ? sim.shoulder : 1) : makeFighter(shared, b.kind === "player" ? PAL[0] : PAL[(b.id % (PAL.length - 1)) + 1]);
       made.id = b.id;
       scene.add(made.group);
       scene.add(made.bar);
@@ -1078,7 +1082,7 @@ function makeRig(template: RigTemplate, barColor: number, moveset = template.mov
   const model = cloneRig(template.scene) as THREE.Group;
   model.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(model);
-  const full = template.moveset === "soldier" || template.moveset === "soldierf" || template.moveset === "zombie" || template.moveset === "zombief" || template.moveset === "mannequin" || template.moveset === "drifter";
+  const full = template.moveset.startsWith("cast:") || template.moveset === "soldier" || template.moveset === "soldierf" || template.moveset === "zombie" || template.moveset === "zombief" || template.moveset === "mannequin" || template.moveset === "drifter";
   const tall = Math.max(0.01, bounds.max.y - bounds.min.y);
   const scale = (full ? 1.92 : 1.5) / tall;
   const yScale = scale * heightMul * (0.9 + leg * 0.1);

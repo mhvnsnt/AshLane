@@ -504,6 +504,66 @@ MOVESETS.mannequin = {
   },
 };
 
+const CAST_LOCO = [
+  { idle: "boxidle", walk: "drunkwalk", run: "gingaside", back: "gingaback", strafeL: "esquiva", strafeR: "evade", block: "guardhigh" },
+  { idle: "drunkidle", walk: "ginga", run: "gingaside", back: "drunkwalk", strafeL: "gingaside", strafeR: "au", block: "guardlow" },
+  { idle: "defender", walk: "gingaback", run: "drunkwalk", back: "crouch", strafeL: "evade", strafeR: "esquiva", block: "stancecrouch" },
+  { idle: "stancecrouch", walk: "boxing1", run: "ginga", back: "gingaback", strafeL: "au", strafeR: "esquiva", block: "defender" },
+];
+const CAST_HIT = [
+  ["boxing", "jabcross", "elbow", "bodyblow", "slugger", "suplex"],
+  ["combo", "knee", "hurricane", "dropkick", "capoeira", "german"],
+  ["rib", "tiger", "feral", "elbow", "knee", "chokeslam"],
+  ["jabcross", "slugger", "boxing2", "boxing3", "bodyblow", "ddt"],
+  ["knee", "dropkick", "hurricane", "tiger", "combo", "brainbuster"],
+  ["elbow", "rib", "feral", "boxing", "slugger", "backdrop"],
+  ["bodyblow", "jabcross", "knee", "capoeira", "combo", "takedown"],
+];
+
+export function castMoveset(file: string) {
+  const id = `cast:${file}`;
+  if (MOVESETS[id]) return id;
+  let n = 0;
+  for (let i = 0; i < file.length; i++) n = (n * 33 + file.charCodeAt(i)) >>> 0;
+  const loco = CAST_LOCO[n % CAST_LOCO.length];
+  const hit = CAST_HIT[n % CAST_HIT.length];
+  MOVESETS[id] = {
+    id,
+    show: [],
+    clips: {
+      idle: loco.idle,
+      walk: loco.walk,
+      run: loco.run,
+      back: loco.back,
+      strafeL: loco.strafeL,
+      strafeR: loco.strafeR,
+      jump: "bigjump",
+      fall: "crossjump",
+      jab: hit[0],
+      cross: hit[1],
+      launch: hit[2],
+      sweep: hit[3],
+      lunge: hit[4],
+      armedJab: hit[1],
+      armedCross: hit[0],
+      armedLaunch: hit[2],
+      armedSweep: hit[3],
+      armedLunge: hit[4],
+      spin: n % 2 === 0 ? "hurricane" : "capoeira",
+      hit: n % 3 === 0 ? "hithead" : n % 3 === 1 ? "hitbody" : "hit",
+      dodge: n % 2 === 0 ? "esquiva" : "evade",
+      down: "fallflat",
+      death: "fallflat",
+      pickup: "rise",
+      throw: hit[5],
+      grab: n % 2 === 0 ? "takedown" : "boxing",
+      block: loco.block,
+      cheer: "kip",
+    },
+  };
+  return id;
+}
+
 export function adoptRig(scene: THREE.Group, animations: THREE.AnimationClip[], movesetId: string) {
   const moveset = MOVESETS[movesetId] ?? MOVESETS.knight;
   const family = rigFamily(scene);

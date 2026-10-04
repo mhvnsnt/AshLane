@@ -30,6 +30,8 @@ export function AshlaneApp() {
   const [specErr, setSpecErr] = useState("");
   const [suite, setSuite] = useState(false);
   const [pendingJob, setPendingJob] = useState<number | null>(null);
+  const [pendingWho, setPendingWho] = useState<string | null>(null);
+  const [suiteWho, setSuiteWho] = useState<string | null>(null);
   const [menu, setMenu] = useState<"main" | "jobs" | "style" | "library" | "story" | "arenas">("main");
   const [arena, setArena] = useState("ward");
   const [slot, setSlot] = useState<Slot>("jab");
@@ -60,6 +62,8 @@ export function AshlaneApp() {
   function leave() {
     setSuite(false);
     setPendingJob(null);
+    setPendingWho(null);
+    setSuiteWho(null);
     setMenu("main");
     api.current?.quit();
   }
@@ -70,6 +74,7 @@ export function AshlaneApp() {
     api.current?.setAttire(pick.file);
     api.current?.startStory(pendingJob);
     setPendingJob(null);
+    setPendingWho(null);
     setMenu("main");
   }
 
@@ -134,8 +139,8 @@ export function AshlaneApp() {
           ) : null}
 
           {!hud.running ? (
-            <div className="veil absolute inset-0 flex items-end justify-center p-4 sm:items-center">
-              <div className="max-h-[78%] w-full max-w-md overflow-y-auto">
+            <div className="sheet veil">
+              <div className="mx-auto w-full max-w-md px-4 py-6">
                 <p className="font-display text-3xl text-cream">Ashlane</p>
                 <p className="mt-2 text-sm leading-relaxed text-cream-dim">
                   {MISSIONS.length} jobs. Hold stick back to guard. Lows and launchers break it. Stick sideways and jump is an au. Throw them into a wall, then hit for a wall follow. Hold a direction as you land to tech. Spin stays on L.
@@ -237,7 +242,7 @@ export function AshlaneApp() {
                           type="button"
                           disabled={locked}
                           className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left disabled:opacity-40"
-                          onClick={() => setPendingJob(index)}
+                          onClick={() => { setPendingWho(null); setPendingJob(index); }}
                         >
                           <span className="font-display text-sm text-brass">
                             {mission.n}. {mission.title}
@@ -453,23 +458,31 @@ export function AshlaneApp() {
           ) : null}
 
           {suite && hud.running ? (
-            <div className="veil absolute inset-0 flex items-end justify-center overflow-y-auto p-4 sm:items-center">
-              <div className="max-h-[78%] w-full max-w-sm overflow-y-auto">
+            <div className="sheet veil">
+              <div className="mx-auto w-full max-w-sm px-4 py-6">
                 <p className="font-display text-xl">Customize</p>
+                <p className="mt-1 text-sm text-cream-dim">{hud.who}{hud.cast ? ` · ${CAST_PICKS.find((pick) => pick.file === hud.cast)?.label ?? hud.cast}` : ""}</p>
                 <div className="mt-3 flex flex-col gap-2">
                   <div className="flex gap-2">
                     <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>Full{hud.build === "full" ? " · on" : ""}</button>
                     <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>Ward size{hud.build === "chibi" ? " · on" : ""}</button>
                   </div>
-                  {CAST_PICKS.map((pick) => (
-                    <button key={pick.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => { api.current?.setWho(pick.id); api.current?.setAttire(pick.file); }}>
-                      <span className="font-display text-sm text-brass">
-                        {pick.name}
-                        {hud.who === pick.name && hud.cast === pick.file ? " · on" : ""}
-                      </span>
-                      <span className="mt-1 block text-sm text-cream-dim">{pick.label}</span>
+                  {suiteWho === null ? ROSTER.map((fighter) => (
+                    <button key={fighter.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => { setSuiteWho(fighter.id); api.current?.setWho(fighter.id); }}>
+                      <span className="font-display text-sm text-brass">{fighter.name}{hud.who === fighter.name ? " · on" : ""}</span>
+                      <span className="mt-1 block text-sm text-cream-dim">{fighter.attires.length} look{fighter.attires.length === 1 ? "" : "s"}</span>
                     </button>
-                  ))}
+                  )) : (
+                    <>
+                      <p className="font-display text-xs text-brass">{ROSTER.find((fighter) => fighter.id === suiteWho)?.name} · pick a look</p>
+                      {ROSTER.find((fighter) => fighter.id === suiteWho)?.attires.map((attire) => (
+                        <button key={attire.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setAttire(attire.file)}>
+                          <span className="font-display text-sm text-brass">{attire.label}{hud.cast === attire.file ? " · on" : ""}</span>
+                        </button>
+                      ))}
+                      <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setSuiteWho(null)}>Different fighter</button>
+                    </>
+                  )}
                   {STYLES.map((style) => (
                     <button key={style.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setStyle(style.id)}>
                       <span className="font-display text-sm text-brass">
@@ -553,10 +566,10 @@ export function AshlaneApp() {
           ) : null}
 
           {hud.running && hud.paused && !hud.missionClear && hud.bout !== "done" && !suite && pendingJob === null ? (
-            <div className="veil absolute inset-0 flex items-center justify-center p-4">
-              <div className="w-full max-w-sm">
+            <div className="sheet veil">
+              <div className="mx-auto w-full max-w-sm px-4 py-6">
                 <p className="font-display text-xl">Paused</p>
-                <p className="mt-1 text-sm text-cream-dim">Full-size people are the default. Switch it here. The ward stays where you left it.</p>
+                <p className="mt-1 text-sm text-cream-dim">{hud.who}. Drag this list. The ward stays where you left it.</p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>You full{hud.build === "full" ? " · on" : ""}</button>
                   <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>You chibi{hud.build === "chibi" ? " · on" : ""}</button>
@@ -588,18 +601,23 @@ export function AshlaneApp() {
             </div>
           ) : null}
           {pendingJob !== null && MISSIONS[pendingJob] ? (
-            <div className="veil absolute inset-0 z-10 flex items-end justify-center p-4 sm:items-center">
-              <div className="max-h-[78%] w-full max-w-md overflow-y-auto">
-                <p className="font-display text-xl text-cream">Who walks in</p>
+            <div className="sheet veil">
+              <div className="mx-auto w-full max-w-md px-4 py-6">
+                <p className="font-display text-xl text-cream">{pendingWho ? "Which look" : "Who walks in"}</p>
                 <p className="mt-1 text-sm text-cream-dim">{MISSIONS[pendingJob].n}. {MISSIONS[pendingJob].title}. {placeName(MISSIONS[pendingJob].drop)}.</p>
                 <div className="mt-4 flex flex-col gap-2">
-                  {CAST_PICKS.map((pick) => (
-                    <button key={pick.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => walkIn(pick)}>
-                      <span className="font-display text-sm text-brass">{pick.name}</span>
-                      <span className="mt-1 block text-sm text-cream-dim">{pick.label}. {pick.bio}</span>
+                  {pendingWho === null ? ROSTER.map((fighter) => (
+                    <button key={fighter.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => setPendingWho(fighter.id)}>
+                      <span className="font-display text-sm text-brass">{fighter.name}</span>
+                      <span className="mt-1 block text-sm text-cream-dim">{fighter.bio}</span>
+                    </button>
+                  )) : ROSTER.find((fighter) => fighter.id === pendingWho)?.attires.map((attire) => (
+                    <button key={attire.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => walkIn({ id: pendingWho, name: ROSTER.find((fighter) => fighter.id === pendingWho)?.name ?? "", label: attire.label, file: attire.file, bio: "" })}>
+                      <span className="font-display text-sm text-brass">{attire.label}</span>
+                      <span className="mt-1 block text-sm text-cream-dim">{ROSTER.find((fighter) => fighter.id === pendingWho)?.name}</span>
                     </button>
                   ))}
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setPendingJob(null)}>
+                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => pendingWho ? setPendingWho(null) : setPendingJob(null)}>
                     Back
                   </button>
                 </div>
