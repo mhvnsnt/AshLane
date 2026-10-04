@@ -1,0 +1,18 @@
+To extract the exact mechanics of those classic GBA games without touching copyright infringement, you use a standard industry practice called Clean-Room Reverse Engineering. You pair that with a federated open-source architecture so you aren't writing the basic physics from scratch.
+Here is the exact operational blueprint for how you and an autonomous agent execute this legally.
+1. The Clean-Room Protocol (Extracting Mechanics)
+You cannot copyright game mechanics, rules, or frame data. You can only copyright the actual code and assets. To avoid getting sued, you isolate the extraction from the implementation.
+ * The Observer (The Agent): You task an agent to study the ROMs, read existing community decompilations, or analyze memory dumps from emulators like BizHawk. The agent's ONLY job is to output purely mathematical specifications—not code. It outputs raw data: "The jump arc lasts 14 frames, peaks at 32 pixels, and has a horizontal velocity of 2.5 pixels per frame."
+ * The Architect (You): You never look at the original decompiled Nintendo or Capcom code. You only read the agent's mathematical blueprint. You then write entirely original code to achieve that exact math.
+ * The Legal Firewall: Because you wrote original code based on observable math, the IP holders have zero claim over your engine. The resulting code is yours.
+2. Federated Open-Source Architecture
+Instead of building a monolithic engine, you build a federated stack. You pull in independent, MIT-licensed open-source modules and wire them together to execute the agent's blueprints.
+ * State Machine Module: Pull in a lightweight state machine library (like XState if you are running JS/TS). You plug the agent's frame data (Idle -> Startup -> Active Hitbox -> Recovery) directly into this.
+ * Collision Engine: Don't write AABB (Axis-Aligned Bounding Box) math from scratch. Pull in an open-source 2D spatial hash library. You feed the hitbox coordinates (extracted by the agent) into the federated collision module.
+ * Asset Pipeline: Hook the engine up to a CC0 (Public Domain) asset federator. While building, the engine automatically pulls placeholder sprites from OpenGameArt or Kenney.nl so you are never tempted to use ripped assets.
+3. Execution Pipeline
+When you are ready to build a specific combat interaction (e.g., a DBGT-style launcher attack), the workflow looks like this:
+ * Prompt the Agent: "Analyze the memory frame data for a heavy launcher attack in Dragon Ball GT: Transformation or Streets of Rage. Output the startup frames, active hitbox duration, X/Y knockback velocity, and hitstun duration as a JSON spec. Do not output code."
+ * Agent Delivers Spec: You receive the raw math.
+ * Map to Federated Engine: You map that JSON data into your own federated collision and state machine modules.
+You get the exact 16-bit weight, momentum, and combat feel, strictly using open-source architecture and your own code.

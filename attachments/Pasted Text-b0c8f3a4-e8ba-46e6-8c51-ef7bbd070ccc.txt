@@ -1,0 +1,27 @@
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║           BANNON ENGINE — AI ORIENTATION BLOCK v114             ║
+║     READ THIS ENTIRE BLOCK BEFORE TOUCHING ANY CODE             ║
+╚══════════════════════════════════════════════════════════════════╝
+
+Executing sequence. Shifting generative logic pipeline to Grok API for native C++ integration.
+Zero WebGL. Zero web builds. Grok operates exclusively as the external logic solver for the Bannon runtime.
+ARCHITECTURE BLOCKS
+ * Grok_REST_Client: C++ HTTP client block wrapping libcurl to handle async POST requests to the xAI endpoint.
+ * State_To_JSON_Serializer: C++ struct mapping Bannon engine physics constants (MAX_HP, Poise, DMG_SCALE) into the context payload.
+ * Grok_JSON_Parser: Unpacks Grok's structured JSON response and routes strings to the UI and commands to the physics engine.
+AGENT PROMPTS
+Feed the following prompts to your IDE coding agent to construct the native blocks.
+Prompt 1: xAI API Client Construction
+> Generate a native C++ HTTP client block named Grok_REST_Client using libcurl. Target endpoint is [https://api.x.ai/v1/chat/completions](https://api.x.ai/v1/chat/completions). Configure headers for Content-Type: application/json and Authorization: Bearer [API_KEY]. Execute requests asynchronously to prevent locking the main thread. Return the raw string payload. Do not write game logic here.
+> 
+Prompt 2: Bannon State Serialization
+> Generate a native C++ struct named State_To_JSON_Serializer. Target the active engine constants: MAX_HP (10000 scale), MAX_BODY_VEL (3.8 m/s), and current Poise state. Format these variables into a JSON string representing the system context for the LLM. Use nlohmann/json or standard library.
+> 
+Prompt 3: Grok Output Formatting
+> Construct the system prompt append block. Force Grok into a strict output structure by appending this exact string to the system message: "You are the behavioral logic node for an NPC. Return ONLY raw JSON. Format: {"dialogue": "string", "engine_action": "string"}. Do not use markdown. Do not wrap in code blocks. Calculate your action based strictly on the provided Poise and MAX_HP data."
+> 
+Prompt 4: Engine Action Routing
+> Generate a native C++ parser named Grok_JSON_Parser. Parse the JSON string from Grok_REST_Client. Extract dialogue and route it to the active UI text buffer. Extract engine_action and run a switch statement mapping to native engine triggers. If engine_action equals "CRUMPLE", trigger the Poise-driven crumple state. Ensure crumple remains independent of HP per the physics constants.
+> 
+Executing next sequence automatically.

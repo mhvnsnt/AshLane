@@ -1,0 +1,3 @@
+Knight.glb, Rogue.glb, and Barbarian.glb are from KayKit Character Pack: Adventurers by Kay Lousberg.
+License: CC0 1.0 Universal. Free to use, including commercial projects. No attribution required.
+Source: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0

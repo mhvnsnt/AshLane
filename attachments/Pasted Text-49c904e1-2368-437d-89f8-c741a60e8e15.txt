@@ -1,0 +1,21 @@
+To get that GTA free-roam camera with heavy wrestling and DBGT combat in a 2D PWA, you drop the side-scrolling corridor completely. You build an open 8-way grid. The camera locks onto your character from straight above, giving you 360-degree movement and an open map to run through.
+The Free-Roam Architecture
+ * The Infinite Grid: Your ASCII text file isn't a single room or street anymore. It's a massive map. You can link huge text files together to create a full city block. The camera stays centered on P, loading the environment in all directions as you run.
+ * 8-Way Combat: Instead of just punching left or right, your character has 8 facing directions. Hitboxes spawn exactly where you aim. You can run diagonally, snap a punch to the right, and instantly pivot to kick someone behind you.
+ * Z-Axis Illusions: Even in pure top-down 2D, you fake height for the wrestling mechanics. When you hit a suplex or an uppercut, the enemy sprite scales up to look like it's flying toward the camera, then scales back down and offsets its Y-coordinate when it slams the pavement.
+Wrestling & Brawler Mechanics in Top-Down
+ * The Grapple Zone: You map an invisible circle around your character. If an enemy enters that circle and you hit the action button, you lock into a grapple state. From there, your next input decides the move—mash attack for rapid strikes, or hit a directional input to throw them.
+ * Crowd Control: In a standard brawler, enemies line up on the left and right. In free-roam, they swarm you in a circle. You need wide sweeping attacks—like a spinning lariat or an area-of-effect blast—to clear space when you get mobbed.
+ * Environmental Slams: Since you have a full GTA-style map, every # (wall) in your ASCII file becomes a weapon. If you grapple an enemy near a wall tile and throw them at it, the engine calculates the collision and triggers heavy wall-bounce damage.
+The Mix Lab Setup
+Your editor stays exactly the same, but you design city blocks instead of narrow paths.
+#################
+#...............#
+#.###...E...###.#
+#.#...........#.#
+#.#.....P.....#.#
+#.#...E...E...#.#
+#...............#
+#################
+
+Players can drop into the center of a custom arena, run in any direction, grab an enemy, and powerbomb them into the scenery. It's fast, entirely free-roaming, and handles massive crowds natively.

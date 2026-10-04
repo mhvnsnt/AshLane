@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Ashlane",
+      "hasCanvas": true,
+      "bodyTextLen": 363,
+      "bodyTextHash": "c3c1b271c96470309b22cb9e92e1d5fbcb2cd606d21eac8dc65967a1a94d1fa4",
+      "bodyTextPrefix": "ASHLANE Cinder ward One ward. Three feelings. Ashlane Free-roam ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Ashlane",
+      "hasCanvas": true,
+      "bodyTextLen": 382,
+      "bodyTextHash": "6403e2b41cf524834ad6278b00c273cb0343e22029d90a34351ea46831c4d0ab",
+      "bodyTextPrefix": "ASHLANE Cinder ward One ward. Three feelings. Ashlane Free-roam ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}
