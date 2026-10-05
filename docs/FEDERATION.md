@@ -223,6 +223,6 @@ See `~/workspace/open-source-hunt/FINDS_WAVE6.md`:
 - [x] 12 new federated modules written (weather, boids, dialogue, quests, pedestrians, framedata, replay, springbones, touch, counters, minigames, streaming)
 - [x] 69 CC0 GLBs converted and pushed (street/weapons/props)
 - [x] FEDERATION.md updated
-- [ ] Wire new modules into sim.ts / view.ts / mount.ts (runtime integration)
-- [ ] TypeScript compile check
+- [x] Wire new modules into sim.ts / view.ts / mount.ts (runtime integration) — done 2026-10-05 via src/game3d/services.ts hub + src/game3d/overlays.ts (commit 7b0faa7)
+- [x] TypeScript compile check — tsc clean, vite build clean (2026-10-05)
 - [ ] Still pending: Downtown City MegaKit, Fantasy Props MegaKit, Medieval Weapons (newer packs)
