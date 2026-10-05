@@ -88,7 +88,12 @@ export type FightStyle =
   | "kickboxing"  // punches + kicks, range
   | "wrestling"   // grapples, throws, slams
   | "martial-arts"// fast technical strikes, evasive footwork
-  | "lucha";      // high-flying, agile, aerial
+  | "lucha"       // high-flying, agile, aerial
+  | "capoeira"    // ginga flow, esquivas, acrobatic kicks (16 Bannon clips)
+  | "drunken"     // unpredictable sway, off-balance strikes (24 Bannon clips)
+  | "muay-thai"   // elbows, knees, clinch, teeps
+  | "mma"         // takedowns, ground-and-pound, submissions
+  | "breakdance"; // b-boy footwork as fighting (6 Bannon clips)
 
 export type ClothingPattern = "solid" | "camo" | "stripes" | "graffiti";
 
@@ -168,7 +173,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     bodyDist: [["male", 55], ["female", 45]],
     height: [0.94, 1.06],
     bulk: [0.92, 1.12],
-    styles: [["street", 40], ["boxing", 25], ["wrestling", 20], ["kickboxing", 10], ["lucha", 5]],
+    styles: [["street", 30], ["boxing", 20], ["wrestling", 15], ["kickboxing", 10], ["capoeira", 10], ["breakdance", 8], ["lucha", 5], ["drunken", 2]],
     hairBias: "any",
     beardChance: 0.3,
     names: ["Marv", "T", "Dez", "Rico", "Peanut", "Sable", "June", "Kilo", "Bo", "Nia", "Reyes", "Tasha", "Dre", "Lou", "Mica", "Sal"],
@@ -184,7 +189,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     bodyDist: [["male", 70], ["female", 30]],
     height: [0.96, 1.08],
     bulk: [0.95, 1.18],
-    styles: [["boxing", 30], ["wrestling", 30], ["martial-arts", 25], ["street", 15]],
+    styles: [["boxing", 25], ["wrestling", 25], ["martial-arts", 20], ["muay-thai", 15], ["mma", 10], ["street", 5]],
     hairBias: "short",
     beardChance: 0.15,
     names: ["Sarge", "Vick", "Doyle", "Mercer", "Pike", "Hale", "Stanton", "Rhodes", "Vale", "Cross", "Dunne", "Frost"],
@@ -200,7 +205,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     bodyDist: [["male", 60], ["female", 40]],
     height: [0.92, 1.05],
     bulk: [0.85, 1.0], // gaunt
-    styles: [["street", 55], ["martial-arts", 30], ["wrestling", 15]],
+    styles: [["street", 40], ["martial-arts", 20], ["drunken", 15], ["wrestling", 10], ["capoeira", 10], ["breakdance", 5]],
     hairBias: "long",
     beardChance: 0.5,
     names: ["Ash", "Cinder", "Wick", "Smolder", "Char", "Ember", "Soot", "Flint", "Tinder", "Grim"],
@@ -216,7 +221,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     bodyDist: [["male", 60], ["female", 40]],
     height: [0.94, 1.07],
     bulk: [0.9, 1.12],
-    styles: [["street", 25], ["boxing", 20], ["kickboxing", 20], ["wrestling", 15], ["martial-arts", 10], ["lucha", 10]],
+    styles: [["street", 20], ["boxing", 15], ["kickboxing", 15], ["wrestling", 12], ["martial-arts", 8], ["muay-thai", 8], ["mma", 8], ["capoeira", 6], ["lucha", 5], ["drunken", 3]],
     hairBias: "any",
     beardChance: 0.35,
     names: ["Vex", "Halo", "Rook", "Jax", "Nyx", "Blaze", "Onyx-2", "Sable", "Krait", "Zero", "Mira", "Dagger"],
@@ -283,6 +288,36 @@ export const FIGHT_STYLES: Record<FightStyle, StyleDef> = {
     desc: "High-flying agile offense. Aerial entries, springboards.",
     clips: { idle: "Idle_Loop", jab: "Punch_Jab", cross: "Punch_Cross", hook: "Melee_Hook", hit: "Hit_Chest", knockdown: "Death01", getup: "NinjaJump_Loop", special: "Slide_Start" },
     hpMul: 0.85, dmgMul: 1.05, speedMul: 1.25,
+  },
+  capoeira: {
+    id: "capoeira", label: "Capoeira",
+    desc: "Ginga flow, esquivas, acrobatic kicks. Never stops moving.",
+    clips: { idle: "Idle_Loop", jab: "Punch_Jab", cross: "Punch_Cross", hook: "Melee_Hook", hit: "Hit_Chest", knockdown: "Hit_Knockback", getup: "NinjaJump_Loop", special: "Sword_Dash" },
+    hpMul: 0.9, dmgMul: 1.0, speedMul: 1.3,
+  },
+  drunken: {
+    id: "drunken", label: "Drunken",
+    desc: "Unpredictable swaying, off-balance strikes. Hard to read.",
+    clips: { idle: "Idle_Loop", jab: "Punch_Jab", cross: "Punch_Cross", hook: "Melee_Hook", hit: "Hit_Chest", knockdown: "Death01", getup: "Jump_Land", special: "Melee_Hook" },
+    hpMul: 1.0, dmgMul: 1.1, speedMul: 1.0,
+  },
+  "muay-thai": {
+    id: "muay-thai", label: "Muay Thai",
+    desc: "Elbows, knees, clinch, teeps. The art of eight limbs.",
+    clips: { idle: "Idle_Loop", jab: "Punch_Jab", cross: "Punch_Cross", hook: "Melee_Hook", hit: "Hit_Chest", knockdown: "Hit_Knockback", getup: "Jump_Land", special: "Sword_Dash" },
+    hpMul: 1.05, dmgMul: 1.15, speedMul: 1.0,
+  },
+  mma: {
+    id: "mma", label: "MMA",
+    desc: "Takedowns, ground-and-pound, submissions. Complete fighter.",
+    clips: { idle: "Crouch_Idle_Loop", jab: "Punch_Jab", cross: "Punch_Cross", hook: "Melee_Hook", hit: "Hit_Chest", knockdown: "Death01", getup: "ClimbUp_1m", special: "OverhandThrow" },
+    hpMul: 1.1, dmgMul: 1.1, speedMul: 1.0,
+  },
+  breakdance: {
+    id: "breakdance", label: "Breakdance",
+    desc: "B-boy footwork as fighting. Style is the weapon.",
+    clips: { idle: "Idle_Loop", jab: "Punch_Jab", cross: "Punch_Cross", hook: "Melee_Hook", hit: "Hit_Chest", knockdown: "Hit_Knockback", getup: "NinjaJump_Loop", special: "Slide_Start" },
+    hpMul: 0.9, dmgMul: 0.95, speedMul: 1.35,
   },
 };
 
