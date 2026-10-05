@@ -53,3 +53,19 @@ Two-bar: Guts (recovers) + Health (permanent). Heat meter from gear.
 - docs/URBAN_REIGN_ANALYSIS.md
 - docs/URBAN_REIGN_DEFJAM_RESEARCH.md
 - docs/PRODUCTION_PLAN.md (this file)
+
+## Federation Status (2026-10-05)
+
+Pulled and wired (Phase 1 complete):
+- `src/game3d/federated/lockon.ts` — Souls-like lock-on (PD), ported to TS
+- `src/game3d/federated/freeflow.ts` — Arkham freeflow targeting (MIT), ported to TS
+- `src/game3d/federated/groupai.ts` — Deathblood max-3-attacker AI (MIT), ported to TS
+- `tools/federation/combat/` — Original sources preserved as reference
+- `tools/federation/setup-assets.sh` — Asset download script (Quaternius/Kenney/FreeMotionPack1)
+- `docs/FEDERATION.md` — Full registry with licenses and integration checklist
+
+Pending (needs manual itch.io download or wiring):
+- Wire federated modules into sim.ts player/enemy update loops
+- Download Quaternius packs (itch.io click-through required)
+- Retarget UAL animations to 58-joint skeleton
+- Build first city level from Downtown City MegaKit
