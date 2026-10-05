@@ -70,3 +70,57 @@ Setup: `bash tools/federation/setup-assets.sh` (itch.io requires manual click-th
 - itch.io packs: CC0 stated on page + in LICENSE.txt inside zips.
 - "Verify" repos (no LICENSE file) NOT pulled — only MIT/PD/CC0 sources used.
 - Bandai Namco mocap (CC-BY-NC-ND) explicitly excluded from commercial pipeline.
+
+## Wave 5 — Yakuza / Urban Reign / Def Jam Systems Hunt (2026-10-05)
+
+Continuous open-source pull for brawler-specific systems. All licenses verified at pull time.
+
+### Brawler Combat Engines
+
+| System | Source | License | What it does | AshLane fit |
+|--------|--------|---------|--------------|-------------|
+| YokosukaJS | https://github.com/allenu/YokosukaJS | MIT | Functional-programming beat-em-up engine in pure JavaScript | **HIGH** — JS-native, study combat loop architecture |
+| Bebeu | https://github.com/sakai-nako/Bebeu | Apache-2.0 | 2.5D beat-em-up engine (Rust/Bevy + Dioxus editor) | Design reference — editor patterns |
+| OpenBOR PLUS | https://github.com/whitedragon0000/OpenBOR_PLUS | BSD-3-Clause | 2D side-scrolling beat-em-up engine (C) | Design reference — the classic brawler engine |
+
+### Yakuza-Style Minigames
+
+| System | Source | License | What it does | AshLane fit |
+|--------|--------|---------|--------------|-------------|
+| dart-room | https://github.com/crispierry/dart-room | MIT | 3D browser darts (Three.js): Count Up, 301, Cricket, 3 CPU difficulties | **HIGH** — Three.js native, drop-in minigame pattern |
+| simple-billiards-engine | https://github.com/cheesehackerxyz/simple-billiards-engine | MIT | Vanilla JS pool physics (no deps), mobile-friendly | **HIGH** — zero-dep physics for pool minigame |
+| rhythm-game | https://github.com/ChloeLiang/rhythm-game | MIT | Web-based rhythm game (HTML/CSS/JS) | Karaoke minigame base |
+| DeskArcade | https://github.com/bokhodirurinboev/deskarcade | MIT | Darts (501/double-out), bowling, paper toss (C#) | Design reference — minigame rules |
+| FighterCommander | https://github.com/HeartlessSeph/FighterCommander | **UNVERIFIED** | Yakuza heat-action file format docs/extractor | Research only — documents heat action conditions |
+
+### Faction / Reputation / Turf
+
+| System | Source | License | What it does | AshLane fit |
+|--------|--------|---------|--------------|-------------|
+| rpg-game-rest (faction module) | https://github.com/ai-village-agents/rpg-game-rest | MIT | JS faction reputation: 8 levels (hated→exalted), rival/ally cascading, rewards, shop discounts | **HIGH** — JS-native, maps to Ashes/Combine/Hollows/Unaffiliated |
+| gangland_warfare (turf spec) | https://github.com/luckyluckiest/gangland_warfare | MIT | GTA-style gang territory control spec | Design reference — turf capture rules |
+| circleback | https://github.com/aleksicmarija/circleback | MIT | Real-time turf war (Three.js + TypeScript) | Design reference — territory mechanics |
+
+### Dialogue Systems (beyond Yarn Spinner)
+
+| System | Source | License | What it does | AshLane fit |
+|--------|--------|---------|--------------|-------------|
+| DialogueGraph | https://github.com/TeodorVecerdi/DialogueGraph | MIT | Node-based branching conversation trees (C#) | Design reference — graph patterns |
+| Parley | https://github.com/bisterix-studio/parley | MIT | Graph-based dialogue plugin (GDScript) | Design reference — writer-friendly patterns |
+| dialogue-engine | https://github.com/Rubonnek/dialogue-engine | MIT | Minimalist dialogue engine (GDScript) | Design reference — minimal patterns |
+
+### Gaps (no clean open-source find yet)
+
+- **Partner AI** (Urban Reign-style follow/assist/double-team) — no clean JS/MIT find; build from groupai.ts patterns
+- **Regional damage** (head/upper/lower) — no standalone system found; implement in sim.ts
+- **Weapon durability** (melee breakables) — no brawler-specific find; implement from Def Jam research
+- **Momentum meter** (Def Jam-style) — no standalone find; implement from MISSION_FLOW_DEEP.md spec
+- **Crowd reaction** — no standalone find; extend combat-sfx.ts crowd system
+- **Random encounter spawner** — D&D generators found, none brawler-specific; build from city-seed.js
+
+## License Hygiene (Wave 5)
+
+- All licenses verified 2026-10-05 via GitHub API at search time.
+- GPL-3.0 excluded: henryzt/Rhythm-Plus-Music-Game (copyleft, incompatible with commercial).
+- UNVERIFIED excluded from code pull: haveaguess/fighting-simulator (no license), monster0506/pool (null), HeartlessSeph/FighterCommander (null), gsaurus/evolution-engine (null).
+- "Verify" repos NOT pulled — only MIT/Apache-2.0/BSD/CC0 sources used.
