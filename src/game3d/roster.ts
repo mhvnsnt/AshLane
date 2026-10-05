@@ -200,6 +200,13 @@ export const ROSTER: LaneFighter[] = [
     bio: "Jager. Body from the Brutal Fist set.",
     attires: [a("base", "Base", "JAGER.glb")],
   },
+  {
+    id: "sombra_negra",
+    name: "Sombra Negra",
+    martial: "lucha",
+    bio: "The Finisher Thief. Steals your finisher mid-match and beats you with it — your best self, turned.",
+    attires: [a("main", "Main Attire", "https://raw.githubusercontent.com/mhvnsnt/Bannon/main/assets/models/SOMBRA_NEGRA.glb")],
+  },
 ];
 
 export function fighterById(id: string) {
