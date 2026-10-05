@@ -285,3 +285,20 @@ Rhea Ripley model is a WWE game rip (like all `wwe2k22_*` meshes). Reskin does N
 3. Kiko's face paint — subtle tactical or skip entirely?
 4. Should Titus have a specific riot gear color? (Currently black)
 5. Finn Mac's gun — does a priest carry? (Owner: gun belt over clerical shirt — keeping the contradiction)
+
+## Attire Variations (Owner 2026-10-05)
+
+### Kiko Tanaka — 5 attires
+1. **Street** (no face paint) — detective trench coat, normal
+2. **Face paint** — Great Muta style paint, theatrical
+3. **Kiko the Ghost Tanaka** — full face paint + Great Muta mask
+4. **Police** (no face paint) — tactical police gear
+5. **Police Ghost** — face paint + Great Muta mask + police tactical
+
+### Big Dawg Titus — 5 attires
+1. **Riot Blue** — blue short-sleeve shirt, dark blue riot vest
+2. **Riot Black** — black version of above
+3. **Shirt Only** — blue shirt, no vest, slacks
+4. **Shirtless** — bare chest, dark blue slacks
+5. **Suit** — full suit (like reference photo)
+
