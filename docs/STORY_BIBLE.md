@@ -1,4 +1,4 @@
-# DIRECTION (Owner, 2026-10-05)\n\nAshLane is STREET-FIRST, not wrestling-first.\n\n- Some factions may be wrestling-related. Some wrestler characters exist.\n- But the core is: street characters, urban culture, MMA, combat sports, different fighting styles.\n- Think: Def Jam + Urban Reign meets music culture.\n- Fighting styles: street brawling, MMA, kickboxing, boxing, wrestling (as ONE style among many), martial arts.\n- The culture is hip-hop/street, not sports entertainment.\n- Wrestlers who appear are FISH OUT OF WATER or crossover characters, not the norm.\n\n---\n\n# CLARIFICATION (Owner, 2026-10-05)\n\n"God Within" is BACKGROUND CANON from Bannon, not a game mode in AshLane. It informs the narrative indirectly but is NEVER referenced by name in-game. No character says it. No menu mentions it. It's the deep lore that shapes the world, not a feature.\n\n---\n\n# ASHLANE — Story Bible (v1.0, 2026-10-05)
+# DIRECTION (Owner, 2026-10-05)\n\nAshLane is STREET-FIRST, not wrestling-first.\n\n- Some factions may be wrestling-related. Some wrestler characters exist.\n- But the core is: street characters, urban culture, MMA, combat sports, different fighting styles.\n- Think: Def Jam + Urban Reign meets music culture.\n- Fighting styles: street brawling, MMA, kickboxing, boxing, wrestling (as ONE style among many), martial arts.\n- The culture is hip-hop/street, not sports entertainment.\n- Wrestlers who appear are FISH OUT OF WATER or crossover characters, not the norm.\n\n---\n\n# CLARIFICATION (Owner, 2026-10-05)\n\n"the Ember (background lore, never named in-game)" is BACKGROUND CANON from Bannon, not a game mode in AshLane. It informs the narrative indirectly but is NEVER referenced by name in-game. No character says it. No menu mentions it. It's the deep lore that shapes the world, not a feature.\n\n---\n\n# ASHLANE — Story Bible (v1.0, 2026-10-05)
 
 > The Ash Laneverse (Earth-AL): an alternate universe of the Bannon "Off The Top Rope"
 > canon. Same multiverse, different world, different rules. DC/Marvel-style:
@@ -22,14 +22,14 @@ The numerology engine still runs underneath everything. Most people still carry
 a Life Path number like a weight. But Ash Lane district is where the engine
 **glitches** — and the glitches are getting worse.
 
-This game is all God Within mode. The supernatural layer isn't a sidequest;
+This game is all the Ember (background lore, never named in-game) mode. The supernatural layer isn't a sidequest;
 it's the air.
 
 ---
 
 ## 2. The Ember (the "Within" layer)
 
-Tekken's Devil Within gave Jin a devil inside. Bannon's God Within gave
+Tekken's Devil Within gave Jin a devil inside. Bannon's the Ember (background lore, never named in-game) gave
 Marquis/Maime a feral third state and Onyx a stable of people the numerology
 engine cannot read.
 
@@ -43,9 +43,9 @@ inside certain fighters. Rules:
   friendly-fire risk in partner missions.
 - The Ember **wants to be fed**. Every use makes the next awakening easier
   and harder to put out. This is the game's central moral meter (parallel to
-  God Within's Corruption vs. Purity threshold).
+  the Ember (background lore, never named in-game)'s Corruption vs. Purity threshold).
 - Some people are **born unlit** — the engine can't see them at all (Onyx's
-  whole deal in God Within canon). They are immune to the Ember but can
+  whole deal in the Ember (background lore, never named in-game) canon). They are immune to the Ember but can
   *smell* it on others. These are the only people who can talk a burning
   fighter down.
 
@@ -95,10 +95,10 @@ orders and believes he's *saving* the city). Theme: **order is just violence
 with paperwork**.
 
 ### THE HOLLOWS — the burned
-*Parallel: Agents of Chaos & the God Within stable.*
+*Parallel: Agents of Chaos & the the Ember (background lore, never named in-game) stable.*
 Fighters whose Embers went too far and hollowed them out. They gather in the
 Park at night, drawn to anyone newly lit. Not evil — **starving**. Their leader
-is called **Hollow** (a nod, not a copy: where God Within's HOLLOW is silent,
+is called **Hollow** (a nod, not a copy: where the Ember (background lore, never named in-game)'s HOLLOW is silent,
 AshLane's Hollow *won't stop talking* — every word is someone else's memory).
 Theme: **what's left when the fire eats the person**.
 
@@ -117,7 +117,7 @@ the interesting part is what isn't for sale.**
 district years ago after a falling-out with their older sibling; comes home
 for the funeral and finds Halcyon demolition notices on every door.
 
-- **Life Path: uncomputable.** Like Onyx in God Within canon, the numerology
+- **Life Path: uncomputable.** Like Onyx in the Ember (background lore, never named in-game) canon, the numerology
   engine glitches on Ash — no number, no assigned destiny. In-universe, this
   is why the Ember hit them so hard and so fast: there was no number to
   *anchor* them when it woke up.
@@ -145,7 +145,7 @@ and that's the problem — everyone can see the fire coming.
 | **Sombra Negra** | Mercenary, Unaffiliated | The Calculated Mercenary. First met as a boss (hired by the Combine), later recruitable. Lucha style; La Trampa de Plata. Tests whether Ash will *buy* help. |
 | **Director Cole Vane** | Halcyon Group, Combine leader | The smiling final boss. Never throws a punch until Chapter 4 — and when he does, it's all technique, no heart. |
 | **Hollow** | Leader of the Hollows | Knows what the Ember wants because it already took everything from them. Offers Ash the truth at a price. |
-| **Onyx** | Wanderer (God Within canon import) | Game-only character crossing over. The only person alive who understands being uncomputable. Appears sparingly — a rooftop conversation in Ch. 2, a warning in Ch. 3. Never fights *for* you. |
+| **Onyx** | Wanderer (the Ember (background lore, never named in-game) canon import) | Game-only character crossing over. The only person alive who understands being uncomputable. Appears sparingly — a rooftop conversation in Ch. 2, a warning in Ch. 3. Never fights *for* you. |
 | **Rook** | Teen runner for the Ashes | Side-mission giver ("?" NPCs). Multi-part chain; the collectible-gated finale reveals what they saw the night Mara died. |
 
 ---
@@ -221,7 +221,7 @@ the cap lifts and the mission card says so up front.
 2. **The numerology engine is shared physics.** LP numbers work the same way;
    that's how Onyx can cross over. What's different is the *institutions*
    built on top of it (rings → blocks).
-3. **God Within characters are the bridge.** Onyx, and only Onyx, moves between
+3. **the Ember (background lore, never named in-game) characters are the bridge.** Onyx, and only Onyx, moves between
    Earth-prime and Earth-AL freely — she's uncomputable everywhere. Nobody
    else crosses without a story reason.
 4. **The Ember is Earth-AL's native supernatural.** It is not Maime, not the
@@ -248,8 +248,8 @@ the cap lifts and the mission card says so up front.
 ---
 
 *Canon consulted: `canon/00_cast_and_world.md` (41-character roster, four-faction
-structure, numerology engine, OTR personas), `canon/godwithin/GOD_WITHIN_mode.md`
+structure, numerology engine, OTR personas), `canon/godwithin/the Ember (background lore)_mode.md`
 (Onyx, the stable, uncomputable Life Paths, Corruption/Purity), Bannon
-`docs/GOD_WITHIN_mode.md` (roam-mode lineage: MDickie × Skyrim × Devil Within),
+`docs/the Ember (background lore)_mode.md` (roam-mode lineage: MDickie × Skyrim × Devil Within),
 `docs/design/THE-BASTARD-GOD-WITHIN-MODE-INTEGRATION.md` (mode-nesting design
 law). Nothing ported — everything paralleled.*
