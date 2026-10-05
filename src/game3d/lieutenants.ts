@@ -35,6 +35,17 @@ export type LieutenantDef = {
   bio: string;
   /** Level 1-5. Lieutenants are 3-5. */
   level: number;
+  /**
+   * Visual notes for model/art reference — never shown in-game UI.
+   * (e.g. "white guy, red hair, snake skin pants")
+   */
+  appearance?: string;
+  /**
+   * Hidden narrative faction — a PLOT TWIST. NEVER shown in roster, menus,
+   * character select, or HUD. For writers and story scripts only.
+   * (e.g. an undercover character whose true allegiance is a reveal)
+   */
+  secretFaction?: string;
 };
 
 export const LIEUTENANTS: LieutenantDef[] = [
@@ -43,13 +54,19 @@ export const LIEUTENANTS: LieutenantDef[] = [
     name: "Cain",
     canonName: 'Cain Elias ("The Executioner")',
     tier: "street",
-    tierReason: '"The Executioner" is a wrestling gimmick — on the street he\'s just Cain, and that\'s scarier.',
-    faction: "combine",
+    tierReason: 'Based on The Undertaker — but on the street he\'s a Yakuza-boss / pimp type, not a wrestler. Snake skin pants, street gear.',
+    faction: "unaffiliated",
+    /**
+     * PLOT TWIST — never shown in-game: undercover for the Dynasty Authority
+     * (police). Publicly Unaffiliated. Nobody in the narrative knows.
+     */
+    secretFaction: "authority",
+    appearance: "White guy, red hair. Snake skin pants as everyday attire. Street gear — Yakuza-boss / pimp energy. Cold eyes, never raises his voice.",
     style: "wrestling",
     archetype: "tank",
     quirk: "by-the-book",
     seed: 0xC41E1,
-    bio: "Halcyon's enforcer. Never raises his voice — doesn't need to. Cold, vindictive, surgical. Takes people apart like he's filing paperwork. The Combine's most reliable weapon because he genuinely enjoys the work.",
+    bio: "Runs the block like a Yakuza boss — snake skin pants, quiet money, colder temper. Never raises his voice; doesn't need to. Cold, vindictive, surgical. Takes people apart like he's filing paperwork. What nobody knows: he feeds the Dynasty Authority. And nobody will know — until it's too late.",
     level: 5,
   },
   {
@@ -181,6 +198,91 @@ export const LIEUTENANTS: LieutenantDef[] = [
     quirk: "big-brother",
     seed: 0x511C,
     bio: "The heart. High-flying street fighter with music in his movement. Fights for the block, for the kids, for the memory. (Canon: real person — this is the regular Stick Up, NOT the cyborg variant.)",
+    level: 5,
+  },
+  // --- THE DYNASTY AUTHORITY (police faction — tier "keep": they're cops in canon too) ---
+  {
+    name: 'Captain Silas "The System"',
+    canonName: 'Captain Silas ("The System")',
+    tier: "keep",
+    tierReason: "Already law enforcement in canon — Commissioner of the Dynasty Authority. Cold bureaucrat translates directly.",
+    faction: "authority",
+    style: "martial-arts",
+    archetype: "balanced",
+    quirk: "by-the-book",
+    seed: 0x511A5,
+    appearance: "Older Black man, close-cropped gray hair. Blue commissioner's uniform, tablet in hand. Reviews your 'data' before the raid. Never raises his voice.",
+    bio: "The Commissioner. Runs the precinct like a data center — crime stats on wall screens, patrol routes optimized by algorithm. Treats citizens as variables. Issued a Class-A warrant once and never rescinded it. Cold, detached, patient. Reads your patterns, then punishes them.",
+    level: 5,
+  },
+  {
+    name: '"Big Dawg" Titus',
+    canonName: '"Big Dawg" Titus',
+    tier: "keep",
+    tierReason: "Already SWAT muscle in canon. Breacher energy translates directly.",
+    faction: "authority",
+    style: "street",
+    archetype: "bruiser",
+    quirk: "brawler",
+    seed: 0x71905,
+    appearance: "Huge. SWAT blacks, helmet under one arm. First through the door, last one standing.",
+    bio: "SWAT breacher. First through the door, last one standing. Big, loud, loves the gear — the battering ram of the Dynasty. Been thrown off a roof twice. Got back up twice.",
+    level: 4,
+  },
+  {
+    name: "The Great White North",
+    canonName: "The Great White North",
+    tier: "keep",
+    tierReason: '"Jailer" gimmick is already law-enforcement. Chains and manacles translate directly.',
+    faction: "authority",
+    style: "wrestling",
+    archetype: "tank",
+    quirk: "loyal",
+    seed: 0x60717,
+    appearance: "Big Canadian. Blue uniform, chain wrapped around one fist, zip-ties on the belt. Quiet.",
+    bio: 'The Jailer. Transport officer — decides who gets "processed" and who gets "handled on-site." Carries a chain wrapped around his fist. The chains aren\'t for show. Quiet. Loyal to Silas to the bone.',
+    level: 4,
+  },
+  {
+    name: 'Finn "The Priest" Mac',
+    canonName: 'Finn "The Priest" Mac',
+    tier: "keep",
+    tierReason: '"Chaplain" gimmick is already law-enforcement-adjacent. Nightstick-as-cross translates directly.',
+    faction: "authority",
+    style: "boxing",
+    archetype: "striker",
+    quirk: "confess",
+    seed: 0xF1A17,
+    appearance: "Irish. Blue uniform, nightstick held like a crucifix. Preaches mid-fight.",
+    bio: 'The Chaplain. Swings the nightstick like a crucifix and demands confessions mid-fight: "Confess! Resistance is a sin against the Script!" Genuinely believes the badge is divine mandate. Silas sacrificed him once under Protocol Zero. He came back anyway.',
+    level: 4,
+  },
+  {
+    name: "Kiko Tanaka",
+    canonName: 'Kiko "The Ghost" Tanaka',
+    tier: "keep",
+    tierReason: '"Detective" role is already law enforcement. Stealth specialist translates directly.',
+    faction: "authority",
+    style: "martial-arts",
+    archetype: "speedster",
+    quirk: "opportunist",
+    seed: 0x7A4A0,
+    appearance: "Japanese. Plainclothes, night-vision goggles pushed up on forehead. You never see him coming.",
+    bio: "The Detective. Plainclothes, night-vision goggles, always watching. The Shadow Slip is real — rapid dodges that make him seem invisible. Works alone. Files reports nobody reads. By the time you see him, the Phantom Lock is already on.",
+    level: 4,
+  },
+  {
+    name: 'Astrid "The Ice Maiden"',
+    canonName: 'Astrid "The Ice Maiden"',
+    tier: "keep",
+    tierReason: '"Warden" role is already law enforcement. Cold precision translates directly.',
+    faction: "authority",
+    style: "muay-thai",
+    archetype: "striker",
+    quirk: "counter",
+    seed: 0xA5711,
+    appearance: "Swedish. Blue uniform, hair pulled back severe. Clinical stillness. Targets joints.",
+    bio: 'The Warden. Runs the holding cells. Cold, clinical — targets joints because "a broken wrist can\'t hold a weapon." Never raises her voice. The most feared officer on the force, including by other officers.',
     level: 5,
   },
 ];

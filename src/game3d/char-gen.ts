@@ -80,7 +80,7 @@ function pick<T>(rng: () => number, arr: readonly T[]): T {
 // Types
 // ---------------------------------------------------------------------------
 
-export type FactionId = "ashes" | "combine" | "hollows" | "unaffiliated" | "painted";
+export type FactionId = "ashes" | "combine" | "hollows" | "unaffiliated" | "painted" | "authority";
 
 export type FightStyle =
   | "street"      // brawling, haymakers, dirty boxing
@@ -246,6 +246,22 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     beardChance: 0.25,
     names: ["Riddle", "Jester", "Mirth", "Patches", "Smiles", "Mimo", "Payaso", "Broma", "Calavera", "Loco", "Truco", "Risa", "Giggles", "Harley", "Frowns", "Bozo"],
   },
+  authority: {
+    id: "authority",
+    label: "The Dynasty Authority",
+    motto: "Peace is mandatory.",
+    shirts: [0x1a2f5a, 0x243b6b, 0x2e4a7a, 0x1a1a1a, 0x222222, 0x3a3a3a], // blues + SWAT black
+    pants: [0x1a2f5a, 0x1f1f1f, 0x2e2e2e],
+    accent: 0xb8c4d4, // badge steel
+    skinDist: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]],
+    bodyDist: [["male", 70], ["female", 30]],
+    height: [0.96, 1.08],
+    bulk: [0.95, 1.18],
+    styles: [["wrestling", 25], ["boxing", 20], ["street", 15], ["martial-arts", 15], ["mma", 10], ["kickboxing", 10], ["muay-thai", 5]],
+    hairBias: "short", // regulation cuts
+    beardChance: 0.2,
+    names: ["Miranda", "Sarge", "Booker", "Nightstick", "Warrant", "Gavel", "Badge", "Rook", "Cuffs", "Deputy", "Squad", "Beat", "Blue", "Paddy", "Rollins", "Sirens"],
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -359,7 +375,9 @@ export type QuirkId =
   // Unaffiliated
   | "mercenary" | "collector" | "drifter"
   // Painted (dark clown gang)
-  | "painted-face" | "carnival" | "recruiter";
+  | "painted-face" | "carnival" | "recruiter"
+  // Authority (Dynasty Authority — corrupt police)
+  | "badge-heavy" | "riot-line" | "nightstick" | "protocol-zero" | "confess";
 
 export type QuirkDef = { id: QuirkId; label: string; hint: string };
 
@@ -386,9 +404,13 @@ export const QUIRKS: Record<QuirkId, QuirkDef> = {
   "mercenary":      { id: "mercenary",      label: "Mercenary",      hint: "\"Nothing personal.\" Efficient, cold." },
   "collector":      { id: "collector",      label: "Collector",      hint: "Wants YOUR moves. Studies you mid-fight." },
   "drifter":        { id: "drifter",        label: "Drifter",        hint: "Might walk away mid-fight if bored." },
-  "painted-face":   { id: "painted-face",   label: "Painted Face",   hint: "Wears the paint. Never takes it off. Nobody's seen under." },
-  "carnival":       { id: "carnival",       label: "Carnival",       hint: "Treats the fight like a show. You're the audience." },
+  "painted-face":   { id: "painted-face",   label: "Painted Face",   hint: "Wears the paint. Never takes it off. Nobody's seen under." },  "carnival":       { id: "carnival",       label: "Carnival",       hint: "Treats the fight like a show. You're the audience." },
   "recruiter":      { id: "recruiter",      label: "Recruiter",      hint: "Trying to recruit you. The paint is the invitation." },
+  "badge-heavy":    { id: "badge-heavy",    label: "Badge Heavy",    hint: "Badge first, questions never. Escalates fast." },
+  "riot-line":      { id: "riot-line",      label: "Riot Line",      hint: "Holds formation. Shields up, advances slow." },
+  "nightstick":     { id: "nightstick",     label: "Nightstick",     hint: "Leads with the baton. Loves the sound it makes." },
+  "protocol-zero":  { id: "protocol-zero",  label: "Protocol Zero",  hint: "Will sacrifice anyone to complete the objective. Even their own." },
+  "confess":        { id: "confess",        label: "Confess",        hint: "Demands confessions mid-fight. Religious fury." },
 };
 
 /** Quirk pools per faction: [quirkId, weight]. */
@@ -412,6 +434,11 @@ const FACTION_QUIRKS: Record<FactionId, [QuirkId, number][]> = {
   painted: [
     ["painted-face", 25], ["carnival", 20], ["wild", 15],
     ["showoff", 15], ["recruiter", 10], ["fights-dirty", 10], ["counter", 5],
+  ],
+  authority: [
+    ["by-the-book", 25], ["badge-heavy", 20], ["loyal", 15],
+    ["riot-line", 12], ["nightstick", 10], ["protocol-zero", 8],
+    ["confess", 5], ["true-believer", 5],
   ],
 };
 
@@ -524,6 +551,24 @@ const BIO_TEMPLATES: Record<FactionId, BioTemplate> = {
       "The carnival grounds are home. You're trespassing.",
     ],
   },
+  authority: {
+    origin: [
+      "Failed out of the academy twice. Third time they stopped asking questions.",
+      "Ex-military. The badge pays better and the rules are looser.",
+      "Grew up wanting to be a hero. The Dynasty taught them otherwise.",
+      "Third-generation cop. Grandfather walked a beat. They kick down doors.",
+      "Was a fighter first. The badge was just a better corner to fight from.",
+      "Joined for the pension. Stayed for the power.",
+    ],
+    motive: [
+      "Peace is mandatory. They'll beat it into you if they have to.",
+      "The badge means never having to say you're sorry.",
+      "Writes you up before the fight even starts. Paperwork's already done.",
+      "Believes the Peace Act like scripture. You're a verse that needs correcting.",
+      "Protocol Zero means nobody's safe — not even their own partner.",
+      "The street doesn't respect the badge. That's why the baton exists.",
+    ],
+  },
 };
 
 /** Generate a 2-3 sentence bio for a grunt. Deterministic from rng. */
@@ -633,7 +678,7 @@ export function generateSquad(faction: FactionId, count: number, seed?: number):
 export function generateCrowd(count: number, seed?: number): GruntRecipe[] {
   const base = seed ?? Math.floor(Math.random() * 0xffffffff);
   const rng = mulberry32(base ^ 0x9e3779b9);
-  const factions: FactionId[] = ["ashes", "combine", "hollows", "unaffiliated", "painted"];
+  const factions: FactionId[] = ["ashes", "combine", "hollows", "unaffiliated", "painted", "authority"];
   const out: GruntRecipe[] = [];
   for (let i = 0; i < count; i++) {
     out.push(generateGrunt(pick(rng, factions), base + i * 104729));
@@ -726,6 +771,7 @@ export function gruntDisplayName(recipe: GruntRecipe): string {
     hollows: "Hollows",
     unaffiliated: "Unaffiliated",
     painted: "Painted",
+    authority: "Authority",
   };
   return `${recipe.name} (${short[recipe.faction]})`;
 }

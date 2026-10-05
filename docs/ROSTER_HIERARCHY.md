@@ -52,9 +52,22 @@ They lead squads, give missions, and show up as mini-bosses.
 > **Rule:** Only rename EXISTING canon characters. If canon doesn't name someone,
 > the slot stays OPEN for the owner. No invented book characters.
 
+### Narrative secrets (PLOT TWISTS — never shown in-game)
+
+Some characters have hidden allegiances that are story reveals, not public
+knowledge. The roster, menus, HUD, and character select must NEVER spoil these.
+They exist for writers and story scripts only.
+
+- **Cain is undercover for the Dynasty Authority (police).** Publicly he shows
+  as Unaffiliated — a Yakuza-boss / pimp street operator. Nobody in the
+  narrative knows he's feeding the police. This is a late-story reveal, not a
+  character-select label. (`secretFaction: "authority"` in `lieutenants.ts`)
+
+---
+
 | Street Name | Canon Name | Why Street? | Faction | Personality | Fighting Style |
 |---|---|---|---|---|---|
-| **Cain** | Cain Elias ("The Executioner") | Gimmick too wrestling — becomes a cold street enforcer | Combine | Cold. Vindictive. Never raises his voice — that's what makes him scary. Enforces Halcyon's will with surgical precision. | Wrestling (technical power) |
+| **Cain** | Cain Elias ("The Executioner") — based on The Undertaker | White guy, red hair. Yakuza-boss / pimp street persona — snake skin pants as everyday attire, street gear. NOT a wrestler here. | Unaffiliated (public) | Cold. Vindictive. Never raises his voice — that's what makes him scary. Surgical precision. | Wrestling (technical power) |
 | **Cass** | Cassian Thorne ("The Golden Ratio") | "Ultimate Lure" gimmick too wrestling — becomes a smooth operator | Combine | Beautiful, untouchable, offers you everything if you just walk away from your people. The temptation. Never gets his hands dirty if he can help it. | Martial Arts (evasive, precise) |
 | **Zero** | Mr. Zero Point ("The Nihilist") | Nihilist gimmick too abstract — becomes a chaos agent | Hollows | Pure chaos. Doesn't fight to win — fights to hurt. Unpredictable, laughs at the wrong moments. The thing the other Hollows are afraid of. | Street (wild, unorthodox) |
 | **Griff** | Grixf ("The Grief Architect") | "Grief Architect" too wrestling — becomes a quiet fixer | Unaffiliated | Quiet. Analytical. Watches fights like he's reading a book he's already finished. Knows things. Sells information, not loyalty. | Martial Arts (counter-striker) |
