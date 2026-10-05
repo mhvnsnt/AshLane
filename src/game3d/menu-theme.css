@@ -1,0 +1,514 @@
+/* ============================================================
+   ASHLANE MENU THEME — "CONCRETE JUNGLE"
+   Gritty urban street brawler aesthetic.
+   Pure CSS/SVG — no image assets required.
+   Grounded in: Urban Reign (gritty comic-book city, gang tags),
+   Def Jam FFNY (hip-hop bold, gold, graffiti walls, portraits),
+   Yakuza (neon signage, high contrast).
+   Tokens (--color-blood etc.) live in src/styles.css @theme.
+   ============================================================ */
+
+/* ---------- TEXTURES (pure CSS) ---------- */
+
+/* Chain-link fence overlay */
+.al-chainlink {
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 8px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.04) 0 2px, transparent 2px 8px);
+}
+
+/* Concrete noise via SVG turbulence */
+.al-concrete {
+  background-color: var(--color-asphalt);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Hazard / caution stripes */
+.al-hazard {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-ember) 0 12px,
+    var(--color-ink) 12px 24px
+  );
+}
+.al-hazard-thin {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-brass) 0 6px,
+    var(--color-ink) 6px 12px
+  );
+}
+
+/* Spray-paint splatter accent (corner blob) */
+.al-spray {
+  position: relative;
+}
+.al-spray::before {
+  content: "";
+  position: absolute;
+  top: -18px;
+  right: -10px;
+  width: 90px;
+  height: 60px;
+  pointer-events: none;
+  opacity: 0.5;
+  background:
+    radial-gradient(ellipse 22px 14px at 30% 40%, var(--color-ember) 60%, transparent 61%),
+    radial-gradient(ellipse 10px 8px at 65% 25%, var(--color-ember) 60%, transparent 61%),
+    radial-gradient(ellipse 14px 10px at 55% 65%, var(--color-ember) 60%, transparent 61%),
+    radial-gradient(ellipse 6px 5px at 80% 55%, var(--color-ember) 60%, transparent 61%);
+}
+
+/* Torn-paper / ripped edge divider */
+.al-rip {
+  height: 14px;
+  background: var(--color-ember);
+  clip-path: polygon(0 60%, 3% 20%, 7% 70%, 11% 30%, 15% 80%, 19% 25%, 24% 65%, 28% 35%, 33% 75%, 38% 20%, 43% 60%, 48% 30%, 52% 70%, 57% 25%, 62% 65%, 67% 35%, 72% 75%, 77% 20%, 82% 60%, 87% 30%, 92% 70%, 96% 25%, 100% 60%, 100% 100%, 0 100%);
+  opacity: 0.85;
+}
+
+/* ---------- TYPOGRAPHY ---------- */
+
+.al-title {
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 0.9;
+  color: var(--color-cream);
+  /* spray-paint drop shadow + outline */
+  text-shadow:
+    3px 3px 0 var(--color-ember),
+    6px 6px 0 rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(228, 87, 46, 0.35);
+}
+
+.al-title-xl {
+  font-size: clamp(3rem, 14vw, 5.5rem);
+}
+
+.al-kicker {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--color-ember);
+}
+
+/* Stencil stamp label */
+.al-stamp {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-brass);
+  border: 2px solid var(--color-brass);
+  padding: 0.25rem 0.6rem;
+  transform: rotate(-2deg);
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* ---------- BUTTONS ---------- */
+
+.al-btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 1.05rem;
+  color: var(--color-cream);
+  background: linear-gradient(180deg, #241d17 0%, #171310 100%);
+  border: 1px solid var(--color-line);
+  border-left: 5px solid var(--color-ember);
+  padding: 0.85rem 1rem 0.85rem 1.1rem;
+  transform: skewX(-4deg);
+  transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+  overflow: hidden;
+}
+.al-btn > span {
+  display: block;
+  transform: skewX(4deg);
+}
+.al-btn::after {
+  /* sheen sweep on hover */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(240, 180, 41, 0.16) 50%, transparent 60%);
+  transform: translateX(-120%);
+  transition: transform 0.35s ease;
+  pointer-events: none;
+}
+.al-btn:hover::after,
+.al-btn:focus-visible::after {
+  transform: translateX(120%);
+}
+.al-btn:hover,
+.al-btn:focus-visible {
+  transform: skewX(-4deg) translateX(6px);
+  border-left-color: var(--color-brass);
+  background: linear-gradient(180deg, #2e2318 0%, #1c1510 100%);
+}
+.al-btn:active {
+  transform: skewX(-4deg) translateX(2px) scale(0.99);
+}
+
+.al-btn-primary {
+  background: linear-gradient(180deg, #f2663a 0%, var(--color-ember) 55%, #b23c1a 100%);
+  border: 1px solid #7a2a12;
+  border-left: 5px solid var(--color-brass);
+  color: #140d08;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.al-btn-primary:hover,
+.al-btn-primary:focus-visible {
+  background: linear-gradient(180deg, #ff7a4d 0%, #f2663a 55%, #c7441f 100%);
+  border-left-color: var(--color-neon);
+}
+
+.al-btn-ghost {
+  background: transparent;
+  border: 1px dashed var(--color-concrete);
+  border-left: 5px solid var(--color-concrete);
+  color: var(--color-cream-dim);
+  font-size: 0.9rem;
+}
+.al-btn-ghost:hover,
+.al-btn-ghost:focus-visible {
+  border-left-color: var(--color-cream-dim);
+  color: var(--color-cream);
+}
+
+.al-btn:disabled {
+  opacity: 0.35;
+  filter: grayscale(0.7);
+  cursor: not-allowed;
+  transform: skewX(-4deg);
+}
+.al-btn:disabled:hover {
+  transform: skewX(-4deg);
+}
+
+/* Small square chip buttons (grids) */
+.al-chip {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-cream);
+  background: #1d1813;
+  border: 1px solid var(--color-line);
+  border-bottom: 3px solid var(--color-ember);
+  padding: 0.7rem 0.5rem;
+  transition: border-color 0.12s ease, transform 0.12s ease, background 0.12s ease;
+}
+.al-chip:hover,
+.al-chip:focus-visible {
+  border-bottom-color: var(--color-brass);
+  background: #261d14;
+  transform: translateY(-2px);
+}
+.al-chip:active {
+  transform: translateY(0);
+}
+.al-chip[data-on="1"] {
+  border-bottom-color: var(--color-neon);
+  color: var(--color-neon);
+  background: #2a2113;
+}
+
+/* ---------- CARDS ---------- */
+
+.al-card {
+  position: relative;
+  background: linear-gradient(180deg, #211a14 0%, #161210 100%);
+  border: 1px solid var(--color-line);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.12s ease, transform 0.12s ease;
+}
+/* rivets */
+.al-card::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle 3px at 0 0, var(--color-concrete) 60%, transparent 61%),
+    radial-gradient(circle 3px at 100% 0, var(--color-concrete) 60%, transparent 61%),
+    radial-gradient(circle 3px at 0 100%, var(--color-concrete) 60%, transparent 61%),
+    radial-gradient(circle 3px at 100% 100%, var(--color-concrete) 60%, transparent 61%);
+  opacity: 0.7;
+}
+.al-card:hover,
+.al-card:focus-visible {
+  border-color: var(--color-ember);
+  transform: translateX(4px);
+}
+.al-card[data-on="1"] {
+  border-color: var(--color-brass);
+  box-shadow: inset 0 0 0 1px var(--color-brass), 0 0 18px rgba(240, 180, 41, 0.18);
+}
+.al-card:disabled {
+  opacity: 0.4;
+}
+
+.al-card-title {
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-brass);
+  font-size: 0.95rem;
+}
+.al-card[data-on="1"] .al-card-title {
+  color: var(--color-neon);
+}
+.al-card-sub {
+  margin-top: 0.3rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--color-cream-dim);
+}
+
+/* ---------- CHARACTER PORTRAITS ---------- */
+
+.al-fighter {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+.al-portrait {
+  flex: none;
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-headline);
+  font-size: 1.5rem;
+  color: var(--color-ink);
+  background: linear-gradient(135deg, var(--color-brass), var(--color-ember));
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 78% 100%, 0 100%);
+  border: none;
+  position: relative;
+}
+.al-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: rgba(0, 0, 0, 0.28);
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 78% 100%, 0 100%);
+}
+.al-portrait > b {
+  position: relative;
+  z-index: 1;
+}
+.al-fighter[data-on="1"] .al-portrait {
+  background: linear-gradient(135deg, var(--color-neon), var(--color-brass));
+  box-shadow: 0 0 16px rgba(255, 221, 51, 0.5);
+}
+
+/* ---------- MISSION LIST ---------- */
+
+.al-mission {
+  position: relative;
+  padding-left: 2.6rem;
+}
+.al-mission-num {
+  position: absolute;
+  left: 0.7rem;
+  top: 0.85rem;
+  font-family: var(--font-headline);
+  font-size: 1.3rem;
+  color: var(--color-ember);
+  opacity: 0.9;
+}
+.al-mission[data-done="1"] .al-mission-num {
+  color: var(--color-brass);
+}
+.al-mission[data-locked="1"] .al-mission-num {
+  color: var(--color-concrete);
+}
+.al-mission[data-done="1"]::after {
+  content: "CLEARED";
+  position: absolute;
+  right: 0.7rem;
+  top: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--color-brass);
+  border: 1px solid var(--color-brass);
+  padding: 0.15rem 0.4rem;
+  transform: rotate(3deg);
+  opacity: 0.85;
+}
+
+/* ---------- SECTION HEADERS ---------- */
+
+.al-section {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 1.1rem 0 0.55rem;
+}
+.al-section::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-ember), transparent);
+}
+.al-section-title {
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.95rem;
+  color: var(--color-cream);
+}
+
+/* ---------- MENU SHEET ---------- */
+
+.al-sheet {
+  background:
+    linear-gradient(180deg, rgba(18, 14, 11, 0.94) 0%, rgba(18, 14, 11, 0.97) 100%);
+}
+.al-sheet-inner {
+  position: relative;
+}
+/* faint oversized watermark tag behind content */
+.al-sheet-inner::before {
+  content: "ASHLANE";
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%) rotate(-8deg);
+  font-family: var(--font-headline);
+  font-size: 4.2rem;
+  letter-spacing: 0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(228, 87, 46, 0.16);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ---------- ANIMATIONS ---------- */
+
+@keyframes al-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.55; }
+  94% { opacity: 1; }
+  96% { opacity: 0.7; }
+  97% { opacity: 1; }
+}
+.al-flicker {
+  animation: al-flicker 4.2s infinite;
+}
+
+@keyframes al-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.al-rise {
+  animation: al-rise 0.28s ease both;
+}
+.al-rise-1 { animation-delay: 0.03s; }
+.al-rise-2 { animation-delay: 0.06s; }
+.al-rise-3 { animation-delay: 0.09s; }
+.al-rise-4 { animation-delay: 0.12s; }
+.al-rise-5 { animation-delay: 0.15s; }
+
+@keyframes al-pulse-ember {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(228, 87, 46, 0.55); }
+  50% { box-shadow: 0 0 22px 4px rgba(228, 87, 46, 0.28); }
+}
+.al-pulse {
+  animation: al-pulse-ember 1.8s ease-in-out infinite;
+}
+
+/* ---------- FORM CONTROLS ---------- */
+
+.al-slider-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-cream-dim);
+}
+.al-sheet input[type="range"] {
+  accent-color: var(--color-ember);
+  width: 100%;
+  margin-top: 0.35rem;
+}
+.al-select {
+  width: 100%;
+  margin-top: 0.35rem;
+  background: #1d1813;
+  border: 1px solid var(--color-line);
+  border-left: 4px solid var(--color-ember);
+  color: var(--color-cream);
+  padding: 0.7rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* ---------- PAUSE / BANNER ---------- */
+
+.al-banner {
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-brass);
+  text-shadow: 2px 2px 0 #000, 0 0 18px rgba(240, 180, 41, 0.4);
+}
+
+.al-hud-chip {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: var(--color-cream-dim);
+  border: 1px solid var(--color-line);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 0.3rem 0.55rem;
+}
+
+/* Health bar with segmented street look */
+.al-hpbar {
+  height: 10px;
+  background: #0d0b09;
+  border: 1px solid var(--color-line);
+  position: relative;
+  overflow: hidden;
+}
+.al-hpbar > i {
+  display: block;
+  height: 100%;
+  background: repeating-linear-gradient(
+    -55deg,
+    var(--color-ember) 0 8px,
+    #c7441f 8px 16px
+  );
+  transition: width 0.18s ease;
+}
+.al-hpbar.brass > i {
+  background: repeating-linear-gradient(
+    -55deg,
+    var(--color-brass) 0 8px,
+    #cf9620 8px 16px
+  );
+}
+
+/* Scrollbar that doesn't look default */
+.al-sheet::-webkit-scrollbar {
+  width: 10px;
+}
+.al-sheet::-webkit-scrollbar-track {
+  background: #14100d;
+}
+.al-sheet::-webkit-scrollbar-thumb {
+  background: var(--color-ember);
+  border: 2px solid #14100d;
+}
