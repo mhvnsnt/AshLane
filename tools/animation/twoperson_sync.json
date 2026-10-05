@@ -1,0 +1,51 @@
+{
+  "moves": {
+    "suplex": {
+      "contact": 1.0,
+      "lift": 2.0,
+      "impact": 3.5,
+      "release": 5.0,
+      "dur": 6.0
+    },
+    "chokeslam": {
+      "contact": 0.8,
+      "lift": 1.8,
+      "impact": 3.0,
+      "release": 4.5,
+      "dur": 5.67
+    },
+    "ddt": {
+      "contact": 1.0,
+      "impact": 2.8,
+      "release": 4.0,
+      "dur": 5.73
+    },
+    "german": {
+      "contact": 1.5,
+      "lift": 3.0,
+      "impact": 5.0,
+      "release": 6.5,
+      "dur": 7.83
+    },
+    "takedown": {
+      "contact": 1.2,
+      "impact": 3.0,
+      "release": 5.5,
+      "dur": 7.23
+    },
+    "backdrop": {
+      "contact": 1.0,
+      "lift": 2.5,
+      "impact": 4.0,
+      "release": 5.0,
+      "dur": 6.1
+    },
+    "brainbuster": {
+      "contact": 0.8,
+      "lift": 2.0,
+      "impact": 3.0,
+      "release": 3.5,
+      "dur": 4.0
+    }
+  }
+}
