@@ -3,13 +3,16 @@
  * Ported from paulcodes/deathblood-lazer (MIT)
  * Original: scripts/managers/enemy_group_manager.gd
  *
- * Limits simultaneous attackers so the player isn't swarmed.
+ * Configurable per-mission: 3 for fair fights, 8+ for swarm missions.
  * Enemies request permission before entering ATTACK state; if MAX_ATTACKERS
  * are already attacking, they circle/wait instead.
  */
 import type { Body } from "../sim";
 
-export const MAX_ATTACKERS = 3;
+export let MAX_ATTACKERS = 3;
+
+/** Set max attackers for this mission (e.g. 8 for swarm missions). */
+export function setMaxAttackers(n: number) { MAX_ATTACKERS = n; }
 
 export interface GroupAIState {
   activeAttackers: number[]; // body ids currently in attack
