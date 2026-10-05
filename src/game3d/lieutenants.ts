@@ -35,6 +35,17 @@ export type LieutenantDef = {
   bio: string;
   /** Level 1-5. Lieutenants are 3-5. */
   level: number;
+  /**
+   * Visual notes for model/art reference — never shown in-game UI.
+   * (e.g. "white guy, red hair, snake skin pants")
+   */
+  appearance?: string;
+  /**
+   * Hidden narrative faction — a PLOT TWIST. NEVER shown in roster, menus,
+   * character select, or HUD. For writers and story scripts only.
+   * (e.g. an undercover character whose true allegiance is a reveal)
+   */
+  secretFaction?: string;
 };
 
 export const LIEUTENANTS: LieutenantDef[] = [
@@ -43,13 +54,19 @@ export const LIEUTENANTS: LieutenantDef[] = [
     name: "Cain",
     canonName: 'Cain Elias ("The Executioner")',
     tier: "street",
-    tierReason: '"The Executioner" is a wrestling gimmick — on the street he\'s just Cain, and that\'s scarier.',
-    faction: "combine",
+    tierReason: 'Based on The Undertaker — but on the street he\'s a Yakuza-boss / pimp type, not a wrestler. Snake skin pants, street gear.',
+    faction: "unaffiliated",
+    /**
+     * PLOT TWIST — never shown in-game: undercover for the Dynasty Authority
+     * (police). Publicly Unaffiliated. Nobody in the narrative knows.
+     */
+    secretFaction: "authority",
+    appearance: "White guy, red hair. Snake skin pants as everyday attire. Street gear — Yakuza-boss / pimp energy. Cold eyes, never raises his voice.",
     style: "wrestling",
     archetype: "tank",
     quirk: "by-the-book",
     seed: 0xC41E1,
-    bio: "Halcyon's enforcer. Never raises his voice — doesn't need to. Cold, vindictive, surgical. Takes people apart like he's filing paperwork. The Combine's most reliable weapon because he genuinely enjoys the work.",
+    bio: "Runs the block like a Yakuza boss — snake skin pants, quiet money, colder temper. Never raises his voice; doesn't need to. Cold, vindictive, surgical. Takes people apart like he's filing paperwork. What nobody knows: he feeds the Dynasty Authority. And nobody will know — until it's too late.",
     level: 5,
   },
   {
