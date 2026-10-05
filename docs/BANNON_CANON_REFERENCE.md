@@ -38,7 +38,7 @@
 ## 2. Key characters & backstories (parallel-universe material)
 
 ### Marquis Deshaun Whitacre — "The Free Agent" / "Bannon" / "The Architect"
-The protagonist of the entire canon. Born November 12, 1996. A charismatic, technical,
+The protagonist of the entire canon. Born Novflame 12, 1996. A charismatic, technical,
 high-risk performer (LP 3 / Exp 5 — freedom and expression) whose public flash hides a
 secret need for loyalty (SU 2 — partnership).
 - Started as the idealistic face **Solaris Justice** ("Justice"). Betrayed by the
@@ -165,7 +165,7 @@ understands the coming threats better than anyone.
 |---|---|---|
 | **The Anti-Hero Alliance** / Forces of Freedom (Bannon, Atlas, Tyneshia, Cain, luchadores) | Loyalty costs; freedom against the structure | **The Ashes** |
 | **The Corporate Structure** — "Tyranny of LP 33/6" (Kennedy's AWE + Combs's JPCW, Silas, Titus, Chainmail, veterans) | Order is violence with paperwork; control the narrative, own the talent | **The Combine** (Halcyon) |
-| **Agents of Chaos & Temptation** (Thorne, Zero Point, NWC's Vandal, Stick-Up's cult) | Chaos as truth; temptation away from loyalty | **The Hollows** (burned-out Ember victims) |
+| **Agents of Chaos & Temptation** (Thorne, Zero Point, NWC's Vandal, Stick-Up's cult) | Chaos as truth; temptation away from loyalty | **The Hollows** (burned-out Flame victims) |
 | **Independent Variables — For Hire** (Sombra Negra, Akon, Yorkshire Grit, Great White North, Raja, Finxsse) | Everyone has a price; the interesting part is what isn't for sale | **The Unaffiliated** |
 | **The Core** (Bannon's own promotion, founded Book 3) | Integrity, expression, unbreakable structure — built by the heroes after winning | *(endgame goal for the Ashes — owner's call)* |
 | **The Dynasty** (Kray-Z, Ronye, Combs, Kennedy — Book 4) | Treat suffering as content/ratings | *(Halcyon boardroom flavor)* |
@@ -213,7 +213,7 @@ Ash Lane district is where it glitches.
 - **The anchor** — every feral/unstable character has exactly one person who can talk
   them down (Tyneshia for Maime). This is a structural role, not a romance subplot.
 - **Mantras** — Bannon: *"Vulnerability is a choice. I choose steel."* The Ashes:
-  *"The block remembers."* One line that carries a whole character.
+  *"The block remflames."* One line that carries a whole character.
 - **The belt melt** — Bannon melts the corrupted AWE championship with a blowtorch to
   purify the platform's history. Symbolic destruction > symbolic victory.
 - **Kayfabe Protocol** — the saga ends by sealing the world off as myth. Endings can
@@ -229,7 +229,7 @@ Ash Lane district is where it glitches.
 > word, not by anyone saying it, nothing like that.**
 >
 > The term **"God Within" must never appear in AshLane** — not in dialogue, menus,
-> items, mission names, or UI. The AshLane equivalent is **the Ember**: same
+> items, mission names, or UI. The AshLane equivalent is **the Flame**: same
 > structural job (the power inside), different name, different rules, native to
 > Earth-AL.
 
@@ -252,7 +252,7 @@ What writers need to know (and only writers):
   on purpose) — implemented as a state-machine swap on physics multipliers, not three
   characters.
 - **Corruption vs. Purity** — a live meter measuring how far the inner power has taken
-  over. The structural ancestor of the Ember's "hunger" meter.
+  over. The structural ancestor of the Flame's "hunger" meter.
 - **The Tree of Life skill tree** — Kabbalistic sephirot progression: Geburah (Maime
   branch, feral combat), Chesed (Marquis branch, precision counters), Kether (apex:
   "you no longer fight the physics engine, you DICTATE it").
@@ -260,7 +260,7 @@ What writers need to know (and only writers):
 **What AshLane takes from this:** the *shape* (a power inside that awakens under
 stress, boosts you, costs you control, has a moral meter; some people are born
 outside the system and can talk the burning down) — and nothing else. New name
-(the Ember), new rules, new faces. **Onyx is the only character who crosses
+(the Flame), new rules, new faces. **Onyx is the only character who crosses
 between Earths**, per the story bible's multiverse law.
 
 ---
