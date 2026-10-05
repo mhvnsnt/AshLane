@@ -182,10 +182,22 @@ export function createView(canvas: HTMLCanvasElement) {
   let rigKey = "";
   const loader = new GLTFLoader();
   loader.setMeshoptDecoder(MeshoptDecoder);
-  void loader.loadAsync("/motion/ual/AnimationLibrary_Godot_Standard.gltf").then((gltf) => {
-    setUal(gltf.scene, gltf.animations);
-    rigKey = "";
-  });
+  // Load all three UAL libraries: Godot Standard (base) + UAL1/UAL2 (86 combat clips).
+  // UAL1/UAL2 ship on the Quaternius 65-joint rig — retargetUal() handles the mapping.
+  const ualLibs = [
+    "/motion/ual/AnimationLibrary_Godot_Standard.gltf",
+    "/motion/ual/UAL1_Standard.glb",
+    "/motion/ual/UAL2_Standard.glb",
+  ];
+  void Promise.all(ualLibs.map((url) => loader.loadAsync(url).catch(() => null))).then(
+    (gltfs) => {
+      const valid = gltfs.filter((g): g is NonNullable<typeof g> => g !== null);
+      if (valid.length === 0) return;
+      const allClips = valid.flatMap((g) => g.animations);
+      setUal(valid[0].scene, allClips);
+      rigKey = "";
+    }
+  );
   const castRigs = new Map<string, RigTemplate>();
   const castLoading = new Set<string>();
   function ensureCast(file: string) {
