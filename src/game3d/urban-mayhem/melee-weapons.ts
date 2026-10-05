@@ -40,7 +40,14 @@ export const MELEE_WEAPONS: Record<MeleeWeaponId, MeleeWeaponDef> = {
 
 export const MELEE_WEAPON_IDS = Object.keys(MELEE_WEAPONS) as MeleeWeaponId[];
 
-/** SKIPPED per owner directive (no guns in AshLane). Documented, not ported. */
+/** SKIPPED per original owner directive (no guns in AshLane). Documented, not ported.
+ *
+ * UPDATE 2026-10-05: owner approved RARE Yakuza-style guns. Firearms are now
+ * implemented in src/game3d/guns.ts (gated behind the Finn Mac first-encounter
+ * disarm). This list remains as the historical record of what was skipped
+ * in the original melee-only port. Thrown explosives (molotov, grenade) are
+ * still NOT ported.
+ */
 export const SKIPPED_WEAPONS = [
   "pistol", "revolver", "smg", "shotgun", "rifle", "marksman", // firearms
   "molotov", "grenade",                                        // thrown explosives
