@@ -185,3 +185,107 @@ export function sfxRoundCue(): void {
   o.connect(g).connect(c.destination);
   o.start(t); o.stop(t + 0.18);
 }
+
+/* ---------------------------------------------------------------------------
+ * Gun SFX — appended for the rare-gun system (guns.ts).
+ * All procedural Web Audio, matching the existing voice recipes above.
+ * ------------------------------------------------------------------------- */
+
+/** Gunshot: sharp crack + low boom + tail. Varies by gun class. */
+export function sfxGunshot(kind: "pistol" | "revolver" | "shotgun" | "smg" = "pistol"): void {
+  const c = ac(); if (!c) return;
+  const t = c.currentTime;
+
+  // Crack: very short, very loud filtered noise burst.
+  const crackDur = kind === "shotgun" ? 0.09 : 0.05;
+  const crackLen = Math.max(1, Math.floor(c.sampleRate * crackDur));
+  const crackBuf = c.createBuffer(1, crackLen, c.sampleRate);
+  const cd = crackBuf.getChannelData(0);
+  for (let i = 0; i < crackLen; i++) cd[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / crackLen, 3);
+  const crack = c.createBufferSource(); crack.buffer = crackBuf;
+  const crackF = c.createBiquadFilter();
+  crackF.type = 'highpass';
+  crackF.frequency.value = kind === "shotgun" ? 400 : 900;
+  const crackG = c.createGain();
+  const crackAmp = kind === "shotgun" ? 0.85 : kind === "revolver" ? 0.7 : 0.55;
+  crackG.gain.setValueAtTime(crackAmp, t);
+  crackG.gain.exponentialRampToValueAtTime(0.0001, t + crackDur);
+  crack.connect(crackF).connect(crackG).connect(c.destination);
+  crack.start(t);
+
+  // Boom: low thump that follows the crack.
+  const boomAmp = kind === "shotgun" ? 0.7 : kind === "revolver" ? 0.5 : 0.35;
+  thump(t + 0.008, boomAmp, kind === "shotgun" ? 120 : 180, 35, kind === "shotgun" ? 0.35 : 0.22);
+
+  // Tail: short noise wash for indoor echo feel.
+  const tailDur = 0.18;
+  const tailLen = Math.max(1, Math.floor(c.sampleRate * tailDur));
+  const tailBuf = c.createBuffer(1, tailLen, c.sampleRate);
+  const td = tailBuf.getChannelData(0);
+  for (let i = 0; i < tailLen; i++) td[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / tailLen, 2) * 0.3;
+  const tail = c.createBufferSource(); tail.buffer = tailBuf;
+  const tailF = c.createBiquadFilter(); tailF.type = 'lowpass'; tailF.frequency.value = 1200;
+  const tailG = c.createGain();
+  tailG.gain.setValueAtTime(0.18, t + 0.02);
+  tailG.gain.exponentialRampToValueAtTime(0.0001, t + tailDur);
+  tail.connect(tailF).connect(tailG).connect(c.destination);
+  tail.start(t + 0.02);
+}
+
+/** Dry fire: empty click. The sound of regret. */
+export function sfxDryFire(): void {
+  const c = ac(); if (!c) return;
+  const t = c.currentTime;
+  snap(t, 0.22, 3200, 0.03, 'highpass');
+  snap(t + 0.045, 0.14, 1800, 0.025, 'bandpass');
+}
+
+/** Reload: mag out, mag in, slide rack. Three-part foley. */
+export function sfxReload(): void {
+  const c = ac(); if (!c) return;
+  const t = c.currentTime;
+  // Mag release.
+  snap(t, 0.2, 2400, 0.04, 'bandpass');
+  // Mag insert.
+  snap(t + 0.28, 0.26, 1600, 0.05, 'bandpass');
+  thump(t + 0.28, 0.14, 300, 120, 0.06);
+  // Slide rack.
+  snap(t + 0.55, 0.3, 2800, 0.05, 'highpass');
+  snap(t + 0.62, 0.34, 2200, 0.06, 'bandpass');
+}
+
+/** Disarm: gun clatters to the ground. Metallic bounce. */
+export function sfxDisarm(): void {
+  const c = ac(); if (!c) return;
+  const t = c.currentTime;
+  // Initial clatter.
+  snap(t, 0.4, 3600, 0.05, 'highpass');
+  thump(t, 0.2, 500, 150, 0.08);
+  // Two bounces, getting quieter.
+  snap(t + 0.16, 0.24, 3200, 0.04, 'highpass');
+  snap(t + 0.34, 0.14, 2800, 0.035, 'highpass');
+}
+
+/** Pistol-whip: dull metal-on-bone thunk. */
+export function sfxPistolWhip(): void {
+  const c = ac(); if (!c) return;
+  const t = c.currentTime;
+  snap(t, 0.36, 1900, 0.06, 'bandpass');
+  thump(t, 0.42, 200, 60, 0.14);
+  // Metallic ring.
+  const o = c.createOscillator();
+  const g = c.createGain();
+  o.type = 'triangle'; o.frequency.value = 2400;
+  g.gain.setValueAtTime(0.06, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+  o.connect(g).connect(c.destination);
+  o.start(t); o.stop(t + 0.14);
+}
+
+/** Gun pickup: quick metal handling sound. */
+export function sfxGunPickup(): void {
+  const c = ac(); if (!c) return;
+  const t = c.currentTime;
+  snap(t, 0.18, 2600, 0.04, 'bandpass');
+  snap(t + 0.09, 0.22, 2000, 0.05, 'bandpass');
+}
