@@ -288,8 +288,8 @@ export function AshlaneApp() {
                     </div>
                     <div className="flex gap-2.5">
                       <button type="button" className="al-chip flex-1" data-on={hud.crowd === "mix" ? "1" : undefined} onClick={() => api.current?.setCrowd("mix")}>Mixed crowd</button>
-                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "chibi" ? "1" : undefined} onClick={() => api.current?.setCrowd("chibi")}>Chibi crowd</button>
-                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "full" ? "1" : undefined} onClick={() => api.current?.setCrowd("full")}>Full crowd</button>
+                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "chibi" ? "1" : undefined} onClick={() => api.current?.setCrowd("chibi")}>KayKit crowd</button>
+                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "full" ? "1" : undefined} onClick={() => api.current?.setCrowd("full")}>Realistic crowd</button>
                     </div>
                     <label className="al-slider-label">Height
                       <input className="mt-1 block w-full" type="range" min={0.86} max={1.18} step={0.02} value={hud.height} onChange={(event) => api.current?.setShape({ height: Number(event.target.value) })} />
@@ -602,9 +602,9 @@ export function AshlaneApp() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button type="button" className="al-chip" data-on={hud.build === "full" ? "1" : undefined} onClick={() => api.current?.setBuild("full")}>You full</button>
                   <button type="button" className="al-chip" data-on={hud.build === "chibi" ? "1" : undefined} onClick={() => api.current?.setBuild("chibi")}>You chibi</button>
-                  <button type="button" className="al-chip" data-on={hud.crowd === "full" ? "1" : undefined} onClick={() => api.current?.setCrowd("full")}>Crowd full</button>
+                  <button type="button" className="al-chip" data-on={hud.crowd === "full" ? "1" : undefined} onClick={() => api.current?.setCrowd("full")}>Crowd realistic</button>
                   <button type="button" className="al-chip" data-on={hud.crowd === "mix" ? "1" : undefined} onClick={() => api.current?.setCrowd("mix")}>Crowd mix</button>
-                  <button type="button" className="al-chip" data-on={hud.crowd === "chibi" ? "1" : undefined} onClick={() => api.current?.setCrowd("chibi")}>Crowd chibi</button>
+                  <button type="button" className="al-chip" data-on={hud.crowd === "chibi" ? "1" : undefined} onClick={() => api.current?.setCrowd("chibi")}>Crowd KayKit</button>
                 </div>
                 <div className="al-section"><span className="al-section-title">Switch block</span></div>
                 <div className="flex flex-col gap-2.5">

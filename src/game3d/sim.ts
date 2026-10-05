@@ -447,13 +447,13 @@ function prefersReduced() {
 }
 
 function loadShape(): Pick<Sim, "build" | "crowd" | "height" | "bulk" | "head" | "leg" | "shoulder"> {
-  const base = { build: "full" as const, crowd: "mix" as const, height: 1, bulk: 1, head: 1, leg: 1, shoulder: 1 };
+  const base = { build: "full" as const, crowd: "full" as const, height: 1, bulk: 1, head: 1, leg: 1, shoulder: 1 };
   try {
     const raw = JSON.parse(localStorage.getItem("ashlane-shape-v2") || "{}") as { build?: string; crowd?: string; height?: number; bulk?: number; head?: number; leg?: number; shoulder?: number };
     const num = (value: unknown, min: number, max: number, fallback: number) => (typeof value === "number" && value >= min && value <= max ? value : fallback);
     return {
       build: raw.build === "chibi" ? "chibi" : "full",
-      crowd: raw.crowd === "chibi" || raw.crowd === "full" || raw.crowd === "mix" ? raw.crowd : "mix",
+      crowd: raw.crowd === "chibi" || raw.crowd === "full" || raw.crowd === "mix" ? raw.crowd : "full",
       height: num(raw.height, 0.86, 1.18, 1),
       bulk: num(raw.bulk, 0.8, 1.25, 1),
       head: num(raw.head, 0.75, 1.3, 1),

@@ -145,7 +145,7 @@ export const EMPTY_HUD: Hud = {
   xp: 0,
   level: 1,
   build: "full",
-  crowd: "mix",
+  crowd: "full",
   height: 1,
   bulk: 1,
   head: 1,

@@ -755,6 +755,11 @@ export function createView(canvas: HTMLCanvasElement) {
     return [soldier, soldierf, drifter, knight, rogue, hood, brute, hex].filter((rig): rig is RigTemplate => rig !== null);
   }
 
+  /** Realistic crowd pool — NO KayKit, NO skeletons, NO zombies. Real people only. */
+  function realistic(): RigTemplate[] {
+    return [soldier, soldierf, drifter, mannequin].filter((rig): rig is RigTemplate => rig !== null);
+  }
+
   function mixed(): RigTemplate[] {
     const extra = [skel, bones, skull, minion, zombie, zombief, mannequin].filter((rig): rig is RigTemplate => rig !== null);
     return [...people(), ...extra];
@@ -762,31 +767,33 @@ export function createView(canvas: HTMLCanvasElement) {
 
   function rigFor(b: Body, sim: Sim): RigTemplate | null {
     const humans = people();
+    const real = realistic();
     const all = sim.crowd === "chibi" ? [knight, rogue, hood, brute, hex, skel, bones, skull, minion].filter((rig): rig is RigTemplate => rig !== null) : mixed();
-    if (!humans.length && !all.length && !knight) return null;
+    if (!humans.length && !all.length && !soldier) return null;
     if (b.kind === "player") {
       if (sim.cast && castRigs.has(sim.cast)) return castRigs.get(sim.cast) ?? null;
-      if (sim.style === "soldier") return soldier ?? humans[0] ?? knight;
-      if (sim.style === "soldierf") return soldierf ?? humans[0] ?? knight;
-      if (sim.style === "zombie") return zombie ?? humans[0] ?? knight;
-      if (sim.style === "zombief") return zombief ?? humans[0] ?? knight;
-      if (sim.style === "mannequin") return mannequin ?? humans[0] ?? knight;
-      if (sim.style === "drifter") return drifter ?? humans[0] ?? knight;
-      if (sim.style === "runner" || sim.style === "ash") return sim.build === "chibi" ? rogue ?? knight : soldierf ?? rogue ?? humans[0] ?? knight;
-      if (sim.style === "brute" || sim.style === "pit") return sim.build === "chibi" ? brute ?? knight : soldier ?? brute ?? humans[0] ?? knight;
-      if (sim.style === "hood") return sim.build === "chibi" ? hood ?? knight : soldierf ?? hood ?? knight;
-      if (sim.style === "hex") return sim.build === "chibi" ? hex ?? knight : soldier ?? hex ?? knight;
-      if (sim.style === "skeleton") return skel ?? knight;
-      if (sim.style === "bones") return bones ?? knight;
-      if (sim.style === "skull") return skull ?? knight;
-      if (sim.style === "minion") return minion ?? knight;
+      if (sim.style === "soldier") return soldier ?? real[0] ?? soldier;
+      if (sim.style === "soldierf") return soldierf ?? real[0] ?? soldier;
+      if (sim.style === "zombie") return zombie ?? real[0] ?? soldier;
+      if (sim.style === "zombief") return zombief ?? real[0] ?? soldier;
+      if (sim.style === "mannequin") return mannequin ?? real[0] ?? soldier;
+      if (sim.style === "drifter") return drifter ?? real[0] ?? soldier;
+      if (sim.style === "runner" || sim.style === "ash") return sim.build === "chibi" ? rogue ?? knight : soldierf ?? rogue ?? real[0] ?? soldier;
+      if (sim.style === "brute" || sim.style === "pit") return sim.build === "chibi" ? brute ?? knight : soldier ?? brute ?? real[0];
+      if (sim.style === "hood") return sim.build === "chibi" ? hood ?? knight : soldierf ?? hood ?? real[0] ?? soldier;
+      if (sim.style === "hex") return sim.build === "chibi" ? hex ?? knight : soldier ?? hex ?? real[0];
+      if (sim.style === "skeleton") return skel ?? soldier;
+      if (sim.style === "bones") return bones ?? soldier;
+      if (sim.style === "skull") return skull ?? soldier;
+      if (sim.style === "minion") return minion ?? soldier;
       if (sim.build === "chibi") return knight;
-      return soldier ?? soldierf ?? drifter ?? humans[0] ?? knight;
+      return soldier ?? soldierf ?? drifter ?? real[0] ?? null;
     }
-    if (b.kind === "ally") return soldierf ?? hood ?? rogue ?? knight;
-    const pool = sim.crowd === "full" ? humans : all;
+    if (b.kind === "ally") return soldierf ?? real[0] ?? soldier;
+    // "full" = realistic humans only (no KayKit). "mix" = variety incl. KayKit. "chibi" = all KayKit.
+    const pool = sim.crowd === "full" ? real : sim.crowd === "mix" ? all : all;
     if (pool.length) return pool[b.id % pool.length];
-    return knight;
+    return soldier;
   }
 
   function syncFighters(sim: Sim) {
