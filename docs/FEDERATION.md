@@ -124,3 +124,105 @@ Continuous open-source pull for brawler-specific systems. All licenses verified 
 - GPL-3.0 excluded: henryzt/Rhythm-Plus-Music-Game (copyleft, incompatible with commercial).
 - UNVERIFIED excluded from code pull: haveaguess/fighting-simulator (no license), monster0506/pool (null), HeartlessSeph/FighterCommander (null), gsaurus/evolution-engine (null).
 - "Verify" repos NOT pulled — only MIT/Apache-2.0/BSD/CC0 sources used.
+
+## Wave 5 Additions (2026-10-05)
+
+### Combat & Feel
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Frame data (startup/active/recovery) | aminrx/shoto-fighter-godot | MIT | `src/game3d/federated/framedata.ts` | Ported |
+| Combo damage scaling | aminrx/shoto-fighter-godot | MIT | `framedata.ts` comboScale() | Ported |
+| Deterministic replay | sinusphi/stickman-fighter | MIT | `src/game3d/federated/replay.ts` | Ported |
+| Counter/parry system | Tekken/Def Jam/Urban Reign patterns | Original | `src/game3d/federated/counters.ts` | New |
+| Chain combos (JJJ etc.) | sumosizedginger/neon-rot-unbound | MIT | Reference for framedata.ts | Pattern documented |
+| Combat iron laws | jammyfu/open-game-skills | (ref) | Design rules | Reference |
+
+### World & Atmosphere
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Day/night cycle + weather | skyeshark/eanpa-sky | MIT | `src/game3d/federated/weather.ts` | Ported |
+| Bird flocks (boids) | beneater/boids | MIT | `src/game3d/federated/boids.ts` | Ported |
+| District chunk streaming | fiercefairy/openworld et al. | (patterns) | `src/game3d/federated/streaming.ts` | Ported |
+| SimClock | wdh815/maptest | (pattern) | `streaming.ts` | Ported |
+
+### NPCs & Crowds
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Pedestrian wander/flee | naveenkcg/game | MIT | `src/game3d/federated/pedestrians.ts` | Ported |
+| Panic alarm + screams | ashalluf/rando-game | (pattern) | `pedestrians.ts` pedAlarm() | Ported |
+| Ambient chatter | richardran/grid-city | (pattern) | `pedestrians.ts` | Ported |
+| Distance culling | naveenkcg/game | MIT | `pedestrians.ts` cullPeds() | Ported |
+
+### Dialogue & Quests
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Branching dialogue | Yarn Spinner (MIT) via bondage.js pattern | Original impl. | `src/game3d/federated/dialogue.ts` | Ported |
+| Quest data format | OQF (Apache 2.0) | Apache 2.0 | `src/game3d/federated/quests.ts` | Ported |
+| 15+ objective types | insimul | (pattern) | `quests.ts` ObjectiveType | Ported |
+
+### Character & Customization
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Spring bones (hair/cloth) | pixiv/three-vrm | MIT | `src/game3d/federated/springbones.ts` | Ported |
+| Procedural grunts | (multiple patterns) | Original | `src/game3d/char-gen.ts` | Done (other agent) |
+
+### Mobile & Input
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Touch controls | devindu22/cyber-arcade-nexus-3d | MIT | `src/game3d/federated/touch.ts` | Ported |
+| Button layout | shri816/forest-arena-game | MIT | `touch.ts` BUTTON_LAYOUT | Ported |
+| Counter button | (owner request) | Original | `touch.ts` + `counters.ts` | New |
+
+### Minigames (venue)
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Darts (501) | bokhodirurinboev/DeskArcade | MIT | `src/game3d/federated/minigames.ts` | Ported |
+| Blackjack | bokhodirurinboev/DeskArcade | MIT | `minigames.ts` | Ported |
+| Pool physics | bokhodirurinboev/DeskArcade | MIT | `minigames.ts` | Ported |
+
+### Audio
+
+| System | Source | License | AshLane location | Status |
+|--------|--------|---------|------------------|--------|
+| Adaptive beats | (original) | Original | `src/game3d/music.ts` | Done (other agent) |
+| Combat SFX | (original) | Original | `src/game3d/combat-sfx.ts` | Done (other agent) |
+| BGM sequencer patterns | reforma-dev/plugins game-audio | MIT | Reference for music.ts | Pattern documented |
+| Procedural portraits | githubuseradmin/asset-lab-test | MIT | Reference | Pattern documented |
+
+### Environments (CC0 GLB — converted, pushed)
+
+| Pack | Source | License | AshLane location | Contents |
+|------|--------|---------|------------------|----------|
+| Modular Street Pack (2018) | Quaternius via beep2bleep mirror | CC0 | `public/models/env/street/` | 25 GLBs: streets, signs, bridges |
+| Medieval Weapons Pack (2018) | Quaternius via beep2bleep mirror | CC0 | `public/models/weapons/` | 24 GLBs |
+| Furniture Pack (2019) | Quaternius via beep2bleep mirror | CC0 | `public/models/props/` | 20 GLBs: breakables |
+
+Note: These are the older CC0 Quaternius packs (2018-2019). The newer
+Downtown City MegaKit / Fantasy Props MegaKit / LowPoly Medieval Weapons
+were downloaded via browser but couldn't be captured — still pending
+manual transfer. The 2018-2019 packs are valid CC0 substitutes.
+
+## Wave 6 Finds (2026-10-05, not yet pulled)
+
+See `~/workspace/open-source-hunt/FINDS_WAVE6.md`:
+- neon-rot-unbound (MIT): chain-combo dictionary, weapon durability, 166 tests
+- open-game-skills: combat design iron laws
+- niulai-game (MIT): Three.js 3D fighter, 7 fighters, super moves
+- game-audio skill (MIT): BGM sequencer anti-repetition
+- asset-lab-test (MIT): procedural SVG portraits
+
+## Integration Checklist (Wave 5)
+
+- [x] 12 new federated modules written (weather, boids, dialogue, quests, pedestrians, framedata, replay, springbones, touch, counters, minigames, streaming)
+- [x] 69 CC0 GLBs converted and pushed (street/weapons/props)
+- [x] FEDERATION.md updated
+- [ ] Wire new modules into sim.ts / view.ts / mount.ts (runtime integration)
+- [ ] TypeScript compile check
+- [ ] Still pending: Downtown City MegaKit, Fantasy Props MegaKit, Medieval Weapons (newer packs)
