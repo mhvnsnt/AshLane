@@ -13,7 +13,7 @@ corporate control, the numerology engine assigning every soul a Life Path number
 decides who they are before they ever throw a punch.
 
 On **Earth-AL**, the rings went dark decades ago. A corporate "consolidation" —
-the Halcyon Group's buyout and demolition of the old wrestling territories —
+the Kennedy Corporate Structure's buyout and demolition of the old wrestling territories —
 scattered the fighting world into the streets. There are no promotions here.
 There are **blocks**. No titles. **Turf.** No kayfabe — because there's no audience
 left to lie to, only neighborhoods to hold.
@@ -63,7 +63,7 @@ all connected, no loading between them:
    Safest by day; contested at night.
 2. **The Alleys** — narrow back-street maze behind the Strip. Ambush country.
    Urban Reign-style multi-attacker brawls.
-3. **The Warehouses** — industrial east. Boss arenas, weapon caches, Halcyon
+3. **The Warehouses** — industrial east. Boss arenas, weapon caches, Kennedy Corp
    demolition crews staging here.
 4. **The Park** — the district's lungs. Grass, trees, stray dogs, old men
    playing chess by day. The Hollows gather here at night.
@@ -73,7 +73,7 @@ all connected, no loading between them:
    Ashes' lookout posts.
 
 The district is named for the **Lane family**, who held these blocks for three
-generations before Halcyon started buying.
+generations before Kennedy Corp started buying.
 
 ---
 
@@ -85,9 +85,9 @@ The protagonist's crew. Not a gang — a **neighborhood**. Fighters, a gym owner
 a nurse, kids who run messages. They don't want territory; they want to keep
 what's theirs. Theme: **loyalty costs**.
 
-### THE COMBINE — Halcyon Group's street arm
+### THE COMBINE — Kennedy Corporate Structure's street arm
 *Parallel: The Corporate Structure (AWE/JPCW).*
-Halcyon Group is demolishing Ash Lane block by block for "Meridian Crossing,"
+Kennedy Corporate Structure is demolishing Ash Lane block by block for "Meridian Crossing,"
 a luxury development. The Combine are the eviction muscle: ex-fighters on
 payroll, demolition crews, private security. Led by **Director Cole Vane**
 (parallel to Edwin J. Kennedy — the smiling man who signs the demolition
@@ -115,7 +115,7 @@ the interesting part is what isn't for sale.**
 
 **Ashton "Ash" Lane** — late 20s. The Lane family's last fighter. Left the
 district years ago after a falling-out with their older sibling; comes home
-for the funeral and finds Halcyon demolition notices on every door.
+for the funeral and finds Kennedy Corp demolition notices on every door.
 
 - **Life Path: uncomputable.** Like Onyx in the Flame (background lore, never named in-game) canon, the numerology
   engine glitches on Ash — no number, no assigned destiny. In-universe, this
@@ -143,7 +143,7 @@ and that's the problem — everyone can see the fire coming.
 | **Doc** | The Ashes' nurse / cornerman | Between-mission healer. Upgrades: better medical supplies = faster Guts recovery. |
 | **Gym Owner "Anchor"** | Runs the Lane gym on the Strip | Parallel to Atlas Vance ("The Anchor") — the moral structure. Teaches new moves; stat upgrades happen here (Urban Reign-style 1–3 pts/mission). |
 | **Sombra Negra** | Mercenary, Unaffiliated | The Calculated Mercenary. First met as a boss (hired by the Combine), later recruitable. Lucha style; La Trampa de Plata. Tests whether Ash will *buy* help. |
-| **Director Cole Vane** | Halcyon Group, Combine leader | The smiling final boss. Never throws a punch until Chapter 4 — and when he does, it's all technique, no heart. |
+| **Director Cole Vane** | Kennedy Corporate Structure, Combine leader | The smiling final boss. Never throws a punch until Chapter 4 — and when he does, it's all technique, no heart. |
 | **Hollow** | Leader of the Hollows | Knows what the Flame wants because it already took everything from them. Offers Ash the truth at a price. |
 | **Onyx** | Wanderer (the Flame (background lore, never named in-game) canon import) | Game-only character crossing over. The only person alive who understands being uncomputable. Appears sparingly — a rooftop conversation in Ch. 2, a warning in Ch. 3. Never fights *for* you. |
 | **Rook** | Teen runner for the Ashes | Side-mission giver ("?" NPCs). Multi-part chain; the collectible-gated finale reveals what they saw the night Mara died. |
@@ -173,7 +173,7 @@ The Hollows come out of the Park. Hollow offers answers. Supernatural mission
 types dominate: Don't Provoke (Hollows that must not be fed), Region Break
 (burn the Flame out of a Hollow's arm to save them — or don't), night-only
 Subway hazards. The Combine exploits the chaos to accelerate demolitions.
-Ends with Ash choosing: **feed the Flame to burn Halcyon's staging ground**
+Ends with Ash choosing: **feed the Flame to burn Kennedy Corp's staging ground**
 (Combine crippled, Ashes horrified) or **starve it and lose the Warehouses**.
 
 ### Chapter 4 — ASHES
