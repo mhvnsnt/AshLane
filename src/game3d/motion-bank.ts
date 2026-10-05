@@ -230,6 +230,80 @@ const UAL_BONE: Record<string, string> = {
   "DEF-toeR": "mixamorigRightToeBase",
 };
 
+
+// Quaternius 65-joint rig (Unreal-style names) -> packed Mixamo (mixamorigHips).
+// The UAL1_Standard / UAL2_Standard clips ship ON the Quaternius rig, so the UAL
+// retarget below needs this map to land those clips on Mixamo-rigged cast.
+// Full 65 -> 58 mapping (see docs/QUATERNIUS.md):
+//   root -> DROP (Mixamo has no root joint)
+//   pelvis -> Hips | spine_01 -> Spine | spine_02 -> Spine1 | spine_03 -> Spine2
+//   neck_01 -> Neck | Head -> Head
+//   clavicle_l/r -> LeftShoulder/RightShoulder
+//   upperarm_l/r -> LeftArm/RightArm | lowerarm_l/r -> LeftForeArm/RightForeArm
+//   hand_l/r -> LeftHand/RightHand
+//   thumb/index/middle/ring/pinky _01/_02/_03 _l/_r -> LeftHand<Digit>1/2/3 etc.
+//     (Mixamo's 4th finger segments have no Quaternius source — left unmapped)
+//   *_04_leaf_* (10 finger-tip end-effectors) -> DROP (Mixamo ends at digit 3)
+//   thigh_l/r -> LeftUpLeg/RightUpLeg | calf_l/r -> LeftLeg/RightLeg
+//   foot_l/r -> LeftFoot/RightFoot | ball_l/r -> LeftToeBase/RightToeBase
+//   ball_leaf_l/r -> DROP (end-effectors)
+// NOTE: the bank-bake path (familyFor) already covers Quaternius bodies through
+// the UE family — `pelvis`/`spine_01`/`upperarm_l` naming is identical.
+const QUATERNIUS_UAL_BONE: Record<string, string> = {
+  "pelvis": "mixamorigHips",
+  "spine_01": "mixamorigSpine",
+  "spine_02": "mixamorigSpine1",
+  "spine_03": "mixamorigSpine2",
+  "neck_01": "mixamorigNeck",
+  "Head": "mixamorigHead",
+  "clavicle_l": "mixamorigLeftShoulder",
+  "clavicle_r": "mixamorigRightShoulder",
+  "upperarm_l": "mixamorigLeftArm",
+  "upperarm_r": "mixamorigRightArm",
+  "lowerarm_l": "mixamorigLeftForeArm",
+  "lowerarm_r": "mixamorigRightForeArm",
+  "hand_l": "mixamorigLeftHand",
+  "hand_r": "mixamorigRightHand",
+  "thigh_l": "mixamorigLeftUpLeg",
+  "thigh_r": "mixamorigRightUpLeg",
+  "calf_l": "mixamorigLeftLeg",
+  "calf_r": "mixamorigRightLeg",
+  "foot_l": "mixamorigLeftFoot",
+  "foot_r": "mixamorigRightFoot",
+  "ball_l": "mixamorigLeftToeBase",
+  "ball_r": "mixamorigRightToeBase",
+  "thumb_01_l": "mixamorigLeftHandThumb1",
+  "thumb_02_l": "mixamorigLeftHandThumb2",
+  "thumb_03_l": "mixamorigLeftHandThumb3",
+  "thumb_01_r": "mixamorigRightHandThumb1",
+  "thumb_02_r": "mixamorigRightHandThumb2",
+  "thumb_03_r": "mixamorigRightHandThumb3",
+  "index_01_l": "mixamorigLeftHandIndex1",
+  "index_02_l": "mixamorigLeftHandIndex2",
+  "index_03_l": "mixamorigLeftHandIndex3",
+  "index_01_r": "mixamorigRightHandIndex1",
+  "index_02_r": "mixamorigRightHandIndex2",
+  "index_03_r": "mixamorigRightHandIndex3",
+  "middle_01_l": "mixamorigLeftHandMiddle1",
+  "middle_02_l": "mixamorigLeftHandMiddle2",
+  "middle_03_l": "mixamorigLeftHandMiddle3",
+  "middle_01_r": "mixamorigRightHandMiddle1",
+  "middle_02_r": "mixamorigRightHandMiddle2",
+  "middle_03_r": "mixamorigRightHandMiddle3",
+  "ring_01_l": "mixamorigLeftHandRing1",
+  "ring_02_l": "mixamorigLeftHandRing2",
+  "ring_03_l": "mixamorigLeftHandRing3",
+  "ring_01_r": "mixamorigRightHandRing1",
+  "ring_02_r": "mixamorigRightHandRing2",
+  "ring_03_r": "mixamorigRightHandRing3",
+  "pinky_01_l": "mixamorigLeftHandPinky1",
+  "pinky_02_l": "mixamorigLeftHandPinky2",
+  "pinky_03_l": "mixamorigLeftHandPinky3",
+  "pinky_01_r": "mixamorigRightHandPinky1",
+  "pinky_02_r": "mixamorigRightHandPinky2",
+  "pinky_03_r": "mixamorigRightHandPinky3",
+};
+
 let ualRoot: THREE.Object3D | null = null;
 let ualClips: THREE.AnimationClip[] = [];
 
@@ -255,7 +329,7 @@ export function retargetUal(target: THREE.Object3D) {
     for (const track of clip.tracks) {
       if (!track.name.endsWith(".quaternion")) continue;
       const bone = track.name.slice(0, -".quaternion".length);
-      const dest = UAL_BONE[bone];
+      const dest = UAL_BONE[bone] ?? QUATERNIUS_UAL_BONE[bone];
       const qS = sourceRest.get(bone);
       const qT = dest ? targetRest.get(dest) : undefined;
       if (!dest || !qS || !qT) continue;

@@ -205,7 +205,23 @@ export const ROSTER: LaneFighter[] = [
     name: "Sombra Negra",
     martial: "lucha",
     bio: "The Finisher Thief. Steals your finisher mid-match and beats you with it — your best self, turned.",
-    attires: [a("main", "Main Attire", "assets/models/SOMBRA_NEGRA_rigged.glb")],
+    attires: [a("main", "Main Attire", "SOMBRA_NEGRA_rigged.glb")],
+  },
+  // CC0 modular base bodies (Quaternius). Hair/beard/brows attach via
+  // attachPart() in ./quaternius.ts — same 65-joint rig, no remap needed.
+  {
+    id: "quaternius_male",
+    name: "Quaternius Male",
+    martial: "street",
+    bio: "CC0 modular base body (Quaternius). Hair, beard and brows swap in the forge — the customization-ready brawler.",
+    attires: [a("base", "Base", "quaternius/Superhero_Male_FullBody.glb")],
+  },
+  {
+    id: "quaternius_female",
+    name: "Quaternius Female",
+    martial: "street",
+    bio: "CC0 modular base body (Quaternius). Hair, beard and brows swap in the forge — the customization-ready brawler.",
+    attires: [a("base", "Base", "quaternius/Superhero_Female_FullBody.glb")],
   },
 ];
 
