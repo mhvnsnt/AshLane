@@ -6,9 +6,10 @@ Every open-source system pulled in, where it lives, license, and integration sta
 
 | System | Source | License | AshLane location | Status |
 |--------|--------|---------|------------------|--------|
-| Lock-on targeting | prashanna135/souls-like-controller | Public domain | `src/game3d/federated/lockon.ts` | Ported, needs wiring into sim.ts |
-| Freeflow targeting | celojevic/batman-arkham-combat | MIT | `src/game3d/federated/freeflow.ts` | Ported, needs wiring into sim.ts |
-| Group attack AI (max 3) | paulcodes/deathblood-lazer | MIT | `src/game3d/federated/groupai.ts` | Ported, needs wiring into sim.ts |
+| Lock-on targeting | prashanna135/souls-like-controller | Public domain | `src/game3d/federated/lockon.ts` | ✅ WIRED (2026-10-05): `sim.lock`, `bufLock`/`prevLock`, `input.lock` edge → `lockOnPress`; per-frame `lockOnUpdate`; "Locked on" banner; auto-clear on spawn/warp; target priority in freeflow |
+| Freeflow targeting | celojevic/batman-arkham-combat | MIT | `src/game3d/federated/freeflow.ts` | ✅ WIRED (2026-10-05): `beginSwing` picks lock target → steer-direction enemy → nearest; `freeflowLunge` magnetic lunge (0.14s, capped 10 u/s); falls back to `commitFacing` |
+| Group attack AI (max 3) | paulcodes/deathblood-lazer | MIT | `src/game3d/federated/groupai.ts` | ✅ WIRED (2026-10-05): `requestAttack` gate on grunt windup entry; `releaseAttack` on atk→free; stale tokens self-prune; reset on spawn/warp. Smoke test: max 2 simultaneous attackers over 600 frames |
+| Per-entity hitstop | paulcodes/deathblood-lazer | MIT | `src/game3d/sim.ts` (`Body.stopT`) | ✅ WIRED (2026-10-05): `hurt()` sets victim `stopT`; `hitGrunts` + grunt bite set attacker `stopT`; frozen bodies skip update/move/separation; global `sim.hitstop` kept for wall slams + specials. Smoke test: 0 movement during freeze, resumes after |
 | Hitbox/hurtbox | paulcodes/deathblood-lazer | MIT | Reference in `federation/combat/` | Pattern documented, sim.ts already has hitstop |
 
 Original source files preserved in `tools/federation/combat/` for reference.
@@ -56,9 +57,16 @@ Setup: `bash tools/federation/setup-assets.sh` (itch.io requires manual click-th
 ## Integration Checklist
 
 - [x] Combat code pulled and ported to TypeScript
-- [ ] Wire lockon.ts into sim.ts player update
-- [ ] Wire freeflow.ts into sim.ts attack logic
-- [ ] Wire groupai.ts into sim.ts enemy AI
+- [x] Wire lockon.ts into sim.ts player update (commit 8a25bf8 — `sim.lock`, `bufLock`, `input.lock`)
+- [x] Wire freeflow.ts into sim.ts attack logic (commit 8a25bf8 — `beginSwing` magnetic lunge)
+- [x] Wire groupai.ts into sim.ts enemy AI (commit 8a25bf8 — token gate + release)
+- [x] Per-entity hitstop wired (`Body.stopT`, commit 8a25bf8)
+- [ ] Lock-on camera bias in view.ts/mount.ts (sim side done; camera + HUD reticle pending)
+- [ ] Lock-on touch button in mount.ts (wires `input.lock`; sim side ready)
+- [ ] Counter system (skipped — owner questions pending per COMBAT_INTEGRATION.md Part 5)
+- [ ] Combo buffer tuning to 150ms (design done, constants pending)
+- [ ] Hit reaction rules: no-stun-lock, hit-interrupts-actions (design done, pending)
+- [ ] Strafe/reposition AI for token-denied grunts (design done, pending)
 - [ ] Download Quaternius packs (manual itch.io step)
 - [ ] Retarget UAL animations to 58-joint skeleton
 - [ ] Build first city level from Downtown City MegaKit
