@@ -122,6 +122,10 @@ export type GruntRecipe = {
   hpMul: number;
   dmgMul: number;
   speedMul: number;
+  // Personality (docs/ROSTER_HIERARCHY.md §3-4)
+  quirk: QuirkId;
+  archetype: ArchetypeId;
+  bio: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -322,6 +326,178 @@ export const FIGHT_STYLES: Record<FightStyle, StyleDef> = {
 };
 
 // ---------------------------------------------------------------------------
+// Personality system — every grunt is a PERSON (docs/ROSTER_HIERARCHY.md §3-4)
+// ---------------------------------------------------------------------------
+
+/** Quirk ids. Flavor text AND AI behavior hints. */
+export type QuirkId =
+  // Universal
+  | "fights-dirty" | "protects-crew" | "showoff" | "hothead" | "coward"
+  | "loyal" | "opportunist" | "brawler" | "counter" | "wild"
+  // Ashes
+  | "block-pride" | "big-brother" | "old-head"
+  // Combine
+  | "by-the-book" | "overtime" | "true-believer"
+  // Hollows
+  | "burned" | "hollow-laugh" | "swarm-mind"
+  // Unaffiliated
+  | "mercenary" | "collector" | "drifter";
+
+export type QuirkDef = { id: QuirkId; label: string; hint: string };
+
+export const QUIRKS: Record<QuirkId, QuirkDef> = {
+  "fights-dirty":   { id: "fights-dirty",   label: "Fights Dirty",   hint: "Eye pokes, low blows. No honor." },
+  "protects-crew":  { id: "protects-crew",  label: "Protects Crew",  hint: "Targets whoever's hitting allies first." },
+  "showoff":        { id: "showoff",        label: "Showoff",        hint: "Taunts after knockdowns. Leaves openings." },
+  "hothead":        { id: "hothead",        label: "Hothead",        hint: "Charges immediately. No patience." },
+  "coward":         { id: "coward",         label: "Coward",         hint: "Hangs back, hits you when you're busy." },
+  "loyal":          { id: "loyal",          label: "Loyal",          hint: "Won't flee, won't switch targets." },
+  "opportunist":    { id: "opportunist",    label: "Opportunist",    hint: "Waits for openings, punishes whiffs." },
+  "brawler":        { id: "brawler",        label: "Brawler",        hint: "Loves the clinch. Wants to trade." },
+  "counter":        { id: "counter",        label: "Counter",        hint: "Baits attacks, punishes hard." },
+  "wild":           { id: "wild",           label: "Wild",           hint: "Unpredictable. Might do anything." },
+  "block-pride":    { id: "block-pride",    label: "Block Pride",    hint: "\"This is MY street.\" Fights harder at home." },
+  "big-brother":    { id: "big-brother",    label: "Big Brother",    hint: "Shields weaker allies with his body." },
+  "old-head":       { id: "old-head",       label: "Old Head",       hint: "Patient. Coaches mid-fight." },
+  "by-the-book":    { id: "by-the-book",    label: "By The Book",    hint: "Disciplined formations, calls targets." },
+  "overtime":       { id: "overtime",       label: "Overtime",       hint: "\"I'm getting paid for this.\" No wasted motion." },
+  "true-believer":  { id: "true-believer",  label: "True Believer",  hint: "Actually believes Halcyon's pitch. Creepy." },
+  "burned":         { id: "burned",         label: "Burned",         hint: "Flame-damaged. Fights through impossible pain." },
+  "hollow-laugh":   { id: "hollow-laugh",   label: "Hollow Laugh",   hint: "Laughs while getting hit. Unsettling." },
+  "swarm-mind":     { id: "swarm-mind",     label: "Swarm Mind",     hint: "Coordinates with other Hollows instinctively." },
+  "mercenary":      { id: "mercenary",      label: "Mercenary",      hint: "\"Nothing personal.\" Efficient, cold." },
+  "collector":      { id: "collector",      label: "Collector",      hint: "Wants YOUR moves. Studies you mid-fight." },
+  "drifter":        { id: "drifter",        label: "Drifter",        hint: "Might walk away mid-fight if bored." },
+};
+
+/** Quirk pools per faction: [quirkId, weight]. */
+const FACTION_QUIRKS: Record<FactionId, [QuirkId, number][]> = {
+  ashes: [
+    ["block-pride", 25], ["big-brother", 20], ["old-head", 15],
+    ["loyal", 15], ["brawler", 10], ["hothead", 8], ["protects-crew", 7],
+  ],
+  combine: [
+    ["by-the-book", 25], ["overtime", 20], ["true-believer", 15],
+    ["counter", 15], ["opportunist", 10], ["loyal", 10], ["coward", 5],
+  ],
+  hollows: [
+    ["burned", 25], ["hollow-laugh", 20], ["swarm-mind", 20],
+    ["wild", 15], ["hothead", 10], ["fights-dirty", 10],
+  ],
+  unaffiliated: [
+    ["mercenary", 25], ["collector", 15], ["drifter", 15],
+    ["opportunist", 15], ["showoff", 10], ["counter", 10], ["wild", 10],
+  ],
+};
+
+/** Stat archetypes — what makes grunts FEEL different, not just look different. */
+export type ArchetypeId = "bruiser" | "striker" | "tank" | "speedster" | "balanced" | "tricky";
+
+export type ArchetypeDef = {
+  id: ArchetypeId; label: string; tell: string;
+  hpMul: number; dmgMul: number; speedMul: number;
+};
+
+export const ARCHETYPES: Record<ArchetypeId, ArchetypeDef> = {
+  bruiser:   { id: "bruiser",   label: "Bruiser",   tell: "Big. Slow. Hits like a truck.",        hpMul: 1.35, dmgMul: 1.25, speedMul: 0.80 },
+  striker:   { id: "striker",   label: "Striker",   tell: "Glass cannon. Fast hands, no chin.",    hpMul: 0.85, dmgMul: 1.40, speedMul: 1.05 },
+  tank:      { id: "tank",      label: "Tank",      tell: "Walks through punches. Grabs you.",     hpMul: 1.50, dmgMul: 1.00, speedMul: 0.75 },
+  speedster: { id: "speedster", label: "Speedster", tell: "Can't hit what you can't catch.",       hpMul: 0.75, dmgMul: 1.00, speedMul: 1.40 },
+  balanced:  { id: "balanced",  label: "Balanced",  tell: "Fundamentals. Boring, hard to beat.",   hpMul: 1.00, dmgMul: 1.00, speedMul: 1.00 },
+  tricky:    { id: "tricky",    label: "Tricky",    tell: "Feints, misdirection, dirty tricks.",   hpMul: 0.85, dmgMul: 1.10, speedMul: 1.20 },
+};
+
+const ARCHETYPE_IDS: ArchetypeId[] = ["bruiser", "striker", "tank", "speedster", "balanced", "tricky"];
+
+// ---------------------------------------------------------------------------
+// Bio generation — 2-3 sentences, faction-flavored.
+// Format: [Origin] [Why they fight] [Quirk hint]
+// ---------------------------------------------------------------------------
+
+type BioTemplate = { origin: string[]; motive: string[] };
+
+const BIO_TEMPLATES: Record<FactionId, BioTemplate> = {
+  ashes: {
+    origin: [
+      "Grew up three doors down from the gym.",
+      "Used to run with the Combine until they torched the corner store.",
+      "Learned to fight in the parking lot behind the rec center.",
+      "Third generation on this block. Not leaving.",
+      "Doc patched them up after their first beating. Never forgot it.",
+    ],
+    motive: [
+      "Fights because somebody has to hold the block.",
+      "Now they're Ashes for life.",
+      "Swings wide but means every word of it.",
+      "Patient — waits for you to make the first mistake.",
+      "The block remembers, and so do they.",
+    ],
+  },
+  combine: {
+    origin: [
+      "Ex-military, dishonorably discharged.",
+      "Corporate security before Halcyon bought the contract.",
+      "Grew up in the suburbs. Never been in a real fight until Halcyon.",
+      "Former athlete. Blew out a knee. Halcyon offered a paycheck.",
+      "Private contractor. This is just another deployment.",
+    ],
+    motive: [
+      "Halcyon pays better than the army and asks fewer questions.",
+      "Fights like it's a job, because it is.",
+      "True believer. Thinks the demolitions are 'urban renewal.'",
+      "Methodical. No wasted motion. Overtime starts now.",
+      "Will lecture you about property values while breaking your ribs.",
+    ],
+  },
+  hollows: {
+    origin: [
+      "The Flame took their brother first. Then it took them.",
+      "Nobody remembers what they were before. The fire ate that too.",
+      "Used to be Ashes. Used to be somebody.",
+      "Found wandering the subway tunnels, laughing at nothing.",
+      "The last thing they said before the Flame took them was a name nobody knows.",
+    ],
+    motive: [
+      "What's left fights because fighting is all that's left.",
+      "Don't let them grab you.",
+      "They laugh when they get hit. Nobody knows why.",
+      "The fire wants to be fed. They're the delivery.",
+      "Put them down fast. It's kinder.",
+    ],
+  },
+  unaffiliated: {
+    origin: [
+      "Lucha circuit washout. Still wears the mask.",
+      "Nobody knows where they're from. Shows up, collects, disappears.",
+      "Ex-Pit fighter. Retired undefeated. Got bored.",
+      "Trained in three countries. Owes money in all of them.",
+      "Used to work security for people who don't exist on paper.",
+    ],
+    motive: [
+      "Fights for cash, stays for the crowd.",
+      "The only thing anyone agrees on: don't let them study you too long.",
+      "\"Nothing personal\" — and they mean it.",
+      "Says the mask is the only honest thing they own.",
+      "Might leave mid-fight if it's boring. Might not.",
+    ],
+  },
+};
+
+/** Generate a 2-3 sentence bio for a grunt. Deterministic from rng. */
+export function generateBio(
+  rng: () => number,
+  faction: FactionId,
+  name: string,
+  quirk: QuirkId,
+): string {
+  const t = BIO_TEMPLATES[faction];
+  const origin = pick(rng, t.origin);
+  const motive = pick(rng, t.motive);
+  const quirkHint = QUIRKS[quirk].hint;
+  return `${origin} ${motive} ${name} ${quirkHint.charAt(0).toLowerCase()}${quirkHint.slice(1)}`;
+}
+
+// ---------------------------------------------------------------------------
 // Generator
 // ---------------------------------------------------------------------------
 
@@ -368,10 +544,17 @@ export function generateGrunt(faction: FactionId, seed?: number): GruntRecipe {
   const pattern: ClothingPattern =
     patternRoll < 0.6 ? "solid" : patternRoll < 0.75 ? "camo" : patternRoll < 0.9 ? "stripes" : "graffiti";
 
+  // Personality: quirk + archetype + bio (docs/ROSTER_HIERARCHY.md §3-4)
+  const quirk = weighted(rng, FACTION_QUIRKS[faction]);
+  const archetype = pick(rng, ARCHETYPE_IDS);
+  const archDef = ARCHETYPES[archetype];
+  const name = pick(rng, def.names);
+  const bio = generateBio(rng, faction, name, quirk);
+
   return {
     seed: s,
     faction,
-    name: pick(rng, def.names),
+    name,
     bodyId,
     skinTone: SKIN_TONES[skinIdx],
     heightScale: rf(rng, def.height[0], def.height[1]),
@@ -386,9 +569,12 @@ export function generateGrunt(faction: FactionId, seed?: number): GruntRecipe {
     patternSeed: Math.floor(rng() * 0xffffffff),
     style,
     level,
-    hpMul: styleDef.hpMul * levelScale,
-    dmgMul: styleDef.dmgMul * levelScale,
-    speedMul: styleDef.speedMul,
+    hpMul: styleDef.hpMul * archDef.hpMul * levelScale,
+    dmgMul: styleDef.dmgMul * archDef.dmgMul * levelScale,
+    speedMul: styleDef.speedMul * archDef.speedMul,
+    quirk,
+    archetype,
+    bio,
   };
 }
 
@@ -500,11 +686,14 @@ export function gruntDisplayName(recipe: GruntRecipe): string {
   return `${recipe.name} (${short[recipe.faction]})`;
 }
 
-/** Bio line for a grunt, faction-flavored. */
+/** Bio line for a grunt — the full generated bio (docs/ROSTER_HIERARCHY.md §4). */
 export function gruntBio(recipe: GruntRecipe): string {
-  const styleLabel = FIGHT_STYLES[recipe.style].label;
-  const tier = ["", "green", "seasoned", "hardened", "veteran", "elite"][recipe.level];
-  return `${FACTIONS[recipe.faction].label} ${tier} ${styleLabel.toLowerCase()}. ${FACTIONS[recipe.faction].motto}`;
+  return recipe.bio;
+}
+
+/** One-line personality summary: "Marv — Bruiser Boxer, Block Pride". */
+export function gruntPersonality(recipe: GruntRecipe): string {
+  return `${recipe.name} — ${ARCHETYPES[recipe.archetype].label} ${FIGHT_STYLES[recipe.style].label}, ${QUIRKS[recipe.quirk].label}`;
 }
 
 /**
@@ -523,6 +712,9 @@ export function gruntToFighter(recipe: GruntRecipe): {
   hpMul: number;
   dmgMul: number;
   speedMul: number;
+  quirk: QuirkId;
+  archetype: ArchetypeId;
+  personality: string;
 } {
   const body = QUATERNIUS_BODIES.find((b) => b.id === recipe.bodyId) ?? QUATERNIUS_BODIES[0];
   return {
@@ -536,6 +728,9 @@ export function gruntToFighter(recipe: GruntRecipe): {
     hpMul: recipe.hpMul,
     dmgMul: recipe.dmgMul,
     speedMul: recipe.speedMul,
+    quirk: recipe.quirk,
+    archetype: recipe.archetype,
+    personality: gruntPersonality(recipe),
   };
 }
 
@@ -557,8 +752,10 @@ export function missionWave(
     g.level = ri(rng, minLevel, maxLevel);
     const ls = 1 + (g.level - 1) * 0.12;
     const sd = FIGHT_STYLES[g.style];
-    g.hpMul = sd.hpMul * ls;
-    g.dmgMul = sd.dmgMul * ls;
+    const ad = ARCHETYPES[g.archetype];
+    g.hpMul = sd.hpMul * ad.hpMul * ls;
+    g.dmgMul = sd.dmgMul * ad.dmgMul * ls;
+    g.speedMul = sd.speedMul * ad.speedMul;
   }
   return squad;
 }
