@@ -5,6 +5,8 @@ import { MISSIONS, placeName, ruleLabel } from "@/game3d/campaign";
 import { ASSIGN_SLOTS, CLIP_NAMES, STYLES, type Slot } from "@/game3d/rig-pipeline";
 import { MARTIAL, STANCES } from "@/game3d/styles";
 import { CAST_PICKS, fighterByName, ROSTER } from "@/game3d/roster";
+import { sfxBack, sfxFight, wireMenuSfx } from "@/game3d/menu-sfx";
+import "@/game3d/menu-theme.css";
 
 const ARENAS: { id: string; label: string; note: string }[] = [
   { id: "ward", label: "Cinder ward", note: "The whole lane." },
@@ -37,6 +39,12 @@ export function AshlaneApp() {
   const [slot, setSlot] = useState<Slot>("jab");
   const [clip, setClip] = useState("Unarmed_Melee_Attack_Punch_A");
   const seeded = useRef(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
+
+  // Wire synthesized menu SFX to every button in the menu sheet.
+  useEffect(() => {
+    wireMenuSfx(sheetRef.current);
+  }, [menu, pendingJob, suite]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -60,6 +68,7 @@ export function AshlaneApp() {
   }, [hud]);
 
   function leave() {
+    sfxBack();
     setSuite(false);
     setPendingJob(null);
     setPendingWho(null);
@@ -70,6 +79,7 @@ export function AshlaneApp() {
 
   function walkIn(pick: (typeof CAST_PICKS)[number]) {
     if (pendingJob === null) return;
+    sfxFight();
     api.current?.setWho(pick.id);
     api.current?.setAttire(pick.file);
     api.current?.startStory(pendingJob);
@@ -102,10 +112,11 @@ export function AshlaneApp() {
 
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-ink text-cream">
-      <header className="flex shrink-0 items-center justify-between gap-3 px-4 py-3">
+      <div className="al-hazard-thin h-1.5 shrink-0" aria-hidden="true" />
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-line bg-asphalt/60 px-4 py-2.5">
         <div>
-          <p className="font-display text-xs tracking-widest text-ember">ASHLANE</p>
-          <h1 className="font-display text-lg leading-tight">{labelFor(hud.mode)}</h1>
+          <p className="al-kicker al-flicker">Ashlane</p>
+          <h1 className="font-headline text-xl uppercase leading-none tracking-wide text-cream">{labelFor(hud.mode)}</h1>
         </div>
         {hud.running ? (
           <div className="flex items-center gap-3">
@@ -118,274 +129,284 @@ export function AshlaneApp() {
               <br />
               L {Math.round(hud.legsDmg)}
             </p>
-            <button type="button" className="rounded-full border border-line bg-ink-2 px-4 py-2 font-display text-xs text-cream" onClick={() => api.current?.pause(true)}>
+            <button type="button" className="al-chip" onClick={() => api.current?.pause(true)}>
               Pause
             </button>
           </div>
         ) : (
-          <p className="max-w-48 text-right text-sm text-cream-dim">One ward. Three feelings.</p>
+          <p className="max-w-48 text-right font-display text-[10px] uppercase tracking-widest text-cream-dim">One ward. Three feelings.</p>
         )}
       </header>
 
       <div className="relative min-h-0 flex-1 px-3 pb-3">
         <div className="stage h-full overflow-hidden rounded-2xl border border-line">
           <canvas ref={canvasRef} className="h-full w-full" />
-          {hud.running && hud.banner ? <p className="pointer-events-none absolute inset-x-0 top-4 text-center font-display text-brass">{hud.banner}</p> : null}
-          {playing && hud.face ? <p className="pointer-events-none absolute inset-x-0 top-10 text-center text-sm text-cream">{hud.face}</p> : null}
-          {hud.combo > 1 && playing ? <p className="pointer-events-none absolute right-4 top-4 font-display text-ember">{hud.combo} HIT</p> : null}
-          {playing && hud.flow > 8 ? <p className="pointer-events-none absolute right-4 top-10 font-display text-xs text-brass">FLOW {hud.flow}</p> : null}
+          {hud.running && hud.banner ? <p className="al-banner pointer-events-none absolute inset-x-0 top-4 text-center text-xl">{hud.banner}</p> : null}
+          {playing && hud.face ? <p className="pointer-events-none absolute inset-x-0 top-12 text-center font-display text-xs uppercase tracking-widest text-cream">{hud.face}</p> : null}
+          {hud.combo > 1 && playing ? <p className="al-title pointer-events-none absolute right-4 top-4 text-2xl text-ember">{hud.combo} HIT</p> : null}
+          {playing && hud.flow > 8 ? <p className="pointer-events-none absolute right-4 top-12 al-hud-chip">FLOW {hud.flow}</p> : null}
           {playing ? (
             <p className="pointer-events-none absolute bottom-3 left-4 max-w-[70%] text-sm text-cream-dim">{objective(hud)}</p>
           ) : null}
 
           {!hud.running ? (
-            <div className="sheet veil">
-              <div className="mx-auto w-full max-w-md px-4 py-6">
-                <p className="font-display text-3xl text-cream">Ashlane</p>
-                <p className="mt-2 text-sm leading-relaxed text-cream-dim">
-                  {MISSIONS.length} jobs. Hold stick back to guard. Lows and launchers break it. Stick sideways and jump is an au. Throw them into a wall, then hit for a wall follow. Hold a direction as you land to tech. Spin stays on L.
+            <div ref={sheetRef} className="sheet veil al-sheet al-concrete">
+              <div className="al-sheet-inner mx-auto w-full max-w-md px-4 py-6">
+                <p className="al-kicker">Green Harbor · street circuit</p>
+                <h2 className="al-title al-title-xl al-spray mt-1">Ashlane</h2>
+                <div className="al-rip mt-3" aria-hidden="true" />
+                <p className="mt-3 text-sm leading-relaxed text-cream-dim">
+                  <span className="font-headline uppercase text-brass">{MISSIONS.length} jobs.</span> Hold stick back to guard. Lows and launchers break it. Stick sideways and jump is an au. Throw them into a wall, then hit for a wall follow. Hold a direction as you land to tech. Spin stays on L.
                 </p>
                 {menu === "main" ? (
-                  <div className="mt-4 flex flex-col gap-2">
-                    <button type="button" className="rounded-full bg-ember px-5 py-3 font-display text-sm text-ink" onClick={() => setMenu("story")}>
-                      Story
+                  <div className="mt-5 flex flex-col gap-2.5">
+                    <button type="button" className="al-btn al-btn-primary al-pulse al-rise" onClick={() => setMenu("story")}>
+                      <span>Story — take the jobs</span>
                     </button>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => api.current?.startBout("exhibit", arena)}>
-                        Exhibition
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <button type="button" className="al-btn al-rise al-rise-1" onClick={() => api.current?.startBout("exhibit", arena)}>
+                        <span>Exhibition</span>
                       </button>
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => api.current?.startBout("practice", arena)}>
-                        Practice
+                      <button type="button" className="al-btn al-rise al-rise-1" onClick={() => api.current?.startBout("practice", arena)}>
+                        <span>Practice</span>
                       </button>
                     </div>
-                    <button type="button" className="rounded-full border border-line bg-ink-2 px-5 py-3 text-sm text-cream" onClick={() => { api.current?.setStage("ward"); begin("roam"); }}>
-                      Ward
+                    <div className="al-section"><span className="al-section-title">Walk the ward</span></div>
+                    <button type="button" className="al-btn al-rise al-rise-2" onClick={() => { api.current?.setStage("ward"); begin("roam"); }}>
+                      <span>Cinder Ward <em className="not-italic text-cream-dim">— the plaza</em></span>
                     </button>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => { api.current?.setStage("dock"); begin("roam"); }}>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      <button type="button" className="al-chip al-rise al-rise-2" onClick={() => { api.current?.setStage("dock"); begin("roam"); }}>
                         Dock
                       </button>
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => { api.current?.setStage("pit"); begin("roam"); }}>
+                      <button type="button" className="al-chip al-rise al-rise-2" onClick={() => { api.current?.setStage("pit"); begin("roam"); }}>
                         Pit
                       </button>
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => { api.current?.setStage("high"); begin("platform"); }}>
+                      <button type="button" className="al-chip al-rise al-rise-2" onClick={() => { api.current?.setStage("high"); begin("platform"); }}>
                         High line
                       </button>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => setMenu("arenas")}>
+                    <div className="grid grid-cols-3 gap-2.5">
+                      <button type="button" className="al-chip al-rise al-rise-3" onClick={() => setMenu("arenas")}>
                         Arenas
                       </button>
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => setMenu("story")}>
+                      <button type="button" className="al-chip al-rise al-rise-3" onClick={() => setMenu("story")}>
                         Jobs
                       </button>
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-3 py-3 text-sm" onClick={() => setMenu("style")}>
+                      <button type="button" className="al-chip al-rise al-rise-3" onClick={() => setMenu("style")}>
                         Customize
                       </button>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-4 py-3 text-sm text-cream" onClick={() => begin("belt")}>
-                        Scrap street
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <button type="button" className="al-btn al-rise al-rise-4" onClick={() => begin("belt")}>
+                        <span>Scrap street</span>
                       </button>
-                      <button type="button" className="rounded-full border border-line bg-ink-2 px-4 py-3 text-sm text-cream" onClick={() => begin("platform")}>
-                        Coil scaffolds
+                      <button type="button" className="al-btn al-rise al-rise-4" onClick={() => begin("platform")}>
+                        <span>Coil scaffolds</span>
                       </button>
                     </div>
                   </div>
                 ) : null}
                 {menu === "arenas" ? (
-                  <div className="mt-4 flex flex-col gap-2">
-                    <p className="text-sm text-cream-dim">Pick a look. Exhibition and Practice use a ring in the middle of it. Ward still walks the whole lane.</p>
-                    {ARENAS.map((place) => (
+                  <div className="mt-4 flex flex-col gap-2.5">
+                    <div className="al-section"><span className="al-section-title">Pick a block</span></div>
+                    <p className="text-sm text-cream-dim">Exhibition and Practice use a ring in the middle of it. Ward still walks the whole lane.</p>
+                    {ARENAS.map((place, i) => (
                       <button
                         key={place.id}
                         type="button"
-                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        data-on={arena === place.id ? "1" : undefined}
+                        className={`al-card al-rise al-rise-${Math.min(i + 1, 5)}`}
                         onClick={() => setArena(place.id)}
                       >
-                        <span className="font-display text-sm text-brass">
+                        <span className="al-card-title">
                           {place.label}
-                          {arena === place.id ? " · on" : ""}
+                          {arena === place.id ? " — locked in" : ""}
                         </span>
-                        <span className="mt-1 block text-sm text-cream-dim">{place.note}</span>
+                        <span className="al-card-sub">{place.note}</span>
                       </button>
                     ))}
-                    <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => api.current?.startBout("exhibit", arena)}>
-                      Exhibition here
+                    <button type="button" className="al-btn al-btn-primary" onClick={() => api.current?.startBout("exhibit", arena)}>
+                      <span>Exhibition here</span>
                     </button>
-                    <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.startBout("practice", arena)}>
-                      Practice here
+                    <button type="button" className="al-btn" onClick={() => api.current?.startBout("practice", arena)}>
+                      <span>Practice here</span>
                     </button>
                     <button
                       type="button"
-                      className="rounded-full border border-line px-4 py-3 text-sm"
+                      className="al-btn"
                       onClick={() => {
                         api.current?.setStage(arena);
                         begin(arena === "high" ? "platform" : "roam");
                       }}
                     >
-                      Walk it
+                      <span>Walk it</span>
                     </button>
-                    <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setMenu("main")}>
-                      Back
+                    <button type="button" className="al-btn al-btn-ghost" onClick={() => { sfxBack(); setMenu("main"); }}>
+                      <span>← Back</span>
                     </button>
                   </div>
                 ) : null}
                 {menu === "story" ? (
-                  <div className="mt-4 flex flex-col gap-2">
-                    <p className="text-sm text-cream-dim">Cleared {hud.clearedMission} of {MISSIONS.length}. Later jobs stay locked until the one before them is done.</p>
+                  <div className="mt-4 flex flex-col gap-2.5">
+                    <div className="al-section"><span className="al-section-title">The jobs</span></div>
+                    <p className="text-sm text-cream-dim"><span className="al-stamp">Cleared {hud.clearedMission} / {MISSIONS.length}</span></p>
+                    <p className="text-sm text-cream-dim">Later jobs stay locked until the one before them is done.</p>
                     {MISSIONS.map((mission, index) => {
                       const locked = index > hud.clearedMission;
+                      const done = index < hud.clearedMission;
                       return (
                         <button
                           key={mission.n}
                           type="button"
                           disabled={locked}
-                          className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left disabled:opacity-40"
+                          data-done={done ? "1" : undefined}
+                          data-locked={locked ? "1" : undefined}
+                          className="al-card al-mission"
                           onClick={() => { setPendingWho(null); setPendingJob(index); }}
                         >
-                          <span className="font-display text-sm text-brass">
-                            {mission.n}. {mission.title}
-                            {index < hud.clearedMission ? " · done" : ""}
-                          </span>
-                          <span className="mt-1 block text-sm text-cream-dim">
+                          <span className="al-mission-num">{locked ? "✕" : mission.n}</span>
+                          <span className="al-card-title">{mission.title}</span>
+                          <span className="al-card-sub">
                             {placeName(mission.drop)}{mission.drop !== mission.home ? ` to ${placeName(mission.home)}` : ""}. {ruleLabel(mission.rule)}.{mission.waves > 1 ? " One extra crew." : ""}
                           </span>
                         </button>
                       );
                     })}
-                    <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setMenu("main")}>
-                      Back
+                    <button type="button" className="al-btn al-btn-ghost" onClick={() => { sfxBack(); setMenu("main"); }}>
+                      <span>← Back</span>
                     </button>
                   </div>
                 ) : null}
                 {menu === "style" ? (
-                  <div className="mt-4 flex flex-col gap-2">
+                  <div className="mt-4 flex flex-col gap-2.5">
+                    <div className="al-section"><span className="al-section-title">Build</span></div>
                     <p className="text-sm text-cream-dim">KayKit stays shorter, at ward size. Soldier, Second soldier, Shambler, and Second shambler are full-size CC0 bodies and stand taller. Limb bones are no longer stretched, so the skin stays in one piece. Sliders change height, width, and the head only.</p>
-                    <div className="flex gap-2">
-                      <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>Ward size{hud.build === "chibi" ? " · on" : ""}</button>
-                      <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>Full size{hud.build === "full" ? " · on" : ""}</button>
+                    <div className="flex gap-2.5">
+                      <button type="button" className="al-chip flex-1" data-on={hud.build === "chibi" ? "1" : undefined} onClick={() => api.current?.setBuild("chibi")}>Ward size</button>
+                      <button type="button" className="al-chip flex-1" data-on={hud.build === "full" ? "1" : undefined} onClick={() => api.current?.setBuild("full")}>Full size</button>
                     </div>
-                    <div className="flex gap-2">
-                      <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("mix")}>Mixed crowd{hud.crowd === "mix" ? " · on" : ""}</button>
-                      <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("chibi")}>Chibi crowd{hud.crowd === "chibi" ? " · on" : ""}</button>
-                      <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("full")}>Full crowd{hud.crowd === "full" ? " · on" : ""}</button>
+                    <div className="flex gap-2.5">
+                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "mix" ? "1" : undefined} onClick={() => api.current?.setCrowd("mix")}>Mixed crowd</button>
+                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "chibi" ? "1" : undefined} onClick={() => api.current?.setCrowd("chibi")}>Chibi crowd</button>
+                      <button type="button" className="al-chip flex-1" data-on={hud.crowd === "full" ? "1" : undefined} onClick={() => api.current?.setCrowd("full")}>Full crowd</button>
                     </div>
-                    <label className="text-sm text-cream-dim">Height
+                    <label className="al-slider-label">Height
                       <input className="mt-1 block w-full" type="range" min={0.86} max={1.18} step={0.02} value={hud.height} onChange={(event) => api.current?.setShape({ height: Number(event.target.value) })} />
                     </label>
-                    <label className="text-sm text-cream-dim">Bulk
+                    <label className="al-slider-label">Bulk
                       <input className="mt-1 block w-full" type="range" min={0.8} max={1.25} step={0.02} value={hud.bulk} onChange={(event) => api.current?.setShape({ bulk: Number(event.target.value) })} />
                     </label>
-                    <label className="text-sm text-cream-dim">Head
+                    <label className="al-slider-label">Head
                       <input className="mt-1 block w-full" type="range" min={0.75} max={1.3} step={0.02} value={hud.head} onChange={(event) => api.current?.setShape({ head: Number(event.target.value) })} />
                     </label>
-                    <label className="text-sm text-cream-dim">Legs
+                    <label className="al-slider-label">Legs
                       <input className="mt-1 block w-full" type="range" min={0.82} max={1.22} step={0.02} value={hud.leg} onChange={(event) => api.current?.setShape({ leg: Number(event.target.value) })} />
                     </label>
-                    <label className="text-sm text-cream-dim">Shoulders
+                    <label className="al-slider-label">Shoulders
                       <input className="mt-1 block w-full" type="range" min={0.82} max={1.22} step={0.02} value={hud.shoulder} onChange={(event) => api.current?.setShape({ shoulder: Number(event.target.value) })} />
                     </label>
+                    <div className="al-section"><span className="al-section-title">Fight kit</span></div>
                     {STYLES.map((style) => (
                       <button
                         key={style.id}
                         type="button"
-                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        data-on={hud.style === style.id ? "1" : undefined}
+                        className="al-card"
                         onClick={() => api.current?.setStyle(style.id)}
                       >
-                        <span className="font-display text-sm text-brass">
-                          {style.label}
-                          {hud.style === style.id ? " · on" : ""}
-                        </span>
-                        <span className="mt-1 block text-sm text-cream-dim">{style.note}</span>
+                        <span className="al-card-title">{style.label}</span>
+                        <span className="al-card-sub">{style.note}</span>
                       </button>
                     ))}
-                    <p className="pt-2 font-display text-xs text-brass">Who you are</p>
-                    <p className="text-sm text-cream-dim">{hud.who}. {hud.bio}</p>
-                    {ROSTER.map((fighter) => (
-                      <button
-                        key={fighter.id}
-                        type="button"
-                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
-                        onClick={() => api.current?.setWho(fighter.id)}
-                      >
-                        <span className="font-display text-sm text-brass">
-                          {fighter.name}
-                          {hud.who === fighter.name ? " · on" : ""}
-                        </span>
-                        <span className="mt-1 block text-sm text-cream-dim">{fighter.bio}</span>
-                      </button>
-                    ))}
+                    <div className="al-section"><span className="al-section-title">Who you are</span></div>
+                    <p className="text-sm text-cream-dim"><span className="font-headline uppercase text-cream">{hud.who}</span>. {hud.bio}</p>
+                    {ROSTER.map((fighter) => {
+                      const on = hud.who === fighter.name;
+                      return (
+                        <button
+                          key={fighter.id}
+                          type="button"
+                          data-on={on ? "1" : undefined}
+                          className="al-card"
+                          onClick={() => api.current?.setWho(fighter.id)}
+                        >
+                          <span className="al-fighter" data-on={on ? "1" : undefined}>
+                            <span className="al-portrait" aria-hidden="true"><b>{fighter.name.charAt(0)}</b></span>
+                            <span>
+                              <span className="al-card-title">{fighter.name}</span>
+                              <span className="al-card-sub">{fighter.bio}</span>
+                              <span className="al-hud-chip mt-1 inline-block">{fighter.martial}</span>
+                            </span>
+                          </span>
+                        </button>
+                      );
+                    })}
                     {fighterByName(hud.who)?.attires.length ? (
-                      <p className="pt-2 font-display text-xs text-brass">Attire</p>
+                      <div className="al-section"><span className="al-section-title">Attire</span></div>
                     ) : null}
                     {fighterByName(hud.who)?.attires.map((attire) => (
                       <button
                         key={attire.file}
                         type="button"
-                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        data-on={hud.cast === attire.file ? "1" : undefined}
+                        className="al-card"
                         onClick={() => api.current?.setAttire(attire.file)}
                       >
-                        <span className="font-display text-sm text-brass">
-                          {attire.label}
-                          {hud.cast === attire.file ? " · on" : ""}
-                        </span>
+                        <span className="al-card-title">{attire.label}</span>
                       </button>
                     ))}
-                    <p className="pt-2 font-display text-xs text-brass">Fighting style</p>
+                    <div className="al-section"><span className="al-section-title">Fighting style</span></div>
                     {MARTIAL.map((style) => (
                       <button
                         key={style.id}
                         type="button"
-                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        data-on={hud.martial === style.id ? "1" : undefined}
+                        className="al-card"
                         onClick={() => api.current?.setMartial(style.id)}
                       >
-                        <span className="font-display text-sm text-brass">
-                          {style.label}
-                          {hud.martial === style.id ? " · on" : ""}
-                        </span>
-                        <span className="mt-1 block text-sm text-cream-dim">{style.note}</span>
+                        <span className="al-card-title">{style.label}</span>
+                        <span className="al-card-sub">{style.note}</span>
                       </button>
                     ))}
-                    <p className="pt-2 font-display text-xs text-brass">Stance</p>
+                    <div className="al-section"><span className="al-section-title">Stance</span></div>
                     {STANCES.map((stance) => (
                       <button
                         key={stance.id}
                         type="button"
-                        className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left"
+                        data-on={hud.stance === stance.id ? "1" : undefined}
+                        className="al-card"
                         onClick={() => api.current?.setStance(stance.id)}
                       >
-                        <span className="font-display text-sm text-brass">
-                          {stance.label}
-                          {hud.stance === stance.id ? " · on" : ""}
-                        </span>
-                        <span className="mt-1 block text-sm text-cream-dim">{stance.note}</span>
+                        <span className="al-card-title">{stance.label}</span>
+                        <span className="al-card-sub">{stance.note}</span>
                       </button>
                     ))}
-                    <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setMenu("library")}>
-                      Assign a single clip
+                    <button type="button" className="al-btn" onClick={() => setMenu("library")}>
+                      <span>Assign a single clip</span>
                     </button>
-                    <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setMenu("main")}>
-                      Back
+                    <button type="button" className="al-btn al-btn-ghost" onClick={() => { sfxBack(); setMenu("main"); }}>
+                      <span>← Back</span>
                     </button>
                   </div>
                 ) : null}
                 {menu === "library" ? (
-                  <div className="mt-4 flex flex-col gap-2">
+                  <div className="mt-4 flex flex-col gap-2.5">
+                    <div className="al-section"><span className="al-section-title">Move lab</span></div>
                     <p className="text-sm text-cream-dim">
                       {CLIP_NAMES.length} clips on this skeleton, kept on every body. Bannon's Mixamo bank uses different bone names, so those files are not in the phone build. Assign one of these instead.
                     </p>
-                    <label className="text-xs text-cream-dim">
+                    <label className="al-slider-label">
                       Slot
-                      <select className="mt-1 w-full rounded-xl border border-line bg-ink-2 px-3 py-3 text-sm text-cream" value={slot} onChange={(e) => setSlot(e.target.value as Slot)}>
+                      <select className="al-select" value={slot} onChange={(e) => setSlot(e.target.value as Slot)}>
                         {ASSIGN_SLOTS.map((name) => (
                           <option key={name}>{name}</option>
                         ))}
                       </select>
                     </label>
-                    <label className="text-xs text-cream-dim">
+                    <label className="al-slider-label">
                       Clip
-                      <select className="mt-1 w-full rounded-xl border border-line bg-ink-2 px-3 py-3 text-sm text-cream" value={clip} onChange={(e) => setClip(e.target.value)}>
+                      <select className="al-select" value={clip} onChange={(e) => setClip(e.target.value)}>
                         {CLIP_NAMES.map((name) => (
                           <option key={name}>{name}</option>
                         ))}
@@ -393,13 +414,13 @@ export function AshlaneApp() {
                     </label>
                     <button
                       type="button"
-                      className="rounded-full bg-brass px-4 py-3 text-sm text-ink"
+                      className="al-btn al-btn-primary"
                       onClick={() => api.current?.assignClip(slot, clip)}
                     >
-                      Assign {clip} to {slot}
+                      <span>Assign {clip} to {slot}</span>
                     </button>
-                    <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setMenu("main")}>
-                      Back
+                    <button type="button" className="al-btn al-btn-ghost" onClick={() => { sfxBack(); setMenu("main"); }}>
+                      <span>← Back</span>
                     </button>
                   </div>
                 ) : null}
@@ -458,59 +479,61 @@ export function AshlaneApp() {
           ) : null}
 
           {suite && hud.running ? (
-            <div className="sheet veil">
-              <div className="mx-auto w-full max-w-sm px-4 py-6">
-                <p className="font-display text-xl">Customize</p>
-                <p className="mt-1 text-sm text-cream-dim">{hud.who}{hud.cast ? ` · ${CAST_PICKS.find((pick) => pick.file === hud.cast)?.label ?? hud.cast}` : ""}</p>
-                <div className="mt-3 flex flex-col gap-2">
-                  <div className="flex gap-2">
-                    <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>Full{hud.build === "full" ? " · on" : ""}</button>
-                    <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>Ward size{hud.build === "chibi" ? " · on" : ""}</button>
+            <div className="sheet veil al-sheet al-concrete">
+              <div className="al-sheet-inner mx-auto w-full max-w-sm px-4 py-6">
+                <p className="al-kicker">Dress for the fight</p>
+                <h2 className="al-title text-3xl mt-1">Customize</h2>
+                <div className="al-rip mt-2" aria-hidden="true" />
+                <p className="mt-2 text-sm text-cream-dim"><span className="font-headline uppercase text-cream">{hud.who}</span>{hud.cast ? ` · ${CAST_PICKS.find((pick) => pick.file === hud.cast)?.label ?? hud.cast}` : ""}</p>
+                <div className="mt-3 flex flex-col gap-2.5">
+                  <div className="flex gap-2.5">
+                    <button type="button" className="al-chip flex-1" data-on={hud.build === "full" ? "1" : undefined} onClick={() => api.current?.setBuild("full")}>Full</button>
+                    <button type="button" className="al-chip flex-1" data-on={hud.build === "chibi" ? "1" : undefined} onClick={() => api.current?.setBuild("chibi")}>Ward size</button>
                   </div>
-                  {suiteWho === null ? ROSTER.map((fighter) => (
-                    <button key={fighter.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => { setSuiteWho(fighter.id); api.current?.setWho(fighter.id); }}>
-                      <span className="font-display text-sm text-brass">{fighter.name}{hud.who === fighter.name ? " · on" : ""}</span>
-                      <span className="mt-1 block text-sm text-cream-dim">{fighter.attires.length} look{fighter.attires.length === 1 ? "" : "s"}</span>
-                    </button>
-                  )) : (
+                  {suiteWho === null ? ROSTER.map((fighter) => {
+                    const on = hud.who === fighter.name;
+                    return (
+                      <button key={fighter.id} type="button" data-on={on ? "1" : undefined} className="al-card" onClick={() => { setSuiteWho(fighter.id); api.current?.setWho(fighter.id); }}>
+                        <span className="al-fighter" data-on={on ? "1" : undefined}>
+                          <span className="al-portrait" aria-hidden="true"><b>{fighter.name.charAt(0)}</b></span>
+                          <span>
+                            <span className="al-card-title">{fighter.name}</span>
+                            <span className="al-card-sub">{fighter.attires.length} look{fighter.attires.length === 1 ? "" : "s"}</span>
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  }) : (
                     <>
-                      <p className="font-display text-xs text-brass">{ROSTER.find((fighter) => fighter.id === suiteWho)?.name} · pick a look</p>
+                      <div className="al-section"><span className="al-section-title">{ROSTER.find((fighter) => fighter.id === suiteWho)?.name} · pick a look</span></div>
                       {ROSTER.find((fighter) => fighter.id === suiteWho)?.attires.map((attire) => (
-                        <button key={attire.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setAttire(attire.file)}>
-                          <span className="font-display text-sm text-brass">{attire.label}{hud.cast === attire.file ? " · on" : ""}</span>
+                        <button key={attire.file} type="button" data-on={hud.cast === attire.file ? "1" : undefined} className="al-card" onClick={() => api.current?.setAttire(attire.file)}>
+                          <span className="al-card-title">{attire.label}</span>
                         </button>
                       ))}
-                      <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setSuiteWho(null)}>Different fighter</button>
+                      <button type="button" className="al-btn al-btn-ghost" onClick={() => setSuiteWho(null)}><span>← Different fighter</span></button>
                     </>
                   )}
+                  <div className="al-section"><span className="al-section-title">Kit</span></div>
                   {STYLES.map((style) => (
-                    <button key={style.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setStyle(style.id)}>
-                      <span className="font-display text-sm text-brass">
-                        {style.label}
-                        {hud.style === style.id ? " · on" : ""}
-                      </span>
+                    <button key={style.id} type="button" data-on={hud.style === style.id ? "1" : undefined} className="al-card" onClick={() => api.current?.setStyle(style.id)}>
+                      <span className="al-card-title">{style.label}</span>
                     </button>
                   ))}
                   {MARTIAL.map((style) => (
-                    <button key={style.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setMartial(style.id)}>
-                      <span className="font-display text-sm text-brass">
-                        {style.label}
-                        {hud.martial === style.id ? " · on" : ""}
-                      </span>
-                      <span className="mt-1 block text-sm text-cream-dim">{style.note}</span>
+                    <button key={style.id} type="button" data-on={hud.martial === style.id ? "1" : undefined} className="al-card" onClick={() => api.current?.setMartial(style.id)}>
+                      <span className="al-card-title">{style.label}</span>
+                      <span className="al-card-sub">{style.note}</span>
                     </button>
                   ))}
                   {STANCES.map((stance) => (
-                    <button key={stance.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => api.current?.setStance(stance.id)}>
-                      <span className="font-display text-sm text-brass">
-                        {stance.label}
-                        {hud.stance === stance.id ? " · on" : ""}
-                      </span>
-                      <span className="mt-1 block text-sm text-cream-dim">{stance.note}</span>
+                    <button key={stance.id} type="button" data-on={hud.stance === stance.id ? "1" : undefined} className="al-card" onClick={() => api.current?.setStance(stance.id)}>
+                      <span className="al-card-title">{stance.label}</span>
+                      <span className="al-card-sub">{stance.note}</span>
                     </button>
                   ))}
-                  <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => setSuite(false)}>
-                    Done
+                  <button type="button" className="al-btn al-btn-primary" onClick={() => setSuite(false)}>
+                    <span>Done</span>
                   </button>
                 </div>
               </div>
@@ -518,19 +541,21 @@ export function AshlaneApp() {
           ) : null}
 
           {hud.running && hud.paused && hud.bout === "done" && !suite ? (
-            <div className="veil absolute inset-0 flex items-end justify-center p-4 sm:items-center">
-              <div className="w-full max-w-sm">
-                <p className="font-display text-xl">Exhibition clear</p>
-                <p className="mt-1 text-sm text-cream-dim">The card is down. Flow was {hud.flow}.</p>
-                <div className="mt-4 flex flex-col gap-2">
-                  <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => api.current?.startBout("exhibit", arena)}>
-                    Run it again
+            <div className="veil al-sheet absolute inset-0 flex items-end justify-center p-4 sm:items-center">
+              <div className="w-full max-w-sm al-rise">
+                <p className="al-kicker">Card's down</p>
+                <h2 className="al-title text-4xl mt-1">Exhibition clear</h2>
+                <div className="al-rip mt-2" aria-hidden="true" />
+                <p className="mt-2 text-sm text-cream-dim">Flow was <span className="font-headline text-brass">{hud.flow}</span>.</p>
+                <div className="mt-4 flex flex-col gap-2.5">
+                  <button type="button" className="al-btn al-btn-primary" onClick={() => api.current?.startBout("exhibit", arena)}>
+                    <span>Run it again</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.startBout("practice", arena)}>
-                    Practice
+                  <button type="button" className="al-btn" onClick={() => api.current?.startBout("practice", arena)}>
+                    <span>Practice</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={leave}>
-                    Main menu
+                  <button type="button" className="al-btn al-btn-ghost" onClick={leave}>
+                    <span>← Main menu</span>
                   </button>
                 </div>
               </div>
@@ -538,27 +563,29 @@ export function AshlaneApp() {
           ) : null}
 
           {hud.running && hud.paused && hud.missionClear && hud.bout !== "done" && !suite && pendingJob === null ? (
-            <div className="veil absolute inset-0 flex items-end justify-center p-4 sm:items-center">
-              <div className="w-full max-w-sm">
-                <p className="font-display text-xl">Job done</p>
-                <p className="mt-1 text-sm text-cream-dim">{hud.missionTitle}</p>
-                <p className="mt-1 text-sm text-cream">Purse {hud.purse}. Rank {hud.level}. The next job is a different block.</p>
-                <div className="mt-4 flex flex-col gap-2">
+            <div className="veil al-sheet absolute inset-0 flex items-end justify-center p-4 sm:items-center">
+              <div className="w-full max-w-sm al-rise">
+                <p className="al-kicker al-flicker">Job complete</p>
+                <h2 className="al-title text-4xl mt-1">Job done</h2>
+                <div className="al-rip mt-2" aria-hidden="true" />
+                <p className="mt-2 text-sm text-cream-dim">{hud.missionTitle}</p>
+                <p className="mt-1 text-sm text-cream">Purse <span className="font-headline text-brass">{hud.purse}</span>. Rank <span className="font-headline text-brass">{hud.level}</span>. The next job is a different block.</p>
+                <div className="mt-4 flex flex-col gap-2.5">
                   {hud.mission + 1 < MISSIONS.length ? (
-                    <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => setPendingJob(hud.mission + 1)}>
-                      Next: {placeName(MISSIONS[hud.mission + 1].home)}
+                    <button type="button" className="al-btn al-btn-primary al-pulse" onClick={() => setPendingJob(hud.mission + 1)}>
+                      <span>Next: {placeName(MISSIONS[hud.mission + 1].home)}</span>
                     </button>
                   ) : (
                     <p className="text-sm text-cream-dim">That's the end of the four chapters.</p>
                   )}
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setPendingJob(hud.mission)}>
-                    Run it again
+                  <button type="button" className="al-btn" onClick={() => setPendingJob(hud.mission)}>
+                    <span>Run it again</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setSuite(true)}>
-                    Customize
+                  <button type="button" className="al-btn" onClick={() => setSuite(true)}>
+                    <span>Customize</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={leave}>
-                    Main menu
+                  <button type="button" className="al-btn al-btn-ghost" onClick={leave}>
+                    <span>← Main menu</span>
                   </button>
                 </div>
               </div>
@@ -566,59 +593,70 @@ export function AshlaneApp() {
           ) : null}
 
           {hud.running && hud.paused && !hud.missionClear && hud.bout !== "done" && !suite && pendingJob === null ? (
-            <div className="sheet veil">
-              <div className="mx-auto w-full max-w-sm px-4 py-6">
-                <p className="font-display text-xl">Paused</p>
-                <p className="mt-1 text-sm text-cream-dim">{hud.who}. Drag this list. The ward stays where you left it.</p>
+            <div ref={sheetRef} className="sheet veil al-sheet al-concrete">
+              <div className="al-sheet-inner mx-auto w-full max-w-sm px-4 py-6">
+                <p className="al-kicker">Take five</p>
+                <h2 className="al-title text-4xl mt-1">Paused</h2>
+                <div className="al-rip mt-2" aria-hidden="true" />
+                <p className="mt-2 text-sm text-cream-dim"><span className="font-headline uppercase text-cream">{hud.who}</span>. Drag this list. The ward stays where you left it.</p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("full")}>You full{hud.build === "full" ? " · on" : ""}</button>
-                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setBuild("chibi")}>You chibi{hud.build === "chibi" ? " · on" : ""}</button>
-                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("full")}>Crowd full{hud.crowd === "full" ? " · on" : ""}</button>
-                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("mix")}>Crowd mix{hud.crowd === "mix" ? " · on" : ""}</button>
-                  <button type="button" className="rounded-full border border-line px-4 py-2 text-sm" onClick={() => api.current?.setCrowd("chibi")}>Crowd chibi{hud.crowd === "chibi" ? " · on" : ""}</button>
+                  <button type="button" className="al-chip" data-on={hud.build === "full" ? "1" : undefined} onClick={() => api.current?.setBuild("full")}>You full</button>
+                  <button type="button" className="al-chip" data-on={hud.build === "chibi" ? "1" : undefined} onClick={() => api.current?.setBuild("chibi")}>You chibi</button>
+                  <button type="button" className="al-chip" data-on={hud.crowd === "full" ? "1" : undefined} onClick={() => api.current?.setCrowd("full")}>Crowd full</button>
+                  <button type="button" className="al-chip" data-on={hud.crowd === "mix" ? "1" : undefined} onClick={() => api.current?.setCrowd("mix")}>Crowd mix</button>
+                  <button type="button" className="al-chip" data-on={hud.crowd === "chibi" ? "1" : undefined} onClick={() => api.current?.setCrowd("chibi")}>Crowd chibi</button>
                 </div>
-                <div className="mt-4 flex flex-col gap-2">
+                <div className="al-section"><span className="al-section-title">Switch block</span></div>
+                <div className="flex flex-col gap-2.5">
                   {MODES.map((mode) => (
-                    <button key={mode.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => begin(mode.id)}>
-                      <span className="font-display text-sm text-brass">{mode.label}</span>
-                      <span className="mt-1 block text-sm text-cream-dim">{mode.hint}</span>
+                    <button key={mode.id} type="button" className="al-card" onClick={() => begin(mode.id)}>
+                      <span className="al-card-title">{mode.label}</span>
+                      <span className="al-card-sub">{mode.hint}</span>
                     </button>
                   ))}
-                  <button type="button" className="rounded-full bg-ember px-4 py-3 font-display text-sm text-ink" onClick={() => api.current?.pause(false)}>
-                    Resume
+                  <button type="button" className="al-btn al-btn-primary al-pulse" onClick={() => api.current?.pause(false)}>
+                    <span>Resume</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => setSuite(true)}>
-                    Customize
+                  <button type="button" className="al-btn" onClick={() => setSuite(true)}>
+                    <span>Customize</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => api.current?.rematch()}>
-                    Rematch
+                  <button type="button" className="al-btn" onClick={() => api.current?.rematch()}>
+                    <span>Rematch</span>
                   </button>
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={leave}>
-                    Main menu
+                  <button type="button" className="al-btn al-btn-ghost" onClick={leave}>
+                    <span>← Main menu</span>
                   </button>
                 </div>
               </div>
             </div>
           ) : null}
           {pendingJob !== null && MISSIONS[pendingJob] ? (
-            <div className="sheet veil">
-              <div className="mx-auto w-full max-w-md px-4 py-6">
-                <p className="font-display text-xl text-cream">{pendingWho ? "Which look" : "Who walks in"}</p>
-                <p className="mt-1 text-sm text-cream-dim">{MISSIONS[pendingJob].n}. {MISSIONS[pendingJob].title}. {placeName(MISSIONS[pendingJob].drop)}.</p>
-                <div className="mt-4 flex flex-col gap-2">
+            <div ref={sheetRef} className="sheet veil al-sheet al-concrete">
+              <div className="al-sheet-inner mx-auto w-full max-w-md px-4 py-6">
+                <p className="al-kicker">Job {MISSIONS[pendingJob].n} · {placeName(MISSIONS[pendingJob].drop)}</p>
+                <h2 className="al-title text-4xl mt-1">{pendingWho ? "Which look" : "Who walks in"}</h2>
+                <div className="al-rip mt-2" aria-hidden="true" />
+                <p className="mt-2 text-sm text-cream-dim">{MISSIONS[pendingJob].title}.</p>
+                <div className="mt-4 flex flex-col gap-2.5">
                   {pendingWho === null ? ROSTER.map((fighter) => (
-                    <button key={fighter.id} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => setPendingWho(fighter.id)}>
-                      <span className="font-display text-sm text-brass">{fighter.name}</span>
-                      <span className="mt-1 block text-sm text-cream-dim">{fighter.bio}</span>
+                    <button key={fighter.id} type="button" className="al-card" onClick={() => setPendingWho(fighter.id)}>
+                      <span className="al-fighter">
+                        <span className="al-portrait" aria-hidden="true"><b>{fighter.name.charAt(0)}</b></span>
+                        <span>
+                          <span className="al-card-title">{fighter.name}</span>
+                          <span className="al-card-sub">{fighter.bio}</span>
+                          <span className="al-hud-chip mt-1 inline-block">{fighter.martial}</span>
+                        </span>
+                      </span>
                     </button>
                   )) : ROSTER.find((fighter) => fighter.id === pendingWho)?.attires.map((attire) => (
-                    <button key={attire.file} type="button" className="rounded-2xl border border-line bg-ink-2 px-4 py-3 text-left" onClick={() => walkIn({ id: pendingWho, name: ROSTER.find((fighter) => fighter.id === pendingWho)?.name ?? "", label: attire.label, file: attire.file, bio: "" })}>
-                      <span className="font-display text-sm text-brass">{attire.label}</span>
-                      <span className="mt-1 block text-sm text-cream-dim">{ROSTER.find((fighter) => fighter.id === pendingWho)?.name}</span>
+                    <button key={attire.file} type="button" className="al-card" onClick={() => walkIn({ id: pendingWho, name: ROSTER.find((fighter) => fighter.id === pendingWho)?.name ?? "", label: attire.label, file: attire.file, bio: "" })}>
+                      <span className="al-card-title">{attire.label}</span>
+                      <span className="al-card-sub">{ROSTER.find((fighter) => fighter.id === pendingWho)?.name}</span>
                     </button>
                   ))}
-                  <button type="button" className="rounded-full border border-line px-4 py-3 text-sm" onClick={() => pendingWho ? setPendingWho(null) : setPendingJob(null)}>
-                    Back
+                  <button type="button" className="al-btn al-btn-ghost" onClick={() => { sfxBack(); pendingWho ? setPendingWho(null) : setPendingJob(null); }}>
+                    <span>← Back</span>
                   </button>
                 </div>
               </div>
@@ -666,10 +704,10 @@ function objective(hud: Hud) {
 
 function Meter({ label, value, tone }: { label: string; value: number; tone: "ember" | "brass" }) {
   return (
-    <div className="w-16">
-      <div className="mb-1 font-display text-xs text-cream-dim">{label}</div>
-      <div className="h-2 overflow-hidden rounded-full bg-ink-2">
-        <div className={tone === "ember" ? "h-full bg-ember" : "h-full bg-brass"} style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
+    <div className="w-20">
+      <div className="mb-1 font-display text-[10px] uppercase tracking-widest text-cream-dim">{label}</div>
+      <div className={`al-hpbar${tone === "brass" ? " brass" : ""}`}>
+        <i style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
       </div>
     </div>
   );
