@@ -205,7 +205,7 @@ export const ROSTER: LaneFighter[] = [
     name: "Sombra Negra",
     martial: "lucha",
     bio: "The Finisher Thief. Steals your finisher mid-match and beats you with it — your best self, turned.",
-    attires: [a("main", "Main Attire", "https://raw.githubusercontent.com/mhvnsnt/Bannon/main/assets/models/SOMBRA_NEGRA.glb")],
+    attires: [a("main", "Main Attire", "assets/models/SOMBRA_NEGRA_rigged.glb")],
   },
 ];
 
