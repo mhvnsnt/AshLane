@@ -1,4 +1,4 @@
-# ASHLANE — Story Bible (v1.0, 2026-10-05)
+# CLARIFICATION (Owner, 2026-10-05)\n\n"God Within" is BACKGROUND CANON from Bannon, not a game mode in AshLane. It informs the narrative indirectly but is NEVER referenced by name in-game. No character says it. No menu mentions it. It's the deep lore that shapes the world, not a feature.\n\n---\n\n# ASHLANE — Story Bible (v1.0, 2026-10-05)
 
 > The Ash Laneverse (Earth-AL): an alternate universe of the Bannon "Off The Top Rope"
 > canon. Same multiverse, different world, different rules. DC/Marvel-style:
