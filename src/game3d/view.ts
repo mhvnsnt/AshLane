@@ -5,7 +5,7 @@ import { clone as cloneRig } from "three/examples/jsm/utils/SkeletonUtils.js";
 import type { Body, Box, Sim } from "./sim";
 import { HAND_SLOT, PROP_MESH, TARGET_HEIGHT, adoptRig, castMoveset, clipForMoveset, slotFor } from "./rig-pipeline";
 import { forgeCar, forgeStreet, poseCar } from "./forge";
-import { bakeMotion, loadMotionBank, motionNames, retargetUal, setUal } from "./motion-bank";
+import { bakeMotion, loadMotionBank, motionNames, retargetUal, setUalSources } from "./motion-bank";
 // Wired modules (services.ts hub): weather drives sun/fog/rain, boids drive
 // bird meshes, streaming ticks the chunk state machine, springbones step
 // secondary motion, universal-retarget remaps template clips per model.
@@ -203,8 +203,10 @@ export function createView(canvas: HTMLCanvasElement) {
     (gltfs) => {
       const valid = gltfs.filter((g): g is NonNullable<typeof g> => g !== null);
       if (valid.length === 0) return;
-      const allClips = valid.flatMap((g) => g.animations);
-      setUal(valid[0].scene, allClips);
+      // FIX 2026-10-05: each library keeps its OWN rest pose. UAL1/UAL2 ship on
+      // mixamorig:* (colon Mixamo); Godot Standard ships on DEF-*. Flattening
+      // clips under one scene silently dropped all 86 UAL1/UAL2 combat clips.
+      setUalSources(valid.map((g) => ({ root: g.scene, clips: g.animations })));
       rigKey = "";
     }
   );

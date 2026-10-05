@@ -304,59 +304,118 @@ const QUATERNIUS_UAL_BONE: Record<string, string> = {
   "pinky_03_r": "mixamorigRightHandPinky3",
 };
 
-let ualRoot: THREE.Object3D | null = null;
-let ualClips: THREE.AnimationClip[] = [];
+interface UalSource {
+  root: THREE.Object3D;
+  clips: THREE.AnimationClip[];
+  rest: Map<string, THREE.Quaternion>;
+}
 
+let ualSources: UalSource[] = [];
+
+function captureRest(root: THREE.Object3D): Map<string, THREE.Quaternion> {
+  const m = new Map<string, THREE.Quaternion>();
+  root.traverse((obj) => {
+    if (obj.name) m.set(obj.name, obj.quaternion.clone());
+  });
+  return m;
+}
+
+/**
+ * Register UAL animation sources. Each library gets its own rest pose —
+ * UAL1/UAL2 ship on mixamorig:* (colon Mixamo) while the Godot Standard
+ * library ships on DEF-* (Rigify). Mixing their rest poses was silently
+ * dropping all 86 UAL1/UAL2 combat clips (FIX 2026-10-05).
+ */
 export function setUal(root: THREE.Object3D, clips: THREE.AnimationClip[]) {
-  ualRoot = root;
-  ualClips = clips;
+  ualSources = [{ root, clips, rest: captureRest(root) }];
+}
+
+/** Register multiple UAL libraries, each with its own rest pose. */
+export function setUalSources(sources: { root: THREE.Object3D; clips: THREE.AnimationClip[] }[]) {
+  ualSources = sources.map((s) => ({ ...s, rest: captureRest(s.root) }));
+}
+
+/** Resolve a source bone name to a destination bone name + source rest key. */
+function resolveUalBone(
+  bone: string,
+  colonTarget: boolean,
+  packedTarget: boolean,
+): { dest: string; srcKey: string } | null {
+  // Case 1: source is already colon Mixamo (UAL1/UAL2: mixamorig:Hips).
+  // Direct mapping — same skeleton family as the standardized cast.
+  if (bone.startsWith("mixamorig:")) {
+    if (colonTarget) return { dest: bone, srcKey: bone };
+    if (packedTarget) return { dest: bone.replace("mixamorig:", "mixamorig"), srcKey: bone };
+    // Stripped Mixamo target: drop the prefix.
+    return { dest: bone.slice("mixamorig:".length), srcKey: bone };
+  }
+  // Case 2: source is packed Mixamo (mixamorigHips).
+  if (bone.startsWith("mixamorig")) {
+    const stripped = bone.slice("mixamorig".length);
+    if (colonTarget) return { dest: `mixamorig:${stripped}`, srcKey: bone };
+    if (packedTarget) return { dest: bone, srcKey: bone };
+    return { dest: stripped, srcKey: bone };
+  }
+  // Case 3: Godot DEF-* names.
+  const godotDest = UAL_BONE[bone];
+  if (godotDest) {
+    const dest = colonTarget && !godotDest.includes(":")
+      ? godotDest.replace("mixamorig", "mixamorig:")
+      : godotDest;
+    return { dest, srcKey: bone };
+  }
+  // Case 4: Quaternius UE names.
+  const quatDest = QUATERNIUS_UAL_BONE[bone];
+  if (quatDest) {
+    const dest = colonTarget && !quatDest.includes(":")
+      ? quatDest.replace("mixamorig", "mixamorig:")
+      : quatDest;
+    return { dest, srcKey: bone };
+  }
+  return null;
 }
 
 export function retargetUal(target: THREE.Object3D) {
-  if (!ualRoot || ualClips.length === 0) return [] as THREE.AnimationClip[];
-  const sourceRest = new Map<string, THREE.Quaternion>();
-  ualRoot.traverse((obj) => {
-    if (obj.name) sourceRest.set(obj.name, obj.quaternion.clone());
-  });
-  const targetRest = new Map<string, THREE.Quaternion>();
-  target.traverse((obj) => {
-    if (obj.name) targetRest.set(obj.name, obj.quaternion.clone());
-  });
-  // FIX 2026-10-05: UAL_BONE/QUATERNIUS_UAL_BONE use packed Mixamo names
-  // (mixamorigHips) but AshLane cast uses colon names (mixamorig:Hips).
-  // Detect the target convention and rewrite destinations to match.
+  if (ualSources.length === 0) return [] as THREE.AnimationClip[];
+  const targetRest = captureRest(target);
+  // Detect the target bone-name convention.
   const colonTarget = targetRest.has("mixamorig:Hips");
-  const fixDest = (d: string) =>
-    colonTarget && d.startsWith("mixamorig") && !d.includes(":")
-      ? d.replace("mixamorig", "mixamorig:")
-      : d;
+  const packedTarget = !colonTarget && targetRest.has("mixamorigHips");
   const out: THREE.AnimationClip[] = [];
-  for (const clip of ualClips) {
-    if (clip.name === "A_TPose") continue;
-    const tracks: THREE.QuaternionKeyframeTrack[] = [];
-    for (const track of clip.tracks) {
-      if (!track.name.endsWith(".quaternion")) continue;
-      const bone = track.name.slice(0, -".quaternion".length);
-      const destRaw = UAL_BONE[bone] ?? QUATERNIUS_UAL_BONE[bone];
-      const dest = destRaw ? fixDest(destRaw) : undefined;
-      const qS = sourceRest.get(bone);
-      const qT = dest ? targetRest.get(dest) : undefined;
-      if (!dest || !qS || !qT) continue;
-      const count = track.times.length;
-      const next = new Float32Array(count * 4);
-      const key = new THREE.Quaternion();
-      const rel = new THREE.Quaternion();
-      const inv = qS.clone().invert();
-      const written = new THREE.Quaternion();
-      for (let i = 0; i < count; i++) {
-        key.fromArray(track.values, i * 4);
-        rel.copy(inv).multiply(key);
-        written.copy(qT).multiply(rel);
-        written.toArray(next, i * 4);
+  const seen = new Set<string>();
+  for (const source of ualSources) {
+    for (const clip of source.clips) {
+      if (clip.name === "A_TPose") continue;
+      // Dedupe: same clip name from multiple libraries = keep first.
+      if (seen.has(clip.name)) continue;
+      const tracks: THREE.QuaternionKeyframeTrack[] = [];
+      for (const track of clip.tracks) {
+        if (!track.name.endsWith(".quaternion")) continue;
+        const bone = track.name.slice(0, -".quaternion".length);
+        const resolved = resolveUalBone(bone, colonTarget, packedTarget);
+        if (!resolved) continue;
+        const qS = source.rest.get(resolved.srcKey);
+        const qT = targetRest.get(resolved.dest);
+        if (!qS || !qT) continue;
+        const count = track.times.length;
+        const next = new Float32Array(count * 4);
+        const key = new THREE.Quaternion();
+        const rel = new THREE.Quaternion();
+        const inv = qS.clone().invert();
+        const written = new THREE.Quaternion();
+        for (let i = 0; i < count; i++) {
+          key.fromArray(track.values, i * 4);
+          rel.copy(inv).multiply(key);
+          written.copy(qT).multiply(rel);
+          written.toArray(next, i * 4);
+        }
+        tracks.push(new THREE.QuaternionKeyframeTrack(`${resolved.dest}.quaternion`, Array.from(track.times), Array.from(next)));
       }
-      tracks.push(new THREE.QuaternionKeyframeTrack(`${dest}.quaternion`, Array.from(track.times), Array.from(next)));
+      if (tracks.length) {
+        seen.add(clip.name);
+        out.push(new THREE.AnimationClip(clip.name, clip.duration, tracks));
+      }
     }
-    if (tracks.length) out.push(new THREE.AnimationClip(clip.name, clip.duration, tracks));
   }
   return out;
 }
