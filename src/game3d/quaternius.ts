@@ -91,7 +91,7 @@ export function attachPart(body: THREE.Object3D, part: THREE.Object3D): number {
       const target = bodyBones.get(src.bones[i].name);
       if (!target) return; // incomplete bind — leave this mesh on the part rig
       remapped.push(target);
-      inverses.push(src.getBoneInverse(i).clone());
+      inverses.push(src.boneInverses[i].clone());
     }
     mesh.skeleton = new THREE.Skeleton(remapped, inverses);
     // Re-bind against the body's current world transform so the part follows it.

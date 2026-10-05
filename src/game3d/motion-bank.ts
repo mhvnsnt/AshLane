@@ -322,6 +322,14 @@ export function retargetUal(target: THREE.Object3D) {
   target.traverse((obj) => {
     if (obj.name) targetRest.set(obj.name, obj.quaternion.clone());
   });
+  // FIX 2026-10-05: UAL_BONE/QUATERNIUS_UAL_BONE use packed Mixamo names
+  // (mixamorigHips) but AshLane cast uses colon names (mixamorig:Hips).
+  // Detect the target convention and rewrite destinations to match.
+  const colonTarget = targetRest.has("mixamorig:Hips");
+  const fixDest = (d: string) =>
+    colonTarget && d.startsWith("mixamorig") && !d.includes(":")
+      ? d.replace("mixamorig", "mixamorig:")
+      : d;
   const out: THREE.AnimationClip[] = [];
   for (const clip of ualClips) {
     if (clip.name === "A_TPose") continue;
@@ -329,7 +337,8 @@ export function retargetUal(target: THREE.Object3D) {
     for (const track of clip.tracks) {
       if (!track.name.endsWith(".quaternion")) continue;
       const bone = track.name.slice(0, -".quaternion".length);
-      const dest = UAL_BONE[bone] ?? QUATERNIUS_UAL_BONE[bone];
+      const destRaw = UAL_BONE[bone] ?? QUATERNIUS_UAL_BONE[bone];
+      const dest = destRaw ? fixDest(destRaw) : undefined;
       const qS = sourceRest.get(bone);
       const qT = dest ? targetRest.get(dest) : undefined;
       if (!dest || !qS || !qT) continue;
