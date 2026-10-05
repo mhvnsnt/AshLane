@@ -80,7 +80,7 @@ function pick<T>(rng: () => number, arr: readonly T[]): T {
 // Types
 // ---------------------------------------------------------------------------
 
-export type FactionId = "ashes" | "combine" | "hollows" | "unaffiliated";
+export type FactionId = "ashes" | "combine" | "hollows" | "unaffiliated" | "painted";
 
 export type FightStyle =
   | "street"      // brawling, haymakers, dirty boxing
@@ -230,6 +230,22 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     beardChance: 0.35,
     names: ["Vex", "Halo", "Rook", "Jax", "Nyx", "Blaze", "Onyx-2", "Sable", "Krait", "Zero", "Mira", "Dagger"],
   },
+  painted: {
+    id: "painted",
+    label: "The Painted", // PROPOSED — owner approval needed (docs/DARK_CLOWN_FACTION.md)
+    motto: "The paint never comes off.",
+    shirts: [0x1a1a1a, 0x2a2a2a, 0x2d1a3e, 0x4a0a0a, 0x3e0a0a, 0xf5f5f5, 0x3d1a3e],
+    pants: [0x1a1a1a, 0x2a2a2a, 0x333333, 0x3d1a3e],
+    accent: 0xcc1122, // blood red
+    skinDist: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]],
+    bodyDist: [["male", 60], ["female", 40]],
+    height: [0.93, 1.07],
+    bulk: [0.88, 1.12],
+    styles: [["wrestling", 25], ["street", 25], ["martial-arts", 15], ["drunken", 10], ["lucha", 10], ["mma", 10], ["capoeira", 5]],
+    hairBias: "any",
+    beardChance: 0.25,
+    names: ["Riddle", "Jester", "Mirth", "Patches", "Smiles", "Mimo", "Payaso", "Broma", "Calavera", "Loco", "Truco", "Risa", "Giggles", "Harley", "Frowns", "Bozo"],
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -341,7 +357,9 @@ export type QuirkId =
   // Hollows
   | "burned" | "hollow-laugh" | "swarm-mind"
   // Unaffiliated
-  | "mercenary" | "collector" | "drifter";
+  | "mercenary" | "collector" | "drifter"
+  // Painted (dark clown gang)
+  | "painted-face" | "carnival" | "recruiter";
 
 export type QuirkDef = { id: QuirkId; label: string; hint: string };
 
@@ -368,6 +386,9 @@ export const QUIRKS: Record<QuirkId, QuirkDef> = {
   "mercenary":      { id: "mercenary",      label: "Mercenary",      hint: "\"Nothing personal.\" Efficient, cold." },
   "collector":      { id: "collector",      label: "Collector",      hint: "Wants YOUR moves. Studies you mid-fight." },
   "drifter":        { id: "drifter",        label: "Drifter",        hint: "Might walk away mid-fight if bored." },
+  "painted-face":   { id: "painted-face",   label: "Painted Face",   hint: "Wears the paint. Never takes it off. Nobody's seen under." },
+  "carnival":       { id: "carnival",       label: "Carnival",       hint: "Treats the fight like a show. You're the audience." },
+  "recruiter":      { id: "recruiter",      label: "Recruiter",      hint: "Trying to recruit you. The paint is the invitation." },
 };
 
 /** Quirk pools per faction: [quirkId, weight]. */
@@ -387,6 +408,10 @@ const FACTION_QUIRKS: Record<FactionId, [QuirkId, number][]> = {
   unaffiliated: [
     ["mercenary", 25], ["collector", 15], ["drifter", 15],
     ["opportunist", 15], ["showoff", 10], ["counter", 10], ["wild", 10],
+  ],
+  painted: [
+    ["painted-face", 25], ["carnival", 20], ["wild", 15],
+    ["showoff", 15], ["recruiter", 10], ["fights-dirty", 10], ["counter", 5],
   ],
 };
 
@@ -479,6 +504,24 @@ const BIO_TEMPLATES: Record<FactionId, BioTemplate> = {
       "\"Nothing personal\" — and they mean it.",
       "Says the mask is the only honest thing they own.",
       "Might leave mid-fight if it's boring. Might not.",
+    ],
+  },
+  painted: {
+    origin: [
+      "Ran away to the carnival grounds at sixteen. Never left.",
+      "The system failed them. Onyx offered the paint instead.",
+      "Used to be somebody. The paint ate that too.",
+      "Found laughing in the funhouse ruins. Hollow brought them in.",
+      "Chola from the east side. The teardrops are real.",
+      "Ex-lucha circuit. Still wears the mask under the paint.",
+    ],
+    motive: [
+      "The paint never comes off. Neither do they.",
+      "Treats the fight like a show. You're the audience.",
+      "Laughs while they fight. It's not joy.",
+      "Trying to recruit you. The paint is the invitation.",
+      "Wears the paint. Never takes it off. Nobody's seen under.",
+      "The carnival grounds are home. You're trespassing.",
     ],
   },
 };
@@ -590,7 +633,7 @@ export function generateSquad(faction: FactionId, count: number, seed?: number):
 export function generateCrowd(count: number, seed?: number): GruntRecipe[] {
   const base = seed ?? Math.floor(Math.random() * 0xffffffff);
   const rng = mulberry32(base ^ 0x9e3779b9);
-  const factions: FactionId[] = ["ashes", "combine", "hollows", "unaffiliated"];
+  const factions: FactionId[] = ["ashes", "combine", "hollows", "unaffiliated", "painted"];
   const out: GruntRecipe[] = [];
   for (let i = 0; i < count; i++) {
     out.push(generateGrunt(pick(rng, factions), base + i * 104729));
@@ -682,6 +725,7 @@ export function gruntDisplayName(recipe: GruntRecipe): string {
     combine: "Combine",
     hollows: "Hollows",
     unaffiliated: "Unaffiliated",
+    painted: "Painted",
   };
   return `${recipe.name} (${short[recipe.faction]})`;
 }
