@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "../game3d/menu-theme.css";
+@import "./game3d/menu-theme.css";
 
 @theme {
   --color-ink: #12100e;
