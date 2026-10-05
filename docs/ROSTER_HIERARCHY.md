@@ -3,6 +3,15 @@
 > Owner directive (2026-10-05): 100+ characters total. Urban Reign-style — every
 > grunt is a PERSON, not a clone. Bannon canon characters appear with STREET NAMES,
 > not wrestling gimmicks. Full bios for everyone.
+>
+> Persona mapping rule (owner, 2026-10-05) — three tiers:
+> 1. **KEEP AS-IS** — if their Bannon persona already works on the street
+>    (urban / music / industry / corporate), keep it. No rename needed.
+> 2. **GIVE STREET PERSONA** — if the wrestling gimmick is too heavy
+>    ("The Executioner", "The Golden Bull"), give them a street name that fits
+>    their personality. A powerhouse wrestler becomes a street enforcer.
+> 3. **CAN KEEP WRESTLING** — characters in wrestling-specific factions stay
+>    wrestlers. There WILL be wrestling factions in the game.
 
 ---
 
@@ -16,35 +25,62 @@ models, unique movesets, story missions built around them. ~8 characters.
 |---|---|---|---|
 | **Ash Lane** | Ashes | Marquis/Bannon (parallel, not port) | Protagonist. LP uncomputable. |
 | **Doc** ("Anchor") | Ashes | Atlas Vance | Gym owner. Moral center. |
-| **Director Cole Vane** | Combine | Edwin Kennedy | Halcyon face. Corporate heel. |
+| **Director Cole Vane** | Combine | Edwin Kennedy (parallel) | Halcyon face. Corporate heel. (Kennedy himself can also appear as-is — see §1b.) |
 | **Sombra Negra** | Unaffiliated | Same character | The Calculated Mercenary. Already on roster. |
 | **Onyx** | None (crosser) | Same character | Only Earth-crosser. Unlit. |
 | **Hollow** | Hollows | (faction boss — owner's call on canon) | Burned-out Flame victim. Swarm leader. |
 | **Rook** | Ashes | (original) | Teen runner. "?" side-chain giver. |
 | **Mara Lane** | Ashes (deceased) | (original) | Ash's sibling. Backstory, not playable. |
 
-### Tier 1 — LIEUTENANTS (named, distinctive generated)
-Canon characters with street names. Generated from the grunt pipeline but with
+### Tier 0b — KEEP-AS-IS CANON FIGURES (corporate / urban, no rename)
+These characters' Bannon personas already work on the street. They appear as
+themselves — no street name, no gimmick change.
+
+| Name | Canon | Role in AshLane | Notes |
+|---|---|---|---|
+| **Edwin Kennedy** | "The Boss" / Mr. Edwin John Kennedy | Combine (Halcyon boardroom) | Already corporate. Micromanaging mogul energy fits Halcyon perfectly. Can appear alongside or above Director Cole Vane. |
+| **Stan Combs** | "The Overlord" | Combine (Halcyon shadow) | Already corporate. The true power behind Halcyon — government-tied predator. Rarely seen, always felt. |
+| **Stick Up** | Andre Curtis / "Jackboy" | Ashes (ally) | Already urban/music. Real person in canon — handle with care per owner. Street fighter, high-flyer, the heart. NOT the cyborg variant (separate). |
+| **Finesse** | Narvin Jackson ("Finxsse") | Unaffiliated | Already urban/industry. Biker-street charisma, speed + power. Moved from lieutenant table — no rename needed. |
+
+### Tier 1 — LIEUTENANTS (street personas for heavy wrestling gimmicks)
+Canon characters whose wrestling gimmicks don't work on the street get street
+names that fit their personality. Generated from the grunt pipeline with
 **fixed seeds** (same person every time), distinctive looks, and full bios.
-They lead squads, give missions, and show up as mini-bosses. ~12 characters.
+They lead squads, give missions, and show up as mini-bosses.
 
 > **Rule:** Only rename EXISTING canon characters. If canon doesn't name someone,
 > the slot stays OPEN for the owner. No invented book characters.
 
-| Street Name | Canon Name | Faction | Personality | Fighting Style |
-|---|---|---|---|---|
-| **Cain** | Cain Elias ("The Executioner") | Combine | Cold. Vindictive. Never raises his voice — that's what makes him scary. Enforces Halcyon's will with surgical precision. | Wrestling (technical power) |
-| **Narv** | Narvin Jackson ("Finxsse") | Unaffiliated | Biker-street charisma. Hates corporate sellouts. Fast, flashy, talks trash the whole fight. Cousin energy — loyal to his own. | Street (speed + power hybrid) |
-| **Cass** | Cassian Thorne ("The Golden Ratio") | Combine | Beautiful, untouchable, offers you everything if you just walk away from your people. The temptation. Never gets his hands dirty if he can help it. | Martial Arts (evasive, precise) |
-| **Zero** | Mr. Zero Point ("The Nihilist") | Hollows | Pure chaos. Doesn't fight to win — fights to hurt. Unpredictable, laughs at the wrong moments. The thing the other Hollows are afraid of. | Street (wild, unorthodox) |
-| **Griff** | Grixf ("The Grief Architect") | Unaffiliated | Quiet. Analytical. Watches fights like he's reading a book he's already finished. Knows things. Sells information, not loyalty. | Martial Arts (counter-striker) |
-| **Shadow** | The Shaolin Shadow | Combine | Disciplined. Silent. A scalpel, not a hammer. Targets limbs, ends fights fast, bows after. Halcyon's most expensive asset. | Martial Arts (limb targeting) |
-| **Akon** | Akon ("The Warrior") | Ashes | Principled to a fault. Fights only for what's right — which makes him the most dangerous man on the block. Teaches the kids. | Boxing (power striker) |
-| **Toro** | El Toro de Oro | Unaffiliated | Loyal masked powerhouse. Protective — if you're his people, nobody touches you. Speaks little, hits hard. | Wrestling (power lucha) |
-| **Pluma** | Rey "La Pluma" Fuego | Unaffiliated | Joyful high-flyer. Fights like he's dancing. The only person who seems to be having fun. Runs with Toro. | Lucha (aerial) |
-| **Jaleel** | Jaleel Friday / Trap Shinobi | Hollows | Code-switches between goofy and terrifying. You never know which one you're getting until the first punch. Tactical mind under the act. | Martial Arts (tricky, misdirection) |
-| **Lin** | (Shaolin-adjacent — slot open) | — | *OPEN — owner's call* | — |
-| **Thorne's Heir** | (Combine lieutenant — slot open) | — | *OPEN — owner's call* | — |
+| Street Name | Canon Name | Why Street? | Faction | Personality | Fighting Style |
+|---|---|---|---|---|---|
+| **Cain** | Cain Elias ("The Executioner") | Gimmick too wrestling — becomes a cold street enforcer | Combine | Cold. Vindictive. Never raises his voice — that's what makes him scary. Enforces Halcyon's will with surgical precision. | Wrestling (technical power) |
+| **Cass** | Cassian Thorne ("The Golden Ratio") | "Ultimate Lure" gimmick too wrestling — becomes a smooth operator | Combine | Beautiful, untouchable, offers you everything if you just walk away from your people. The temptation. Never gets his hands dirty if he can help it. | Martial Arts (evasive, precise) |
+| **Zero** | Mr. Zero Point ("The Nihilist") | Nihilist gimmick too abstract — becomes a chaos agent | Hollows | Pure chaos. Doesn't fight to win — fights to hurt. Unpredictable, laughs at the wrong moments. The thing the other Hollows are afraid of. | Street (wild, unorthodox) |
+| **Griff** | Grixf ("The Grief Architect") | "Grief Architect" too wrestling — becomes a quiet fixer | Unaffiliated | Quiet. Analytical. Watches fights like he's reading a book he's already finished. Knows things. Sells information, not loyalty. | Martial Arts (counter-striker) |
+| **Shadow** | The Shaolin Shadow | No real name in canon — street handle fits the discipline | Combine | Disciplined. Silent. A scalpel, not a hammer. Targets limbs, ends fights fast, bows after. Halcyon's most expensive asset. | Martial Arts (limb targeting) |
+| **Akon** | Akon ("The Warrior") | KEEP — "The Warrior" already works as a street name | Ashes | Principled to a fault. Fights only for what's right — which makes him the most dangerous man on the block. Teaches the kids. | Boxing (power striker) |
+| **Toro** | El Toro de Oro ("The Golden Bull") | Shortened — "Golden Bull" too wrestling, "Toro" is street | Unaffiliated | Loyal powerhouse. Protective — if you're his people, nobody touches you. Speaks little, hits hard. | Wrestling (power lucha) |
+| **Fuego** | Rey "La Pluma" Fuego | KEEP — lucha names are street culture, not wrestling gimmick | Unaffiliated | Joyful high-flyer. Fights like he's dancing. The only person who seems to be having fun. Runs with Toro. | Lucha (aerial) |
+| **Jaleel** | Jaleel Friday / Trap Shinobi | KEEP — real name already, no gimmick to strip | Hollows | Code-switches between goofy and terrifying. You never know which one you're getting until the first punch. Tactical mind under the act. | Martial Arts (tricky, misdirection) |
+| **Lin** | (Shaolin-adjacent — slot open) | — | — | *OPEN — owner's call* | — |
+| **Thorne's Heir** | (Combine lieutenant — slot open) | — | — | *OPEN — owner's call* | — |
+
+### Tier 1b — WRESTLING FACTIONS (keep wrestling personas)
+There WILL be wrestling factions in AshLane — underground fight clubs, lucha
+circuits, and ex-promotion talent who never left the life. Characters here keep
+their wrestling names, gimmicks, and presentation. They're the bridge between
+the street world and the Bannon canon.
+
+| Faction | Concept | Who Lives Here |
+|---|---|---|
+| **The Circuit** | Underground lucha / indie wrestling scene. Masks, entrances, crowds. The closest thing to "wrestling" in AshLane — but it's gritty, not corporate. | Fuego, Toro, lucha grunts. Any canon luchador who fits. |
+| **The Old Guard** | Ex-promotion talent. They used to wrestle for the territories Halcyon demolished. Still carry the names, still work the gimmicks — it's all they know. | Open slots for canon wrestlers whose gimmicks ARE their identity. Owner's call on who. |
+| **The Pit** | No-rules fight club. Wrestling moves, street rules. Where wrestlers and street fighters meet in the middle. | Crossover talent. Tournament nights. |
+
+> Owner decides which canon wrestlers land here vs. get street personas. Default:
+> if the gimmick is the person's identity (not just a stage name), they belong
+> in a wrestling faction.
 
 ### Tier 2 — GRUNTS (generated, 60+)
 The backbone. Generated by `char-gen.ts` with full personalities. Each one gets:
@@ -58,11 +94,12 @@ The backbone. Generated by `char-gen.ts` with full personalities. Each one gets:
 
 | Faction | Grunts | Notes |
 |---|---|---|
-| The Ashes | 18 | Neighborhood crew. Heart of the story. |
+| The Ashes | 18 | Neighborhood crew. Heart of the story. (Stick Up ally, not counted.) |
 | The Combine | 18 | Halcyon muscle. Disciplined, equipped. |
 | The Hollows | 14 | Burned-out Flame victims. Swarm missions. |
-| The Unaffiliated | 14 | Mercs, luchadores, wildcards. |
-| **Total** | **64** | + 20 bosses/lieutenants = **84 hand-placed** |
+| The Unaffiliated | 14 | Mercs, luchadores, wildcards. (Finesse ally, not counted.) |
+| Wrestling factions | 10 | The Circuit, Old Guard, Pit — grunt wrestlers with gimmicks intact. |
+| **Total** | **74** | + 24 bosses/lieutenants/keep-as-is = **98 hand-placed** |
 
 Plus infinite on-demand generation for swarms, crowds, and side missions.
 **Target: 100+ unique characters in the shipped roster.**
@@ -183,9 +220,10 @@ Format: `[Origin] [Why they fight] [Quirk hint]`
 ## 6. What Needs Owner Input (do NOT invent)
 
 - Tyneshia Hall parallel — slot open
-- Finxsse is Narvin Jackson (done above) — but confirm "Narv" works
-- The Celtic Fury — no canon real name, slot open
+- The Celtic Fury — no canon real name, slot open (wrestling faction or street persona?)
 - Captain Unity, Agent Canuck, Lady Rhiannon — JPCW assets, slots open
+- Which canon wrestlers go to wrestling factions vs. get street personas — owner's call
+- The Old Guard roster — which ex-promotion talent survived the demolitions?
 - The Core endgame — owner's call
 - Any new book characters — NEVER invent these
 
