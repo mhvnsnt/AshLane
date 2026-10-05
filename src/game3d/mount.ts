@@ -7,6 +7,16 @@ import { applyFighter, applyMartial, applyStance, loadFighter, saveFighter } fro
 import { fighterById } from "./roster";
 import { getMusic } from "./music";
 import { sfxPunch, sfxKick, sfxKnockout, startCrowd, stopCrowd } from "./combat-sfx";
+// Wired modules (services.ts hub): touch overlay, dialogue, minigames,
+// attention encounters, replay export.
+import {
+  createServices, touchInput, openDialogue, replayJSON, type GameServices,
+} from "./services";
+import { addAttentionGrunt } from "./sim";
+import type { DialogueEvent } from "./federated/dialogue";
+import {
+  buildTouchOverlay, createDialogueUI, createMinigameUI, type MinigameKind,
+} from "./overlays";
 
 export type Handle = {
   start: (mode: Mode) => void;
@@ -26,6 +36,12 @@ export type Handle = {
   startBout: (kind: "exhibit" | "practice", stage: string) => void;
   startStory: (index: number) => void;
   quit: () => void;
+  /** Wired: open a minigame overlay (darts / blackjack / pool). */
+  openMinigame: (kind: "darts" | "blackjack" | "pool") => void;
+  /** Wired: export the recorded input replay as JSON. */
+  getReplay: () => string;
+  /** Wired: play a Yarn-style dialogue script in the dialogue panel. */
+  say: (script: string, node?: string) => void;
   assignClip: (slot: Slot, clip: string) => void;
   setStick: (x: number, y: number) => void;
   setBtn: (name: "attack" | "grab" | "blast" | "jump" | "dash" | "use", down: boolean) => void;
@@ -51,6 +67,7 @@ const WATCH = new Set([
   "KeyZ",
   "KeyX",
   "KeyF",
+  "KeyC",
 ]);
 
 export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof snapshot>) => void): Handle {
@@ -73,6 +90,10 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
     applyStance(fighter.stance);
   }
   const view = createView(canvas);
+  // Wired: attach the module hub (weather, peds, quests, attention,
+  // replay, touch, streaming, dialogue, minigames, counters, springbones).
+  sim.services = createServices();
+  const svcs: GameServices = sim.services;
   const keys = new Set<string>();
   const stick = { x: 0, y: 0 };
   const btns = { attack: false, grab: false, blast: false, jump: false, dash: false, use: false };
@@ -124,6 +145,11 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
   const parent = canvas.parentElement ?? canvas;
   const ro = new ResizeObserver(() => view.resize());
   ro.observe(parent);
+  // Wired overlays: touch controls (touch.ts), dialogue panel (dialogue.ts),
+  // minigames (minigames.ts).
+  buildTouchOverlay(parent, svcs, sim);
+  const dlg = createDialogueUI(svcs);
+  const minigames = createMinigameUI(svcs);
 
   window.__controlsTest = {
     getYaw: () => sim.bodies[0]?.yaw ?? 0,
@@ -150,6 +176,11 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
       acc -= 1 / 60;
       guard += 1;
     }
+    // Wired: attention encounters (services.ts) spawn into the world.
+    consumeEncounter(sim, svcs);
+    // Wired: dialogue overlay (dialogue.ts) sync + quest briefs.
+    dlg.sync();
+    syncQuestBrief(sim, svcs, dlg);
     view.render(sim, frameDt);
     hudAcc += frameDt;
     if (hudAcc > 0.1) {
@@ -314,6 +345,15 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
       } catch {}
       push(snapshot(sim));
     },
+    openMinigame(kind) {
+      minigames.open(kind);
+    },
+    getReplay() {
+      return replayJSON(svcs, "manual-export");
+    },
+    say(script, node) {
+      dlg.show(openDialogue(svcs, script, node ?? "Start"));
+    },
     assignClip(slot, clip) {
       retargetSlot("player", slot, clip);
       saveFighter(sim.style, sim.martial, sim.stance);
@@ -344,8 +384,66 @@ export function mount(canvas: HTMLCanvasElement, push: (hud: ReturnType<typeof s
   };
 }
 
-function readInput(sim: Sim, keys: Set<string>, stick: { x: number; y: number }, btns: { attack: boolean; grab: boolean; blast: boolean; jump: boolean; dash: boolean; use: boolean }, input: FrameInput) {
-  let x = stick.x;
+/**
+ * Wired: attention encounters (attention.ts) spawn into the world.
+ * The director queues thugs / scouts / named-enforcer hunts; this consumes
+ * the queue and drops the bodies near the player via sim.addAttentionGrunt.
+ */
+function consumeEncounter(sim: Sim, svcs: GameServices): void {
+  const enc = svcs.pendingEncounter;
+  if (!enc) return;
+  const p = sim.bodies[0];
+  if (!p) return;
+  svcs.pendingEncounter = null;
+  const ring = (n: number, r: number, arch: "hood" | "brute" | "hex") => {
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.5;
+      addAttentionGrunt(sim, p.x + Math.cos(a) * r, p.z + Math.sin(a) * r, arch);
+    }
+  };
+  if (enc.kind === "thugs") {
+    // Yakuza-style: visible street thugs, spawned far enough to avoid.
+    ring(enc.count, 22, "hood");
+    sim.banner = "Street thugs eyeing you";
+    sim.bannerT = 1.6;
+  } else if (enc.kind === "scouts") {
+    ring(enc.count, 16, "hood");
+  } else {
+    // Named enforcer hunt + Combine backup.
+    const a = Math.random() * Math.PI * 2;
+    addAttentionGrunt(
+      sim, p.x + Math.cos(a) * 14, p.z + Math.sin(a) * 14,
+      "hex", enc.enforcer.name, 160 + enc.enforcer.level * 30,
+    );
+    for (let i = 0; i < enc.backup; i++) {
+      const b2 = Math.random() * Math.PI * 2;
+      addAttentionGrunt(sim, p.x + Math.cos(b2) * 18, p.z + Math.sin(b2) * 18, "hood");
+    }
+  }
+}
+
+/**
+ * Wired: quest step briefs (quests.ts) play as dialogue (dialogue.ts).
+ * A step's `brief` is an inline Yarn-style script shown once per step.
+ */
+function syncQuestBrief(
+  sim: Sim,
+  svcs: GameServices,
+  dlg: { show: (ev: DialogueEvent) => void; visible: () => boolean },
+): void {
+  void sim;
+  const q = svcs.quest;
+  const pr = svcs.questProgress;
+  if (!q || !pr || pr.complete) return;
+  if (svcs.briefStep === pr.stepIndex) return;
+  svcs.briefStep = pr.stepIndex;
+  const step = q.steps[pr.stepIndex];
+  if (step?.brief && !dlg.visible()) {
+    dlg.show(openDialogue(svcs, step.brief));
+  }
+}
+
+function readInput(sim: Sim, keys: Set<string>, stick: { x: number; y: number }, btns: { attack: boolean; grab: boolean; blast: boolean; jump: boolean; dash: boolean; use: boolean }, input: FrameInput) {  let x = stick.x;
   let y = stick.y;
   if (keys.has("KeyA") || keys.has("ArrowLeft")) x -= 1;
   if (keys.has("KeyD") || keys.has("ArrowRight")) x += 1;
@@ -372,6 +470,30 @@ function readInput(sim: Sim, keys: Set<string>, stick: { x: number; y: number },
   input.jump = btns.jump || keys.has("Space") || keys.has("KeyU") || !!pad?.buttons[3]?.pressed;
   input.dash = btns.dash || keys.has("ShiftLeft") || keys.has("ShiftRight") || !!pad?.buttons[5]?.pressed;
   input.use = btns.use || keys.has("KeyF") || !!pad?.buttons[4]?.pressed;
+  // Wired: just-frame parry button (counters.ts) — KeyC / gamepad R1.
+  input.counter = keys.has("KeyC") || !!pad?.buttons[6]?.pressed;
+  // Wired: touch overlay (touch.ts) merges into the same FrameInput.
+  const svcs = sim.services;
+  if (svcs) {
+    const ti = touchInput(svcs);
+    if (svcs.touch.move.active) {
+      input.x = ti.x;
+      input.y = ti.y;
+    }
+    input.attack = input.attack || ti.attack;
+    input.grab = input.grab || ti.grab;
+    input.blast = input.blast || ti.blast;
+    input.jump = input.jump || ti.jump;
+    input.dash = input.dash || ti.dash;
+    input.use = input.use || ti.use;
+    input.lock = input.lock || ti.lock;
+    input.counter = input.counter || ti.counter;
+    if (svcs.touch.camDX !== 0 || svcs.touch.camDY !== 0) {
+      sim.orbit -= svcs.touch.camDX * 0.005;
+      svcs.touch.camDX = 0;
+      svcs.touch.camDY = 0;
+    }
+  }
 }
 
 function deadzone(x: number, y: number) {

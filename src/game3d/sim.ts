@@ -9,6 +9,10 @@ import { resetYoko, tickYokosukaBelt } from "./yokosuka/belt";
 import { createLockOn, lockOnPress, lockOnUpdate, clearLock, type LockOnState } from "./federated/lockon";
 import { pickFreeflowTarget, freeflowLunge } from "./federated/freeflow";
 import { requestAttack, releaseAttack, type GroupAIState } from "./federated/groupai";
+import {
+  tickSimServices, tryParry, resolveParry, comboDamageScale, styleFor,
+  type GameServices,
+} from "./services";
 
 export type Phase = "free" | "atk" | "hit" | "launch" | "down" | "grab" | "throw" | "dash" | "spin" | "windup" | "out";
 export type Home = "plaza" | "street" | "scaffold" | "market" | "yard" | "dock" | "under" | "ring" | "cage" | "subway" | "crane" | "office";
@@ -227,6 +231,9 @@ export type Sim = {
   leg: number;
   shoulder: number;
   block: number;
+  /** Wired module hub (services.ts). Null until mount() attaches it. */
+  services: GameServices | null;
+  prevCounter: boolean;
 };
 
 export type FrameInput = {
@@ -239,6 +246,8 @@ export type FrameInput = {
   dash: boolean;
   use: boolean;
   lock?: boolean;
+  /** just-frame parry button (touch CTR / KeyC) — wired to federated/counters.ts */
+  counter?: boolean;
 };
 
 const R = 0.42;
@@ -591,6 +600,7 @@ export function createSim(tune?: Tune): Sim {
     prevJump: false,
     prevDash: false,
     prevUse: false,
+    prevCounter: false,
     bufUse: 0,
     reduced: prefersReduced(),
     spawnX: 0,
@@ -623,6 +633,7 @@ export function createSim(tune?: Tune): Sim {
     lowGuard: false,
     guardT: 0,
     block: 0,
+    services: null,
     ...loadShape(),
   };
   spawnBodies(sim);
@@ -678,6 +689,28 @@ function addGrunt(sim: Sim, x: number, z: number, y: number, home: Home, arch: A
   const who = claimWard(home, arch);
   g.name = who.name;
   sim.bodies.push(g);
+  // Wired: urban-mayhem fighting style per archetype (192 discipline x modifier combos).
+  if (sim.services) {
+    const disc = arch === "brute" ? "wrestling" : arch === "runner" ? "kickboxing"
+      : arch === "hood" ? "street_boxing" : arch === "hex" ? "muay_thai" : "mma";
+    styleFor(sim.services, g.id, disc);
+  }
+}
+
+/**
+ * Spawn a grunt for an attention-system encounter (thugs / scouts / enforcer
+ * backup). Exported for services.ts / mount.ts consumers.
+ */
+export function addAttentionGrunt(
+  sim: Sim, x: number, z: number, arch: Arch, name?: string, hp?: number,
+): void {
+  addGrunt(sim, x, z, 0, "street", arch);
+  const g = sim.bodies[sim.bodies.length - 1];
+  if (name) g.name = name;
+  if (hp !== undefined) {
+    g.hp = hp;
+    g.maxHp = hp;
+  }
 }
 
 function addProp(sim: Sim, kind: Prop["kind"], x: number, y: number, z: number, hp: number, loot: Prop["loot"]) {
@@ -1054,6 +1087,35 @@ function hurt(sim: Sim, b: Body, dmg: number, poiseDmg: number, kx: number, kz: 
     sim.bannerT = 0.4;
     return false;
   }
+  // Federated just-frame parry (counters.ts): the counter button opens a
+  // ~167ms active window. resolveParry() is a no-op ("missed") when no
+  // window is open, so this is safe to call on every player hit.
+  if (b.kind === "player" && sim.services) {
+    const res = resolveParry(sim.services, b.id, "jab");
+    if (res === "countered") {
+      for (const e of sim.bodies) {
+        if (e.kind !== "grunt" || !e.alive || (e.state !== "atk" && e.state !== "windup")) continue;
+        if (Math.hypot(e.x - b.x, e.z - b.z) > 2.2) continue;
+        e.state = "hit";
+        e.stateT = 0.8;
+        e.poise = 0;
+        e.vx = (e.x - b.x) * 2.6;
+        e.vz = (e.z - b.z) * 2.6;
+      }
+      b.iframe = Math.max(b.iframe, 0.25);
+      b.meter = Math.min(100, (b.meter ?? 0) + 20);
+      sim.banner = "Counter!";
+      sim.bannerT = 0.6;
+      sim.sfx.push("hit");
+      sim.flow = Math.min(100, sim.flow + 12);
+      return false;
+    }
+    if (res === "traded") {
+      dmg *= 0.4;
+      sim.banner = "Traded";
+      sim.bannerT = 0.4;
+    }
+  }
   const f = forward(b.yaw);
   const kl = Math.hypot(kx, kz) || 1;
   const facing = (kx / kl) * f.x + (kz / kl) * f.z;
@@ -1238,7 +1300,7 @@ function hitGrunts(sim: Sim, hx: number, hz: number, radius: number, dmg: number
     const kx = (dirX * 0.7 + (awayX / al) * 0.3) * kb * (laying ? (popUp ? 1.15 : 0.35) : 1) * shove;
     const kz = (dirZ * 0.7 + (awayZ / al) * 0.3) * kb * (laying ? (popUp ? 1.15 : 0.35) : 1) * shove;
     const pop = laying ? (popUp ? 6.2 : 0.05) : lift;
-    let dealt = dmg * scale;
+    let dealt = dmg * scale * (sim.services ? comboDamageScale(sim.combo + 1) : 1);
     let liftHit = pop;
     if (e.splat > 0 && !laying) {
       dealt *= 1.3;
@@ -2445,12 +2507,16 @@ function updateEnemies(sim: Sim, dt: number) {
   }
 }
 
-function updatePlayer(sim: Sim, dt: number, dashEdge: boolean) {
+function updatePlayer(sim: Sim, dt: number, dashEdge: boolean, counterEdge: boolean) {
   const p = sim.bodies[0];
   p.iframe = Math.max(0, p.iframe - dt);
   if (p.stopT > 0) {
     p.stopT -= dt;
     return;
+  }
+  // Federated just-frame parry (counters.ts): KeyC / touch CTR / gamepad.
+  if (counterEdge && sim.services && p.state === "free") {
+    tryParry(sim.services, p.id);
   }
   if (sim.bufLock > 0) {
     sim.bufLock = 0;
@@ -3581,6 +3647,7 @@ export function step(sim: Sim, input: FrameInput, dt: number) {
   const dashEdge = input.dash && !sim.prevDash;
   const useEdge = input.use && !sim.prevUse;
   const lockEdge = !!input.lock && !sim.prevLock;
+  const counterEdge = !!input.counter && !sim.prevCounter;
   sim.prevAtk = input.attack;
   sim.prevGrab = input.grab;
   sim.prevBlast = input.blast;
@@ -3588,6 +3655,7 @@ export function step(sim: Sim, input: FrameInput, dt: number) {
   sim.prevDash = input.dash;
   sim.prevUse = input.use;
   sim.prevLock = !!input.lock;
+  sim.prevCounter = !!input.counter;
   if (atkEdge) sim.bufAtk = 0.16;
   else sim.bufAtk = Math.max(0, sim.bufAtk - dt);
   if (grabEdge) sim.bufGrab = 0.16;
@@ -3602,6 +3670,8 @@ export function step(sim: Sim, input: FrameInput, dt: number) {
   else sim.bufLock = Math.max(0, sim.bufLock - dt);
 
   if (!sim.running || sim.paused) return;
+  // Wired modules: weather clock, attention director, quests, peds, replay.
+  if (sim.services) tickSimServices(sim, input, dt);
   if (sim.hitstop > 0) {
     sim.hitstop -= dt;
     sim.shake *= Math.exp(-8 * dt);
@@ -3611,7 +3681,7 @@ export function step(sim: Sim, input: FrameInput, dt: number) {
   steer(sim, input);
   sim.stickY = input.y;
   sim.stickX = input.x;
-  updatePlayer(sim, dt, dashEdge);
+  updatePlayer(sim, dt, dashEdge, counterEdge);
   updateEnemies(sim, dt);
   updateAlly(sim, dt);
   tickYokosukaBelt(sim, input, dt);

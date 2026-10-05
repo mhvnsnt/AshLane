@@ -3,13 +3,13 @@
  *
  * This is NOT GTA wanted stars. There are no generic cops, no star UI,
  * no "evade the police" chase. Attention is FACTION-BASED: make noise on
- * the street and Edwin Kennedy's Corporate Structure — the Halcyon
- * Combine — starts looking for you. With NAMED enforcers, not patrol cars.
+ * the street and Edwin Kennedy's Corporate Structure — the Combine —
+ * starts looking for you. With NAMED enforcers, not patrol cars.
  *
  * Canon mapping (docs/BANNON_CANON_REFERENCE.md):
  *   - The Corporate Structure (Kennedy's AWE + Combs's JPCW) -> The Combine
- *   - The Halcyon Group is Kennedy's corporate front. The enforcers below
- *     are Kennedy's people wearing Halcyon badges.
+ *   - Kennedy's Corporate Structure is the corporate front. The enforcers
+ *     below are Kennedy's people wearing corporate badges.
  *
  * Design (owner-approved, 2026-10-05):
  *   - 0-30  (quiet):   random street thugs, Yakuza-style — visible on the
@@ -104,7 +104,7 @@ export const ENFORCERS: EnforcerDef[] = [
     quirk: "by-the-book",
     level: 4,
     backup: 2,
-    bio: "Halcyon's surgeon. Cold, clinical, precise — dismantles people the way other men take apart engines. Doesn't trash-talk. Doesn't hurry. Every strike lands exactly where he meant it to.",
+    bio: "Kennedy's surgeon. Cold, clinical, precise — dismantles people the way other men take apart engines. Doesn't trash-talk. Doesn't hurry. Every strike lands exactly where he meant it to.",
     behavior:
       "Surgical pressure: walks you down with fundamental strikes, targets " +
       "whichever body region you've been hit in most (regional damage synergy). " +
@@ -159,7 +159,7 @@ export function enforcerById(id: EnforcerDef["id"]): EnforcerDef {
 
 /** Attention floor per district key. */
 export const DISTRICT_ATTENTION_FLOOR: Record<string, number> = {
-  warehouses: 15, // Combine territory — Halcyon security everywhere
+  warehouses: 15, // Combine territory — corporate security everywhere
   strip: 10,      // Commercial, cameras, witnesses
   alleys: 5,      // Ashes turf — eyes on the street, some corporate informants
   subway: 5,

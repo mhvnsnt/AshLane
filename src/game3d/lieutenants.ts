@@ -79,7 +79,7 @@ export const LIEUTENANTS: LieutenantDef[] = [
     archetype: "tricky",
     quirk: "true-believer",
     seed: 0xCA55,
-    bio: "Beautiful, untouchable, and always offering you a way out — if you just walk away from your people. Never gets his hands dirty if he can talk someone else into it. The temptation with a Halcyon badge.",
+    bio: "Beautiful, untouchable, and always offering you a way out — if you just walk away from your people. Never gets his hands dirty if he can talk someone else into it. The temptation with a corporate badge.",
     level: 4,
   },
   {
@@ -118,7 +118,7 @@ export const LIEUTENANTS: LieutenantDef[] = [
     archetype: "striker",
     quirk: "overtime",
     seed: 0x5AD0,
-    bio: "Disciplined. Silent. A scalpel, not a hammer — targets limbs, ends fights in seconds, bows after. Halcyon's most expensive asset. Nobody knows what they paid him. Nobody wants to ask.",
+    bio: "Disciplined. Silent. A scalpel, not a hammer — targets limbs, ends fights in seconds, bows after. Kennedy's most expensive asset. Nobody knows what they paid him. Nobody wants to ask.",
     level: 5,
   },
   {

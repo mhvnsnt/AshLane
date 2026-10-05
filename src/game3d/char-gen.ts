@@ -188,7 +188,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     motto: "Order is just violence with paperwork.",
     shirts: [0x1f2a44, 0x2c3e5a, 0x4a5568, 0xd8d8d8, 0x3a3a3a],
     pants: [0x1f2a44, 0x2e2e2e, 0x3a3f4a],
-    accent: 0x7fb3d5, // Halcyon corporate blue
+    accent: 0x7fb3d5, // Kennedy corporate blue
     skinDist: [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1]],
     bodyDist: [["male", 70], ["female", 30]],
     height: [0.96, 1.08],
@@ -397,7 +397,7 @@ export const QUIRKS: Record<QuirkId, QuirkDef> = {
   "old-head":       { id: "old-head",       label: "Old Head",       hint: "Patient. Coaches mid-fight." },
   "by-the-book":    { id: "by-the-book",    label: "By The Book",    hint: "Disciplined formations, calls targets." },
   "overtime":       { id: "overtime",       label: "Overtime",       hint: "\"I'm getting paid for this.\" No wasted motion." },
-  "true-believer":  { id: "true-believer",  label: "True Believer",  hint: "Actually believes Halcyon's pitch. Creepy." },
+  "true-believer":  { id: "true-believer",  label: "True Believer",  hint: "Actually believes Kennedy's pitch. Creepy." },
   "burned":         { id: "burned",         label: "Burned",         hint: "Flame-damaged. Fights through impossible pain." },
   "hollow-laugh":   { id: "hollow-laugh",   label: "Hollow Laugh",   hint: "Laughs while getting hit. Unsettling." },
   "swarm-mind":     { id: "swarm-mind",     label: "Swarm Mind",     hint: "Coordinates with other Hollows instinctively." },
@@ -488,13 +488,13 @@ const BIO_TEMPLATES: Record<FactionId, BioTemplate> = {
   combine: {
     origin: [
       "Ex-military, dishonorably discharged.",
-      "Corporate security before Halcyon bought the contract.",
-      "Grew up in the suburbs. Never been in a real fight until Halcyon.",
-      "Former athlete. Blew out a knee. Halcyon offered a paycheck.",
+      "Corporate security before Kennedy bought the contract.",
+      "Grew up in the suburbs. Never been in a real fight until the Combine.",
+      "Former athlete. Blew out a knee. Kennedy offered a paycheck.",
       "Private contractor. This is just another deployment.",
     ],
     motive: [
-      "Halcyon pays better than the army and asks fewer questions.",
+      "Kennedy pays better than the army and asks fewer questions.",
       "Fights like it's a job, because it is.",
       "True believer. Thinks the demolitions are 'urban renewal.'",
       "Methodical. No wasted motion. Overtime starts now.",

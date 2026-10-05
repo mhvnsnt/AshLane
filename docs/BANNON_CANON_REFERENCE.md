@@ -17,11 +17,11 @@
 
 - **The core conflict is always structure vs. freedom.** Every book, every faction war,
   every character arc is a version of: corporate control (the structure) vs. personal
-  expression (the street / the soul). AshLane keeps this exact spine — Halcyon = the
-  structure, the blocks = freedom.
+  expression (the street / the soul). AshLane keeps this exact spine — the
+  Corporate Structure = the structure, the blocks = freedom.
 - **Kayfabe is a world-control mechanic.** In Bannon canon, Kennedy literally built
   kayfabe as "the Tower of Babel that still stands" — fiction used as corporate/political
-  control. Earth-AL parallel: Halcyon's *narrative* (blight, progress, renewal) is the
+  control. Earth-AL parallel: the Corporate Structure's *narrative* (blight, progress, renewal) is the
   weapon. The blocks don't need lies told to an audience; the lie is told to the city.
 - **The numerology engine is physics.** Every person in the Bannon universe runs on a
   Life Path (LP) / Expression (Exp) / Soul Urge (SU) number that decides who they are
@@ -109,7 +109,7 @@ volatile (Sun in Virgo, Moon in Pisces). Built the entire kayfabe structure. Not
 final boss — he's the *puppet*: Stan Combs uses him. His corporate finisher:
 **The Indefinite Suspension**. By Book 5 he's a comic-relief mogul; by Book 6 he's
 suing for "control of reality itself."
-- **Earth-AL parallel already cast:** Director Cole Vane (Halcyon Group).
+- **Earth-AL parallel already cast:** Director Cole Vane (Kennedy Corporate Structure).
 
 ### Stan "Honey" Combs — "The Overlord" / "The Shadow Architect"
 LP 8. Owner of **JPCW** (Japan Proresu Championship Wrestling). The true final-boss
@@ -118,7 +118,7 @@ Project**, drugged and coerced talent, and treated human beings as "Optimized As
 Sun in Scorpio, Mars in Capricorn (29° — ruthless efficiency). His corporate finisher:
 **The Hostile Takeover**. Book 5: arrested on RICO charges, sent to ADX Florence —
 still doing pushups and waiting for "gravity" to win.
-- **Earth-AL note:** folded into the Halcyon Group concept. No separate parallel needed.
+- **Earth-AL note:** folded into the Kennedy Corporate Structure concept. No separate parallel needed.
 
 ### Cassian "The Golden Ratio" Thorne — "The Ultimate Lure"
 LP 1. Beautiful, flawless, solitary — offers Marquis the temptation of *perfect solo
@@ -149,7 +149,7 @@ Fuego ends up running a taco truck, still wearing the mask.
 Book 4–6: hacker "Gamemasters" who seize the Island's simulation, then stage a hostile
 corporate takeover of the entire Dynasty. Jager is a punk bard with a sonic scream;
 Shinobi is a trap-ninja tactician. They run the regime the heroes have to outlast.
-- **Earth-AL note:** tech/military angle exists in Halcyon. No direct parallels. Slot open.
+- **Earth-AL note:** tech/military angle exists in the Corporate Structure. No direct parallels. Slot open.
 
 ### Grixf — "The Grief Architect" / "The Prophet"
 Analytical rival tortured by Bannon in Book 1's "Purity of Pain" I Quit Match (never
@@ -164,12 +164,12 @@ understands the coming threats better than anyone.
 | Bannon canon faction | Core motivation | Earth-AL parallel |
 |---|---|---|
 | **The Anti-Hero Alliance** / Forces of Freedom (Bannon, Atlas, Tyneshia, Cain, luchadores) | Loyalty costs; freedom against the structure | **The Ashes** |
-| **The Corporate Structure** — "Tyranny of LP 33/6" (Kennedy's AWE + Combs's JPCW, Silas, Titus, Chainmail, veterans) | Order is violence with paperwork; control the narrative, own the talent | **The Combine** (Halcyon) |
+| **The Corporate Structure** — "Tyranny of LP 33/6" (Kennedy's AWE + Combs's JPCW, Silas, Titus, Chainmail, veterans) | Order is violence with paperwork; control the narrative, own the talent | **The Combine** |
 | **Agents of Chaos & Temptation** (Thorne, Zero Point, NWC's Vandal, Stick-Up's cult) | Chaos as truth; temptation away from loyalty | **The Hollows** (burned-out Flame victims) |
 | **Independent Variables — For Hire** (Sombra Negra, Akon, Yorkshire Grit, Great White North, Raja, Finxsse) | Everyone has a price; the interesting part is what isn't for sale | **The Unaffiliated** |
 | **The Core** (Bannon's own promotion, founded Book 3) | Integrity, expression, unbreakable structure — built by the heroes after winning | *(endgame goal for the Ashes — owner's call)* |
-| **The Dynasty** (Kray-Z, Ronye, Combs, Kennedy — Book 4) | Treat suffering as content/ratings | *(Halcyon boardroom flavor)* |
-| **The Administration** (Slump + Kennedy family — Book 5) | Political-dynasty heel stable; kayfabe as government | *(Halcyon endgame — owner's call)* |
+| **The Dynasty** (Kray-Z, Ronye, Combs, Kennedy — Book 4) | Treat suffering as content/ratings | *(Corporate Structure boardroom flavor)* |
+| **The Administration** (Slump + Kennedy family — Book 5) | Political-dynasty heel stable; kayfabe as government | *(Corporate Structure endgame — owner's call)* |
 
 ---
 
@@ -194,7 +194,7 @@ understands the coming threats better than anyone.
   lets the dead wrestle the living) → cliffhanger.
 
 **The Ash Laneverse divergence:** On Earth-AL, the wrestling world never made it past
-the corporate endgame. The Halcyon Group bought out and demolished the territories —
+the corporate endgame. The Kennedy Corporate Structure bought out and demolished the territories —
 no rings, no promotions, no audience. The war that Bannon fought in rings is fought on
 Earth-AL in **streets, for blocks, for turf**. The numerology engine still runs, but
 Ash Lane district is where it glitches.

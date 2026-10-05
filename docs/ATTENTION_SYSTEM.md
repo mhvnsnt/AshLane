@@ -3,24 +3,24 @@
 **Owner-approved 2026-10-05.** This is NOT GTA wanted stars. There are no
 generic cops, no star UI, no police chases. Attention is faction-based:
 make noise on the street and Edwin Kennedy's Corporate Structure — the
-Halcyon Combine — starts looking for you. With NAMED enforcers.
+Combine — starts looking for you. With NAMED enforcers.
 
-## Who is Halcyon? (owner asked)
+## Who is the Corporate Structure? (owner asked)
 
-Short answer: **Halcyon is Kennedy's corporate front.**
+Short answer: **it's Kennedy's operation.**
 
 - **The Corporate Structure** (Bannon canon): Edwin Kennedy's AWE +
   Stan Combs's JPCW — corporate control vs. personal freedom, the central
   conflict of the books.
-- **The Halcyon Group** (AshLane): the Earth-AL corporate entity that
-  bought out and demolished the wrestling territories. It is Kennedy's
+- **Kennedy Corporate Structure** (AshLane): the Earth-AL corporate entity
+  that bought out and demolished the wrestling territories. Kennedy's
   operation wearing a clean corporate name.
-- **The Combine** (AshLane faction): Halcyon's street-level muscle —
+- **The Combine** (AshLane faction): the Structure's street-level muscle —
   private security, enforcers, eviction crews. Corporate navy, buzz cuts,
   "order is just violence with paperwork."
 
 So when attention rises, it's not "the police" — it's **Kennedy's people
-in Halcyon badges** coming to find out who you are and shut you down.
+in corporate badges** coming to find out who you are and shut you down.
 
 ## The three tiers
 
@@ -60,7 +60,7 @@ style, quirk, and behavior notes in `src/game3d/attention.ts`.
 1. **Grixf — "The Analyst"** (70+) — Kennedy's true believer. Studies
    your fights, shows up knowing your favorite punch. Learns mid-fight.
    Rides with 1 backup.
-2. **Cold Frost — "The Technician"** (78+) — Halcyon's surgeon. Cold,
+2. **Cold Frost — "The Technician"** (78+) — Kennedy's surgeon. Cold,
    clinical, precise. Targets whichever body region you've been hit in
    most (regional damage synergy). 2 backup.
 3. **Machine Tiger — "The Stiff"** (85+) — Dynasty asset on loan.

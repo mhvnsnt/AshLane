@@ -40,7 +40,7 @@ here: `generateGrunt("combine")` returns a unique fighter every call.
 | Faction | Look | Styles |
 |---|---|---|
 | **Ashes** | Earth tones, flame-orange accent | street, boxing, wrestling |
-| **Combine** | Navy/slate corporate, Halcyon blue accent, buzzed hair bias, heavier builds | boxing, wrestling, martial-arts |
+| **Combine** | Navy/slate corporate, Kennedy corporate blue accent, buzzed hair bias, heavier builds | boxing, wrestling, martial-arts |
 | **Hollows** | Char black/ash gray, dying-flame red, gaunt, long hair, beards | street, martial-arts |
 | **Unaffiliated** | Tactical darks, mercenary gold accent | all six styles |
 

@@ -25,7 +25,7 @@ models, unique movesets, story missions built around them. ~8 characters.
 |---|---|---|---|
 | **Ash Lane** | Ashes | Marquis/Bannon (parallel, not port) | Protagonist. LP uncomputable. |
 | **Doc** ("Anchor") | Ashes | Atlas Vance | Gym owner. Moral center. |
-| **Director Cole Vane** | Combine | Edwin Kennedy (parallel) | Halcyon face. Corporate heel. (Kennedy himself can also appear as-is — see §1b.) |
+| **Director Cole Vane** | Combine | Edwin Kennedy (parallel) | Corporate face. Corporate heel. (Kennedy himself can also appear as-is — see §1b.) |
 | **Sombra Negra** | Unaffiliated | Same character | The Calculated Mercenary. Already on roster. |
 | **Onyx** | None (crosser) | Same character | Only Earth-crosser. Unlit. |
 | **Hollow** | Hollows | (faction boss — owner's call on canon) | Burned-out Flame victim. Swarm leader. |
@@ -38,8 +38,8 @@ themselves — no street name, no gimmick change.
 
 | Name | Canon | Role in AshLane | Notes |
 |---|---|---|---|
-| **Edwin Kennedy** | "The Boss" / Mr. Edwin John Kennedy | Combine (Halcyon boardroom) | Already corporate. Micromanaging mogul energy fits Halcyon perfectly. Can appear alongside or above Director Cole Vane. |
-| **Stan Combs** | "The Overlord" | Combine (Halcyon shadow) | Already corporate. The true power behind Halcyon — government-tied predator. Rarely seen, always felt. |
+| **Edwin Kennedy** | "The Boss" / Mr. Edwin John Kennedy | Combine (corporate boardroom) | Already corporate. Micromanaging mogul energy. Can appear alongside or above Director Cole Vane. |
+| **Stan Combs** | "The Overlord" | Combine (corporate shadow) | Already corporate. The true power behind the Structure — government-tied predator. Rarely seen, always felt. |
 | **Stick Up** | Andre Curtis / "Jackboy" | Ashes (ally) | Already urban/music. Real person in canon — handle with care per owner. Street fighter, high-flyer, the heart. NOT the cyborg variant (separate). |
 | **Finesse** | Narvin Jackson ("Finxsse") | Unaffiliated | Already urban/industry. Biker-street charisma, speed + power. Moved from lieutenant table — no rename needed. |
 
@@ -71,7 +71,7 @@ They exist for writers and story scripts only.
 | **Cass** | Cassian Thorne ("The Golden Ratio") | "Ultimate Lure" gimmick too wrestling — becomes a smooth operator | Combine | Beautiful, untouchable, offers you everything if you just walk away from your people. The temptation. Never gets his hands dirty if he can help it. | Martial Arts (evasive, precise) |
 | **Zero** | Mr. Zero Point ("The Nihilist") | Nihilist gimmick too abstract — becomes a chaos agent | Hollows | Pure chaos. Doesn't fight to win — fights to hurt. Unpredictable, laughs at the wrong moments. The thing the other Hollows are afraid of. | Street (wild, unorthodox) |
 | **Griff** | Grixf ("The Grief Architect") | "Grief Architect" too wrestling — becomes a quiet fixer | Unaffiliated | Quiet. Analytical. Watches fights like he's reading a book he's already finished. Knows things. Sells information, not loyalty. | Martial Arts (counter-striker) |
-| **Shadow** | The Shaolin Shadow | No real name in canon — street handle fits the discipline | Combine | Disciplined. Silent. A scalpel, not a hammer. Targets limbs, ends fights fast, bows after. Halcyon's most expensive asset. | Martial Arts (limb targeting) |
+| **Shadow** | The Shaolin Shadow | No real name in canon — street handle fits the discipline | Combine | Disciplined. Silent. A scalpel, not a hammer. Targets limbs, ends fights fast, bows after. Kennedy's most expensive asset. | Martial Arts (limb targeting) |
 | **Akon** | Akon ("The Warrior") | KEEP — "The Warrior" already works as a street name | Ashes | Principled to a fault. Fights only for what's right — which makes him the most dangerous man on the block. Teaches the kids. | Boxing (power striker) |
 | **Toro** | El Toro de Oro ("The Golden Bull") | Shortened — "Golden Bull" too wrestling, "Toro" is street | Unaffiliated | Loyal powerhouse. Protective — if you're his people, nobody touches you. Speaks little, hits hard. | Wrestling (power lucha) |
 | **Fuego** | Rey "La Pluma" Fuego | KEEP — lucha names are street culture, not wrestling gimmick | Unaffiliated | Joyful high-flyer. Fights like he's dancing. The only person who seems to be having fun. Runs with Toro. | Lucha (aerial) |
@@ -88,7 +88,7 @@ the street world and the Bannon canon.
 | Faction | Concept | Who Lives Here |
 |---|---|---|
 | **The Circuit** | Underground lucha / indie wrestling scene. Masks, entrances, crowds. The closest thing to "wrestling" in AshLane — but it's gritty, not corporate. | Fuego, Toro, lucha grunts. Any canon luchador who fits. |
-| **The Old Guard** | Ex-promotion talent. They used to wrestle for the territories Halcyon demolished. Still carry the names, still work the gimmicks — it's all they know. | Open slots for canon wrestlers whose gimmicks ARE their identity. Owner's call on who. |
+| **The Old Guard** | Ex-promotion talent. They used to wrestle for the territories the Corporate Structure demolished. Still carry the names, still work the gimmicks — it's all they know. | Open slots for canon wrestlers whose gimmicks ARE their identity. Owner's call on who. |
 | **The Pit** | No-rules fight club. Wrestling moves, street rules. Where wrestlers and street fighters meet in the middle. | Crossover talent. Tournament nights. |
 
 > Owner decides which canon wrestlers land here vs. get street personas. Default:
@@ -108,7 +108,7 @@ The backbone. Generated by `char-gen.ts` with full personalities. Each one gets:
 | Faction | Grunts | Notes |
 |---|---|---|
 | The Ashes | 18 | Neighborhood crew. Heart of the story. (Stick Up ally, not counted.) |
-| The Combine | 18 | Halcyon muscle. Disciplined, equipped. |
+| The Combine | 18 | Corporate muscle. Disciplined, equipped. |
 | The Hollows | 14 | Burned-out Flame victims. Swarm missions. |
 | The Unaffiliated | 14 | Mercs, luchadores, wildcards. (Finesse ally, not counted.) |
 | Wrestling factions | 10 | The Circuit, Old Guard, Pit — grunt wrestlers with gimmicks intact. |
@@ -169,7 +169,7 @@ Each grunt gets one quirk. It's flavor text AND it hints at AI behavior.
 *Combine:*
 - `by-the-book` — disciplined formations, calls out targets.
 - `overtime` — "I'm getting paid for this." Methodical, no wasted motion.
-- `true-believer` — actually believes Halcyon's pitch. Creepy about it.
+- `true-believer` — actually believes Kennedy's pitch. Creepy about it.
 
 *Hollows:*
 - `burned` — Flame-damaged. Fights through pain that should drop him.
@@ -196,7 +196,7 @@ Format: `[Origin] [Why they fight] [Quirk hint]`
 > Now she's Ashes for life. Patient — waits for you to make the first mistake."
 
 **Combine examples:**
-> "Ex-military, dishonorably discharged. Halcyon pays better than the army and
+> "Ex-military, dishonorably discharged. Kennedy pays better than the army and
 > asks fewer questions. Fights like it's a job, because it is."
 >
 > "True believer. Thinks the demolitions are 'urban renewal.' Will lecture you
