@@ -1,4 +1,4 @@
-# DIRECTION (Owner, 2026-10-05)\n\nAshLane is STREET-FIRST, not wrestling-first.\n\n- Some factions may be wrestling-related. Some wrestler characters exist.\n- But the core is: street characters, urban culture, MMA, combat sports, different fighting styles.\n- Think: Def Jam + Urban Reign meets music culture.\n- Fighting styles: street brawling, MMA, kickboxing, boxing, wrestling (as ONE style among many), martial arts.\n- The culture is hip-hop/street, not sports entertainment.\n- Wrestlers who appear are FISH OUT OF WATER or crossover characters, not the norm.\n\n---\n\n# CLARIFICATION (Owner, 2026-10-05)\n\n"the Ember (background lore, never named in-game)" is BACKGROUND CANON from Bannon, not a game mode in AshLane. It informs the narrative indirectly but is NEVER referenced by name in-game. No character says it. No menu mentions it. It's the deep lore that shapes the world, not a feature.\n\n---\n\n# ASHLANE — Story Bible (v1.0, 2026-10-05)
+# DIRECTION (Owner, 2026-10-05)\n\nAshLane is STREET-FIRST, not wrestling-first.\n\n- Some factions may be wrestling-related. Some wrestler characters exist.\n- But the core is: street characters, urban culture, MMA, combat sports, different fighting styles.\n- Think: Def Jam + Urban Reign meets music culture.\n- Fighting styles: street brawling, MMA, kickboxing, boxing, wrestling (as ONE style among many), martial arts.\n- The culture is hip-hop/street, not sports entertainment.\n- Wrestlers who appear are FISH OUT OF WATER or crossover characters, not the norm.\n\n---\n\n# CLARIFICATION (Owner, 2026-10-05)\n\n"the Flame (background lore, never named in-game)" is BACKGROUND CANON from Bannon, not a game mode in AshLane. It informs the narrative indirectly but is NEVER referenced by name in-game. No character says it. No menu mentions it. It's the deep lore that shapes the world, not a feature.\n\n---\n\n# ASHLANE — Story Bible (v1.0, 2026-10-05)
 
 > The Ash Laneverse (Earth-AL): an alternate universe of the Bannon "Off The Top Rope"
 > canon. Same multiverse, different world, different rules. DC/Marvel-style:
@@ -22,34 +22,34 @@ The numerology engine still runs underneath everything. Most people still carry
 a Life Path number like a weight. But Ash Lane district is where the engine
 **glitches** — and the glitches are getting worse.
 
-This game is all the Ember (background lore, never named in-game) mode. The supernatural layer isn't a sidequest;
+This game is all the Flame (background lore, never named in-game) mode. The supernatural layer isn't a sidequest;
 it's the air.
 
 ---
 
-## 2. The Ember (the "Within" layer)
+## 2. The Flame (the "Within" layer)
 
-Tekken's Devil Within gave Jin a devil inside. Bannon's the Ember (background lore, never named in-game) gave
+Tekken's Devil Within gave Jin a devil inside. Bannon's the Flame (background lore, never named in-game) gave
 Marquis/Maime a feral third state and Onyx a stable of people the numerology
 engine cannot read.
 
-On Earth-AL, the equivalent is **the Ember** — a supernatural fire that lives
+On Earth-AL, the equivalent is **the Flame** — a supernatural fire that lives
 inside certain fighters. Rules:
 
-- The Ember **awakens under extreme stress or rage** (first manifestation is
+- The Flame **awakens under extreme stress or rage** (first manifestation is
   always involuntary — a story beat, never a player choice).
 - While burning, the fighter is stronger, faster, and harder to put down —
   but their **control degrades**. Mechanically: damage up, defense variance up,
   friendly-fire risk in partner missions.
-- The Ember **wants to be fed**. Every use makes the next awakening easier
+- The Flame **wants to be fed**. Every use makes the next awakening easier
   and harder to put out. This is the game's central moral meter (parallel to
-  the Ember (background lore, never named in-game)'s Corruption vs. Purity threshold).
+  the Flame (background lore, never named in-game)'s Corruption vs. Purity threshold).
 - Some people are **born unlit** — the engine can't see them at all (Onyx's
-  whole deal in the Ember (background lore, never named in-game) canon). They are immune to the Ember but can
+  whole deal in the Flame (background lore, never named in-game) canon). They are immune to the Flame but can
   *smell* it on others. These are the only people who can talk a burning
   fighter down.
 
-The Ember is not good or evil. It's **hunger**. What matters is what you feed it —
+The Flame is not good or evil. It's **hunger**. What matters is what you feed it —
 and what you refuse to.
 
 ---
@@ -79,7 +79,7 @@ generations before Halcyon started buying.
 
 ## 4. Factions (parallel to Bannon's four-faction structure)
 
-### THE ASHES — "The Block Remembers"
+### THE ASHES — "The Block Remflames"
 *Parallel: The Anti-Hero Alliance / Forces of Freedom.*
 The protagonist's crew. Not a gang — a **neighborhood**. Fighters, a gym owner,
 a nurse, kids who run messages. They don't want territory; they want to keep
@@ -95,10 +95,10 @@ orders and believes he's *saving* the city). Theme: **order is just violence
 with paperwork**.
 
 ### THE HOLLOWS — the burned
-*Parallel: Agents of Chaos & the the Ember (background lore, never named in-game) stable.*
-Fighters whose Embers went too far and hollowed them out. They gather in the
+*Parallel: Agents of Chaos & the the Flame (background lore, never named in-game) stable.*
+Fighters whose Flames went too far and hollowed them out. They gather in the
 Park at night, drawn to anyone newly lit. Not evil — **starving**. Their leader
-is called **Hollow** (a nod, not a copy: where the Ember (background lore, never named in-game)'s HOLLOW is silent,
+is called **Hollow** (a nod, not a copy: where the Flame (background lore, never named in-game)'s HOLLOW is silent,
 AshLane's Hollow *won't stop talking* — every word is someone else's memory).
 Theme: **what's left when the fire eats the person**.
 
@@ -117,17 +117,17 @@ the interesting part is what isn't for sale.**
 district years ago after a falling-out with their older sibling; comes home
 for the funeral and finds Halcyon demolition notices on every door.
 
-- **Life Path: uncomputable.** Like Onyx in the Ember (background lore, never named in-game) canon, the numerology
+- **Life Path: uncomputable.** Like Onyx in the Flame (background lore, never named in-game) canon, the numerology
   engine glitches on Ash — no number, no assigned destiny. In-universe, this
-  is why the Ember hit them so hard and so fast: there was no number to
+  is why the Flame hit them so hard and so fast: there was no number to
   *anchor* them when it woke up.
 - **Style:** street brawler with a technical base (the Lane family gym taught
   fundamentals). Balanced — the player's stat upgrades shape the identity.
 - **The arc (4-phase, Bannon booking template):** Ascent (reclaim the block)
-  → Catalyst (the Ember's first kill — was it self-defense?) → Reign (burning
+  → Catalyst (the Flame's first kill — was it self-defense?) → Reign (burning
   through the Combine, losing the Ashes' trust) → Redemption (choose what the
   fire is *for*).
-- **Mantra:** "The block remembers." (Said before every story-mission start —
+- **Mantra:** "The block remflames." (Said before every story-mission start —
   the AshLane equivalent of Bannon's "Vulnerability is a choice. I choose steel.")
 
 Ash is **not** Marquis. Marquis hides behind a steel mask; Ash's face is bare
@@ -144,8 +144,8 @@ and that's the problem — everyone can see the fire coming.
 | **Gym Owner "Anchor"** | Runs the Lane gym on the Strip | Parallel to Atlas Vance ("The Anchor") — the moral structure. Teaches new moves; stat upgrades happen here (Urban Reign-style 1–3 pts/mission). |
 | **Sombra Negra** | Mercenary, Unaffiliated | The Calculated Mercenary. First met as a boss (hired by the Combine), later recruitable. Lucha style; La Trampa de Plata. Tests whether Ash will *buy* help. |
 | **Director Cole Vane** | Halcyon Group, Combine leader | The smiling final boss. Never throws a punch until Chapter 4 — and when he does, it's all technique, no heart. |
-| **Hollow** | Leader of the Hollows | Knows what the Ember wants because it already took everything from them. Offers Ash the truth at a price. |
-| **Onyx** | Wanderer (the Ember (background lore, never named in-game) canon import) | Game-only character crossing over. The only person alive who understands being uncomputable. Appears sparingly — a rooftop conversation in Ch. 2, a warning in Ch. 3. Never fights *for* you. |
+| **Hollow** | Leader of the Hollows | Knows what the Flame wants because it already took everything from them. Offers Ash the truth at a price. |
+| **Onyx** | Wanderer (the Flame (background lore, never named in-game) canon import) | Game-only character crossing over. The only person alive who understands being uncomputable. Appears sparingly — a rooftop conversation in Ch. 2, a warning in Ch. 3. Never fights *for* you. |
 | **Rook** | Teen runner for the Ashes | Side-mission giver ("?" NPCs). Multi-part chain; the collectible-gated finale reveals what they saw the night Mara died. |
 
 ---
@@ -157,13 +157,13 @@ and that's the problem — everyone can see the fire coming.
 Ash buries Mara, sees the demolition notices, and starts taking the block
 back one storefront at a time. Tutorial brawls, first Combine eviction crew,
 first night in the Alleys. Ends with the gym reopened and the Ashes named.
-**Ember status:** dormant — one flicker in the final mission (a warning, not a weapon).
+**Flame status:** dormant — one flicker in the final mission (a warning, not a weapon).
 
 ### Chapter 2 — TURF WAR
 *Theme: power and its cost. Missions 13–30.*
 Open gang warfare. Partner missions unlock (Rook, then Sombra if recruited).
 The Combine escalates: private security, demolition crews, Sombra Negra as a
-hired boss. **The Ember awakens mid-chapter** — involuntary, during an escort
+hired boss. **The Flame awakens mid-chapter** — involuntary, during an escort
 mission gone wrong. Ash wins the fight and terrifies their own crew.
 Onyx's rooftop scene. Ends with the Ashes split: half follow Ash, half walk away.
 
@@ -171,20 +171,20 @@ Onyx's rooftop scene. Ends with the Ashes split: half follow Ash, half walk away
 *Theme: what the fire wants. Missions 31–45.*
 The Hollows come out of the Park. Hollow offers answers. Supernatural mission
 types dominate: Don't Provoke (Hollows that must not be fed), Region Break
-(burn the Ember out of a Hollow's arm to save them — or don't), night-only
+(burn the Flame out of a Hollow's arm to save them — or don't), night-only
 Subway hazards. The Combine exploits the chaos to accelerate demolitions.
-Ends with Ash choosing: **feed the Ember to burn Halcyon's staging ground**
+Ends with Ash choosing: **feed the Flame to burn Halcyon's staging ground**
 (Combine crippled, Ashes horrified) or **starve it and lose the Warehouses**.
 
 ### Chapter 4 — ASHES
 *Theme: what you burn vs. what you build. Missions 46–60.*
 Endgame. The district's fate is decided block by block on the city map —
 every mission flips territory. Director Vane finally fights (Boss Duel,
-technique-perfect, Ember-less — the scariest thing Ash has faced: a man with
+technique-perfect, Flame-less — the scariest thing Ash has faced: a man with
 no fire at all). Final choice: **burn Meridian Crossing's cornerstone**
-(Ember ending — the district is saved but Ash becomes what the Hollows are)
+(Flame ending — the district is saved but Ash becomes what the Hollows are)
 or **put the fire out for good** (Ash ending — Ash Lane stands, Ash walks
-away unlit, the Ember dies with the choice). Post-game: free roam, side
+away unlit, the Flame dies with the choice). Post-game: free roam, side
 chains, territory defense.
 
 ---
@@ -198,13 +198,13 @@ archetypes). Chapter homes:
 |---|---|---|---|---|---|
 | Exterminate | ✓ | ✓ | ✓ | ✓ | Bread and butter; **swarm variants** allowed on Combine raids and Hollow nights (group-AI cap lifted by design) |
 | Assassinate | ✓ | ✓ | – | ✓ | Ch.1: eviction foremen. Ch.4: Combine officers |
-| Timed | ✓ | – | ✓ | – | Ch.1: stop a demolition crew before the charge blows. Ch.3: outrun the Ember taking hold |
+| Timed | ✓ | – | ✓ | – | Ch.1: stop a demolition crew before the charge blows. Ch.3: outrun the Flame taking hold |
 | Don't Provoke | – | ✓ | ✓ | – | Ch.2: Sombra's spotters. Ch.3: the Hollows' rule — feed one and they all come |
 | Boss Duel | ✓ | ✓ | ✓ | ✓ | One per chapter minimum: Ch.1 foreman, Ch.2 Sombra, Ch.3 Hollow, Ch.4 Vane |
-| Region Break | – | ✓ | ✓ | – | Ch.2: cripple security rigs. Ch.3: burn Ember out of limbs |
+| Region Break | – | ✓ | ✓ | – | Ch.2: cripple security rigs. Ch.3: burn Flame out of limbs |
 | Weapon Steal | – | ✓ | – | ✓ | Ch.2: demolition tools. Ch.4: security armory |
-| Partner | – | ✓ | ✓ | ✓ | Unlocks Ch.2 (Rook → Sombra). Ember friendly-fire risk applies |
-| Escort | – | ✓ | – | ✓ | Ch.2: the Ember's awakening mission. Ch.4: evacuate the Park |
+| Partner | – | ✓ | ✓ | ✓ | Unlocks Ch.2 (Rook → Sombra). Flame friendly-fire risk applies |
+| Escort | – | ✓ | – | ✓ | Ch.2: the Flame's awakening mission. Ch.4: evacuate the Park |
 
 **Swarm rule (owner directive 2026-10-05):** the default group-AI cap is 3
 simultaneous attackers — a *fairness* default, not a law. Combine raids,
@@ -221,10 +221,10 @@ the cap lifts and the mission card says so up front.
 2. **The numerology engine is shared physics.** LP numbers work the same way;
    that's how Onyx can cross over. What's different is the *institutions*
    built on top of it (rings → blocks).
-3. **the Ember (background lore, never named in-game) characters are the bridge.** Onyx, and only Onyx, moves between
+3. **the Flame (background lore, never named in-game) characters are the bridge.** Onyx, and only Onyx, moves between
    Earth-prime and Earth-AL freely — she's uncomputable everywhere. Nobody
    else crosses without a story reason.
-4. **The Ember is Earth-AL's native supernatural.** It is not Maime, not the
+4. **The Flame is Earth-AL's native supernatural.** It is not Maime, not the
    Devil Gene — it's this Earth's answer to the same question: *what lives
    inside a fighter?*
 5. **Names are load-bearing.** "Ash Lane" the person, "Ash Lane" the district,
@@ -236,7 +236,7 @@ the cap lifts and the mission card says so up front.
 
 ## 10. Open Threads (for future chapters/DLC)
 
-- What *is* the Ember, cosmologically? (Tied to `canon/cosmology/` on prime —
+- What *is* the Flame, cosmologically? (Tied to `canon/cosmology/` on prime —
   do not answer fully in the base game.)
 - Mara Lane's death — the Rook chain's finale recontextualizes it.
 - Sombra Negra's contract: who hired them *before* the Combine, and why did
@@ -248,8 +248,8 @@ the cap lifts and the mission card says so up front.
 ---
 
 *Canon consulted: `canon/00_cast_and_world.md` (41-character roster, four-faction
-structure, numerology engine, OTR personas), `canon/godwithin/the Ember (background lore)_mode.md`
+structure, numerology engine, OTR personas), `canon/godwithin/the Flame (background lore)_mode.md`
 (Onyx, the stable, uncomputable Life Paths, Corruption/Purity), Bannon
-`docs/the Ember (background lore)_mode.md` (roam-mode lineage: MDickie × Skyrim × Devil Within),
+`docs/the Flame (background lore)_mode.md` (roam-mode lineage: MDickie × Skyrim × Devil Within),
 `docs/design/THE-BASTARD-GOD-WITHIN-MODE-INTEGRATION.md` (mode-nesting design
 law). Nothing ported — everything paralleled.*
