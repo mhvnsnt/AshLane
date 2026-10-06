@@ -6,7 +6,61 @@ import { ASSIGN_SLOTS, CLIP_NAMES, STYLES, type Slot } from "@/game3d/rig-pipeli
 import { MARTIAL, STANCES } from "@/game3d/styles";
 import { CAST_PICKS, fighterByName, ROSTER } from "@/game3d/roster";
 import { sfxBack, sfxFight, wireMenuSfx } from "@/game3d/menu-sfx";
+import { AshlaneLogo, FactionEmblem, StyleIcon, MenuIcon } from "@/game3d/menu-icons";
+import { FighterPortrait } from "@/game3d/fighter-portraits";
+import { StreetBackdrop } from "@/game3d/menu-backdrop";
+import type { FactionId } from "@/game3d/char-gen";
 import "@/game3d/menu-theme.css";
+
+/* Roster fighter id -> faction (for emblems + portrait backgrounds) */
+const FIGHTER_FACTIONS: Record<string, FactionId> = {
+  bannon: "ashes",
+  maime: "hollows",
+  brutus: "combine",
+  cain: "unaffiliated",
+  viper: "unaffiliated",
+  titan: "combine",
+  stickup: "ashes",
+  finxsse: "unaffiliated",
+  tyneshia: "ashes",
+  onyx: "painted",
+  cody: "unaffiliated",
+  cipher: "painted",
+  echo: "painted",
+  pablo: "unaffiliated",
+  kobra: "hollows",
+  hollow: "hollows",
+  hall: "unaffiliated",
+  edwin: "combine",
+  aaron: "combine",
+  sensei: "unaffiliated",
+  toro: "unaffiliated",
+  static: "painted",
+  stan: "combine",
+  triplex: "combine",
+  wreck: "hollows",
+  devil: "hollows",
+  jager: "authority",
+  sombra_negra: "unaffiliated",
+  quaternius_male: "unaffiliated",
+  quaternius_female: "unaffiliated",
+};
+
+/* Deterministic pseudo-stats for fighter cards (seeded by id) */
+function fighterStats(id: string): { pow: number; spd: number; tgh: number } {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) | 0;
+  const r = (s: number) => {
+    h = (Math.imul(h ^ (h >>> 15), 1 | h) + 0x6d2b79f5) | 0;
+    let t = Math.imul(h ^ (h >>> 7), 61 | h) ^ h;
+    return (((t ^ (t >>> 14)) >>> 0) % 1000) / 1000;
+  };
+  return {
+    pow: 0.35 + r(1) * 0.6,
+    spd: 0.35 + r(2) * 0.6,
+    tgh: 0.35 + r(3) * 0.6,
+  };
+}
 
 const ARENAS: { id: string; label: string; note: string }[] = [
   { id: "ward", label: "Cinder ward", note: "The whole lane." },
@@ -150,30 +204,32 @@ export function AshlaneApp() {
           ) : null}
 
           {!hud.running ? (
-            <div ref={sheetRef} className="sheet veil al-sheet al-concrete">
-              <div className="al-sheet-inner mx-auto w-full max-w-md px-4 py-6">
-                <p className="al-kicker">Green Harbor · street circuit</p>
-                <h2 className="al-title al-title-xl al-spray mt-1">Ashlane</h2>
-                <div className="al-rip mt-3" aria-hidden="true" />
+            <div ref={sheetRef} className="sheet veil al-sheet al-sheet-clear">
+              <StreetBackdrop />
+              <div className="al-sheet-inner al-menu-content mx-auto w-full max-w-md px-4 py-6">
+                <div className="al-logo-wrap al-rise">
+                  <AshlaneLogo />
+                </div>
+                <div className="al-rip mt-1" aria-hidden="true" />
                 <p className="mt-3 text-sm leading-relaxed text-cream-dim">
                   <span className="font-headline uppercase text-brass">{MISSIONS.length} jobs.</span> Hold stick back to guard. Lows and launchers break it. Stick sideways and jump is an au. Throw them into a wall, then hit for a wall follow. Hold a direction as you land to tech. Spin stays on L.
                 </p>
                 {menu === "main" ? (
-                  <div className="mt-5 flex flex-col gap-2.5">
+                  <div className="mt-5 flex flex-col gap-2.5 al-menu-enter">
                     <button type="button" className="al-btn al-btn-primary al-pulse al-rise" onClick={() => setMenu("story")}>
-                      <span>Story — take the jobs</span>
+                      <span className="al-btn-icon"><MenuIcon name="story" />Story — take the jobs</span>
                     </button>
                     <div className="grid grid-cols-2 gap-2.5">
                       <button type="button" className="al-btn al-rise al-rise-1" onClick={() => api.current?.startBout("exhibit", arena)}>
-                        <span>Exhibition</span>
+                        <span className="al-btn-icon"><MenuIcon name="fight" />Exhibition</span>
                       </button>
                       <button type="button" className="al-btn al-rise al-rise-1" onClick={() => api.current?.startBout("practice", arena)}>
-                        <span>Practice</span>
+                        <span className="al-btn-icon"><MenuIcon name="trophy" />Practice</span>
                       </button>
                     </div>
-                    <div className="al-section"><span className="al-section-title">Walk the ward</span></div>
+                    <div className="al-divider"><span><MenuIcon name="map" size={14} />Walk the ward</span></div>
                     <button type="button" className="al-btn al-rise al-rise-2" onClick={() => { api.current?.setStage("ward"); begin("roam"); }}>
-                      <span>Cinder Ward <em className="not-italic text-cream-dim">— the plaza</em></span>
+                      <span className="al-btn-icon"><MenuIcon name="flame" />Cinder Ward <em className="not-italic text-cream-dim">— the plaza</em></span>
                     </button>
                     <div className="grid grid-cols-3 gap-2.5">
                       <button type="button" className="al-chip al-rise al-rise-2" onClick={() => { api.current?.setStage("dock"); begin("roam"); }}>
@@ -194,15 +250,15 @@ export function AshlaneApp() {
                         Jobs
                       </button>
                       <button type="button" className="al-chip al-rise al-rise-3" onClick={() => setMenu("style")}>
-                        Customize
+                        Fighters
                       </button>
                     </div>
                     <div className="grid grid-cols-2 gap-2.5">
                       <button type="button" className="al-btn al-rise al-rise-4" onClick={() => begin("belt")}>
-                        <span>Scrap street</span>
+                        <span className="al-btn-icon"><MenuIcon name="fight" />Scrap street</span>
                       </button>
                       <button type="button" className="al-btn al-rise al-rise-4" onClick={() => begin("platform")}>
-                        <span>Coil scaffolds</span>
+                        <span className="al-btn-icon"><MenuIcon name="map" />Coil scaffolds</span>
                       </button>
                     </div>
                   </div>
@@ -321,27 +377,38 @@ export function AshlaneApp() {
                     ))}
                     <div className="al-section"><span className="al-section-title">Who you are</span></div>
                     <p className="text-sm text-cream-dim"><span className="font-headline uppercase text-cream">{hud.who}</span>. {hud.bio}</p>
-                    {ROSTER.map((fighter) => {
-                      const on = hud.who === fighter.name;
+                    {/* selected fighter detail */}
+                    {(() => {
+                      const sel = ROSTER.find((f) => f.name === hud.who);
+                      if (!sel) return null;
+                      const faction: FactionId = FIGHTER_FACTIONS[sel.id] ?? "unaffiliated";
                       return (
-                        <button
-                          key={fighter.id}
-                          type="button"
-                          data-on={on ? "1" : undefined}
-                          className="al-card"
-                          onClick={() => api.current?.setWho(fighter.id)}
-                        >
-                          <span className="al-fighter" data-on={on ? "1" : undefined}>
-                            <span className="al-portrait" aria-hidden="true"><b>{fighter.name.charAt(0)}</b></span>
-                            <span>
-                              <span className="al-card-title">{fighter.name}</span>
-                              <span className="al-card-sub">{fighter.bio}</span>
-                              <span className="al-hud-chip mt-1 inline-block">{fighter.martial}</span>
-                            </span>
-                          </span>
-                        </button>
+                        <div className="al-select-detail al-rise">
+                          <div className="flex items-center gap-3">
+                            <FighterPortrait fighterId={sel.id} name={sel.name} faction={faction} size={72} />
+                            <div className="flex-1">
+                              <h3>{sel.name}</h3>
+                              <div className="mt-1 flex items-center gap-2">
+                                <FactionEmblem faction={faction} size={22} />
+                                <StyleIcon style={sel.martial} size={22} />
+                                <span className="al-hud-chip">{sel.martial}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="mt-2 text-sm leading-relaxed text-cream-dim">{sel.bio}</p>
+                        </div>
                       );
-                    })}
+                    })()}
+                    <div className="al-fighter-grid">
+                      {ROSTER.map((fighter) => (
+                        <FighterCard
+                          key={fighter.id}
+                          fighter={fighter}
+                          selected={hud.who === fighter.name}
+                          onSelect={() => api.current?.setWho(fighter.id)}
+                        />
+                      ))}
+                    </div>
                     {fighterByName(hud.who)?.attires.length ? (
                       <div className="al-section"><span className="al-section-title">Attire</span></div>
                     ) : null}
@@ -490,20 +557,18 @@ export function AshlaneApp() {
                     <button type="button" className="al-chip flex-1" data-on={hud.build === "full" ? "1" : undefined} onClick={() => api.current?.setBuild("full")}>Full</button>
                     <button type="button" className="al-chip flex-1" data-on={hud.build === "chibi" ? "1" : undefined} onClick={() => api.current?.setBuild("chibi")}>Ward size</button>
                   </div>
-                  {suiteWho === null ? ROSTER.map((fighter) => {
-                    const on = hud.who === fighter.name;
-                    return (
-                      <button key={fighter.id} type="button" data-on={on ? "1" : undefined} className="al-card" onClick={() => { setSuiteWho(fighter.id); api.current?.setWho(fighter.id); }}>
-                        <span className="al-fighter" data-on={on ? "1" : undefined}>
-                          <span className="al-portrait" aria-hidden="true"><b>{fighter.name.charAt(0)}</b></span>
-                          <span>
-                            <span className="al-card-title">{fighter.name}</span>
-                            <span className="al-card-sub">{fighter.attires.length} look{fighter.attires.length === 1 ? "" : "s"}</span>
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  }) : (
+                  {suiteWho === null ? (
+                    <div className="al-fighter-grid">
+                      {ROSTER.map((fighter) => (
+                        <FighterCard
+                          key={fighter.id}
+                          fighter={fighter}
+                          selected={hud.who === fighter.name}
+                          onSelect={() => { setSuiteWho(fighter.id); api.current?.setWho(fighter.id); }}
+                        />
+                      ))}
+                    </div>
+                  ) : (
                     <>
                       <div className="al-section"><span className="al-section-title">{ROSTER.find((fighter) => fighter.id === suiteWho)?.name} · pick a look</span></div>
                       {ROSTER.find((fighter) => fighter.id === suiteWho)?.attires.map((attire) => (
@@ -637,19 +702,22 @@ export function AshlaneApp() {
                 <h2 className="al-title text-4xl mt-1">{pendingWho ? "Which look" : "Who walks in"}</h2>
                 <div className="al-rip mt-2" aria-hidden="true" />
                 <p className="mt-2 text-sm text-cream-dim">{MISSIONS[pendingJob].title}.</p>
-                <div className="mt-4 flex flex-col gap-2.5">
-                  {pendingWho === null ? ROSTER.map((fighter) => (
-                    <button key={fighter.id} type="button" className="al-card" onClick={() => setPendingWho(fighter.id)}>
-                      <span className="al-fighter">
-                        <span className="al-portrait" aria-hidden="true"><b>{fighter.name.charAt(0)}</b></span>
-                        <span>
-                          <span className="al-card-title">{fighter.name}</span>
-                          <span className="al-card-sub">{fighter.bio}</span>
-                          <span className="al-hud-chip mt-1 inline-block">{fighter.martial}</span>
-                        </span>
-                      </span>
-                    </button>
-                  )) : ROSTER.find((fighter) => fighter.id === pendingWho)?.attires.map((attire) => (
+                <div className="mt-4 flex flex-col gap-2.5 al-menu-enter">
+                  {pendingWho === null ? (
+                    <>
+                      <div className="al-divider"><span><MenuIcon name="user" size={14} />Pick your fighter</span></div>
+                      <div className="al-fighter-grid">
+                        {ROSTER.map((fighter) => (
+                          <FighterCard
+                            key={fighter.id}
+                            fighter={fighter}
+                            selected={false}
+                            onSelect={() => setPendingWho(fighter.id)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  ) : ROSTER.find((fighter) => fighter.id === pendingWho)?.attires.map((attire) => (
                     <button key={attire.file} type="button" className="al-card" onClick={() => walkIn({ id: pendingWho, name: ROSTER.find((fighter) => fighter.id === pendingWho)?.name ?? "", label: attire.label, file: attire.file, bio: "" })}>
                       <span className="al-card-title">{attire.label}</span>
                       <span className="al-card-sub">{ROSTER.find((fighter) => fighter.id === pendingWho)?.name}</span>
@@ -700,6 +768,53 @@ function objective(hud: Hud) {
   if (hud.area === "crane") return "North roof. A long fall hurts.";
   if (hud.area === "office") return "Back room, past the market. Ledger Cho keeps the paper.";
   return `${hud.job}. ${hud.jobStep}`;
+}
+
+function FighterCard({
+  fighter,
+  selected,
+  onSelect,
+}: {
+  fighter: (typeof ROSTER)[number];
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const faction: FactionId = FIGHTER_FACTIONS[fighter.id] ?? "unaffiliated";
+  const stats = fighterStats(fighter.id);
+  return (
+    <button
+      type="button"
+      data-on={selected ? "1" : undefined}
+      className="al-fighter-card al-rise"
+      onClick={onSelect}
+      aria-label={`Select ${fighter.name}`}
+    >
+      <span className="al-fc-portrait" aria-hidden="true">
+        <FighterPortrait fighterId={fighter.id} name={fighter.name} faction={faction} size={148} />
+      </span>
+      <span className="al-fc-body">
+        <span className="al-fc-name">{fighter.name}</span>
+        <span className="al-fc-meta">
+          <FactionEmblem faction={faction} size={18} />
+          <StyleIcon style={fighter.martial} size={18} />
+        </span>
+        <span className="al-stat" aria-hidden="true">
+          <span className="al-stat-row">
+            <span className="al-stat-label">POW</span>
+            <span className="al-stat-track"><span className="al-stat-fill" style={{ width: `${stats.pow * 100}%` }} /></span>
+          </span>
+          <span className="al-stat-row">
+            <span className="al-stat-label">SPD</span>
+            <span className="al-stat-track"><span className="al-stat-fill cool" style={{ width: `${stats.spd * 100}%` }} /></span>
+          </span>
+          <span className="al-stat-row">
+            <span className="al-stat-label">TGH</span>
+            <span className="al-stat-track"><span className="al-stat-fill" style={{ width: `${stats.tgh * 100}%` }} /></span>
+          </span>
+        </span>
+      </span>
+    </button>
+  );
 }
 
 function Meter({ label, value, tone }: { label: string; value: number; tone: "ember" | "brass" }) {

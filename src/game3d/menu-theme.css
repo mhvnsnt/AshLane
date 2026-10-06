@@ -375,6 +375,10 @@
   background:
     linear-gradient(180deg, rgba(18, 14, 11, 0.94) 0%, rgba(18, 14, 11, 0.97) 100%);
 }
+/* transparent variant: let StreetBackdrop show through */
+.al-sheet.al-sheet-clear {
+  background: linear-gradient(180deg, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0.82) 100%);
+}
 .al-sheet-inner {
   position: relative;
 }
@@ -511,4 +515,378 @@
 .al-sheet::-webkit-scrollbar-thumb {
   background: var(--color-ember);
   border: 2px solid #14100d;
+}
+
+/* ============================================================
+   STREET BACKDROP — animated city scene
+   ============================================================ */
+
+.al-street-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.al-street-skyline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* neon window flicker */
+@keyframes al-neon-flicker-a {
+  0%, 100% { opacity: 0.9; }
+  91% { opacity: 0.9; }
+  92% { opacity: 0.3; }
+  93% { opacity: 0.9; }
+  96% { opacity: 0.5; }
+  97% { opacity: 0.9; }
+}
+@keyframes al-neon-flicker-b {
+  0%, 100% { opacity: 0.85; }
+  88% { opacity: 0.85; }
+  89% { opacity: 0.2; }
+  91% { opacity: 0.85; }
+}
+.al-neon-a { animation: al-neon-flicker-a 5.1s infinite; }
+.al-neon-b { animation: al-neon-flicker-b 7.3s infinite; }
+
+@keyframes al-sign-a {
+  0%, 100% { opacity: 1; }
+  90% { opacity: 1; }
+  91% { opacity: 0.4; }
+  92% { opacity: 1; }
+  94% { opacity: 0.6; }
+  95% { opacity: 1; }
+}
+@keyframes al-sign-b {
+  0%, 100% { opacity: 0.95; }
+  85% { opacity: 0.95; }
+  86% { opacity: 0.3; }
+  88% { opacity: 0.95; }
+}
+.al-neon-sign-a {
+  animation: al-sign-a 4.7s infinite;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+.al-neon-sign-b {
+  animation: al-sign-b 6.2s infinite;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+.al-lamp {
+  animation: al-sign-b 8s infinite;
+  filter: drop-shadow(0 0 12px #f0b429);
+}
+
+/* rain */
+.al-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.al-drop {
+  position: absolute;
+  top: -20px;
+  width: 1.5px;
+  height: 28px;
+  background: linear-gradient(180deg, transparent, rgba(127, 179, 213, 0.4));
+  animation: al-fall linear infinite;
+}
+@keyframes al-fall {
+  to { transform: translateY(110vh); }
+}
+
+/* rising embers */
+.al-embers {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.al-ember {
+  position: absolute;
+  bottom: -10px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #e4572e;
+  box-shadow: 0 0 8px #e4572e;
+  animation: al-rise-ember linear infinite;
+  opacity: 0;
+}
+@keyframes al-rise-ember {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.9; }
+  100% { transform: translateY(-70vh) translateX(30px); opacity: 0; }
+}
+
+/* vignette over backdrop */
+.al-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(8, 6, 5, 0.75) 100%);
+}
+
+/* menu content floats above backdrop */
+.al-sheet-inner,
+.al-menu-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   FIGHTER CARDS — Def Jam style select
+   ============================================================ */
+
+.al-fighter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 0.65rem;
+}
+
+.al-fighter-card {
+  position: relative;
+  background: linear-gradient(180deg, #211a14 0%, #141010 100%);
+  border: 1px solid var(--color-line);
+  border-bottom: 3px solid var(--color-ember);
+  padding: 0;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease;
+  cursor: pointer;
+}
+.al-fighter-card:hover,
+.al-fighter-card:focus-visible {
+  transform: translateY(-3px) scale(1.02);
+  border-bottom-color: var(--color-brass);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(228, 87, 46, 0.25);
+  z-index: 2;
+}
+.al-fighter-card[data-on="1"] {
+  border-color: var(--color-brass);
+  border-bottom-color: var(--color-neon);
+  box-shadow: 0 0 0 1px var(--color-brass), 0 0 22px rgba(240, 180, 41, 0.3);
+}
+.al-fighter-card .al-fc-portrait {
+  width: 100%;
+  aspect-ratio: 1;
+  display: block;
+}
+.al-fighter-card .al-fc-portrait svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.al-fighter-card .al-fc-body {
+  padding: 0.55rem 0.6rem 0.65rem;
+  position: relative;
+}
+.al-fighter-card .al-fc-name {
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  color: var(--color-cream);
+  line-height: 1.1;
+}
+.al-fighter-card[data-on="1"] .al-fc-name {
+  color: var(--color-neon);
+}
+.al-fighter-card .al-fc-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+.al-fighter-card .al-fc-faction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-cream-dim);
+}
+
+/* stat bars */
+.al-stat {
+  margin-top: 0.3rem;
+}
+.al-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.2rem;
+}
+.al-stat-label {
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-cream-dim);
+  width: 2.2rem;
+  flex: none;
+}
+.al-stat-track {
+  flex: 1;
+  height: 5px;
+  background: #0d0b09;
+  border: 1px solid var(--color-line);
+  position: relative;
+  overflow: hidden;
+}
+.al-stat-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-ember), var(--color-brass));
+  transition: width 0.25s ease;
+}
+.al-stat-fill.cool {
+  background: linear-gradient(90deg, #4d9de0, #7fb3d5);
+}
+
+/* selected fighter detail panel */
+.al-select-detail {
+  background: linear-gradient(180deg, rgba(33, 26, 20, 0.96), rgba(20, 16, 16, 0.98));
+  border: 1px solid var(--color-brass);
+  border-left: 5px solid var(--color-ember);
+  padding: 0.9rem 1rem;
+}
+.al-select-detail h3 {
+  font-family: var(--font-headline);
+  text-transform: uppercase;
+  font-size: 1.3rem;
+  color: var(--color-cream);
+  letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   MENU BUTTONS v2 — with icons
+   ============================================================ */
+
+.al-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.al-btn-icon svg {
+  flex: none;
+  opacity: 0.85;
+}
+.al-btn:hover .al-btn-icon svg {
+  opacity: 1;
+  transform: scale(1.12);
+  transition: transform 0.14s ease;
+}
+
+/* section divider with icon */
+.al-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 1rem 0 0.5rem;
+}
+.al-divider::before,
+.al-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-line), transparent);
+}
+.al-divider span {
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-brass);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ============================================================
+   LOADING SCREEN
+   ============================================================ */
+
+.al-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: #0a0806;
+}
+.al-loading-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.al-loading-flame {
+  display: inline-block;
+}
+@keyframes al-flame-dance {
+  0%, 100% { transform: scaleY(1) scaleX(1); transform-origin: bottom center; }
+  30% { transform: scaleY(1.12) scaleX(0.94); }
+  60% { transform: scaleY(0.94) scaleX(1.06); }
+}
+.al-flame-dance {
+  animation: al-flame-dance 0.9s ease-in-out infinite;
+}
+.al-loading-label {
+  margin-top: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-cream-dim);
+}
+.al-loading-bar {
+  margin: 0.8rem auto 0;
+  width: 180px;
+  height: 6px;
+  background: #14100d;
+  border: 1px solid var(--color-line);
+  overflow: hidden;
+}
+.al-loading-bar i {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, var(--color-ember), var(--color-brass));
+  animation: al-load-slide 1.1s ease-in-out infinite;
+}
+@keyframes al-load-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(450%); }
+}
+
+/* ============================================================
+   MENU TRANSITIONS
+   ============================================================ */
+
+@keyframes al-menu-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.al-menu-enter {
+  animation: al-menu-in 0.22s ease both;
+}
+@keyframes al-menu-out {
+  from { opacity: 1; }
+  to { opacity: 0; transform: translateX(-16px); }
+}
+
+/* logo treatment on menu */
+.al-logo-wrap {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.25rem;
+}
+.al-logo-wrap svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  display: block;
 }
